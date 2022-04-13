@@ -1,2 +1,2 @@
 # slimer-react
-Practive lib for react.
+Practice lib for react.
