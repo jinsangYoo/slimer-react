@@ -1,46 +1,32 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import {
-  HTTP_METHOD,
-  BASE_URL,
-  HTTP_URL,
-  ACENetworkParams
-} from '../constant/Network'
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
+import {HTTP_METHOD, BASE_URL, HTTP_URL, ACENetworkParams} from '../constant/Network'
 import POLICY from '../constant/Policy'
-import { NetworkMode, NetworkRequestType } from '../constant/SDKMode'
-// import ACECommonStaticConfig from '../config/ACECommonStaticConfig'
-// import {ACS} from '../../acone/acs'
-import { mapValueStringToObject } from '../util/MapUtil'
+import {NetworkMode, NetworkRequestType} from '../constant/SDKMode'
+import ACECommonStaticConfig from '../config/ACECommonStaticConfig'
+import {ACS} from '../../acone/acs'
+import {mapValueStringToObject} from '../util/MapUtil'
 import ACELog from '../logger/ACELog'
 
 // import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
-// import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
-// import ACEParameterUtil from '../parameter/ACEParameterUtil'
+import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
+import ACEParameterUtil from '../parameter/ACEParameterUtil'
 
 export class ACENetwork {
   private static _TAG = 'Net'
 
-  private static networkRequestTypeToParams(
-    requestType: NetworkRequestType
-  ): ACENetworkParams {
-    // const currentNetworkMode =
-    //   ControlTowerSingleton.getInstance().getNetworkMode()
+  private static networkRequestTypeToParams(requestType: NetworkRequestType): ACENetworkParams {
+    // const currentNetworkMode = ControlTowerSingleton.getInstance().getNetworkMode()
     const currentNetworkMode = NetworkMode.HOME_dev
 
     ACELog.d(
       ACENetwork._TAG,
-      `networkRequestTypeToParams requestType: ${NetworkRequestType[requestType]}, currentNetworkMode:${NetworkMode[currentNetworkMode]}`
+      `networkRequestTypeToParams requestType: ${NetworkRequestType[requestType]}, currentNetworkMode:${NetworkMode[currentNetworkMode]}`,
     )
     return {
-      baseUrl: this.networkRequestTypeToBaseURLs(
-        currentNetworkMode,
-        requestType
-      ),
-      requestHeaders: this.networkRequestTypeToHeaders(
-        currentNetworkMode,
-        requestType
-      ),
+      baseUrl: this.networkRequestTypeToBaseURLs(currentNetworkMode, requestType),
+      requestHeaders: this.networkRequestTypeToHeaders(currentNetworkMode, requestType),
       url: this.networkRequestTypeToURLs(currentNetworkMode, requestType),
-      params: this.networkRequestTypeToURLParams(requestType)
+      params: this.networkRequestTypeToURLParams(requestType),
     }
   }
 
@@ -67,10 +53,7 @@ export class ACENetwork {
     }
   }
 
-  private static networkRequestTypeToBaseURLs(
-    networkMode: NetworkMode,
-    requestType: NetworkRequestType
-  ): string {
+  private static networkRequestTypeToBaseURLs(networkMode: NetworkMode, requestType: NetworkRequestType): string {
     switch (requestType) {
       case NetworkRequestType.LOG:
         return this.logToBaseURL(networkMode)
@@ -81,9 +64,7 @@ export class ACENetwork {
   //#endregion
 
   //#region request headers
-  private static logToRequestHeaders(
-    networkMode: NetworkMode
-  ): Map<string, string> {
+  private static logToRequestHeaders(networkMode: NetworkMode): Map<string, string> {
     const _map = new Map<string, string>()
     switch (networkMode) {
       case NetworkMode.COMPANY_dev:
@@ -95,22 +76,20 @@ export class ACENetwork {
     }
   }
 
-  private static policyToRequestHeaders(
-    networkMode: NetworkMode
-  ): Map<string, string> {
+  private static policyToRequestHeaders(networkMode: NetworkMode): Map<string, string> {
     const _map = new Map<string, string>()
 
     switch (networkMode) {
       case NetworkMode.COMPANY_dev:
       case NetworkMode.HOME_dev:
       case NetworkMode.Pro:
-        // _map.set(POLICY.REQUEST_APPLICATION_ID, ACS.getPackageNameOrBundleID() ?? 'no packageName')
+        _map.set(POLICY.REQUEST_APPLICATION_ID, ACS.getPackageNameOrBundleID() ?? 'no packageName')
 
-        // _map.set(POLICY.REQUEST_CID, ACECommonStaticConfig.getKey())
-        // _map.set(POLICY.REQUEST_PLATFORM, Platform.OS)
-        // _map.set(POLICY.REQUEST_SERVICE_ID, ACECommonStaticConfig.getKey())
+        _map.set(POLICY.REQUEST_CID, ACECommonStaticConfig.getKey())
+        _map.set(POLICY.REQUEST_PLATFORM, 'Platform.OS')
+        _map.set(POLICY.REQUEST_SERVICE_ID, ACECommonStaticConfig.getKey())
         _map.set(POLICY.REQUEST_TIME, Date.now().toString())
-        // _map.set(POLICY.REQUEST_VERSION, ACS.SDKVersion())
+        _map.set(POLICY.REQUEST_VERSION, ACS.SDKVersion())
         break
     }
 
@@ -119,7 +98,7 @@ export class ACENetwork {
 
   private static networkRequestTypeToHeaders(
     networkMode: NetworkMode,
-    requestType: NetworkRequestType
+    requestType: NetworkRequestType,
   ): Map<string, string> {
     switch (requestType) {
       case NetworkRequestType.LOG:
@@ -153,10 +132,7 @@ export class ACENetwork {
     }
   }
 
-  private static networkRequestTypeToURLs(
-    networkMode: NetworkMode,
-    requestType: NetworkRequestType
-  ): string {
+  private static networkRequestTypeToURLs(networkMode: NetworkMode, requestType: NetworkRequestType): string {
     switch (requestType) {
       case NetworkRequestType.LOG:
         return this.logToURL(networkMode)
@@ -165,12 +141,10 @@ export class ACENetwork {
     }
   }
 
-  private static networkRequestTypeToURLParams(
-    requestType: NetworkRequestType
-  ): object {
+  private static networkRequestTypeToURLParams(requestType: NetworkRequestType): object {
     switch (requestType) {
       case NetworkRequestType.LOG:
-        // return ACEParameterUtilForOne.getInstance().getParamsToObjectForLogSend()
+        return ACEParameterUtilForOne.getInstance().getParamsToObjectForLogSend()
         return {}
       case NetworkRequestType.POLICY:
         return {}
@@ -179,60 +153,45 @@ export class ACENetwork {
   //#endregion
 
   //#region request
-  public static requestToPolicy(
-    completed?: (response: AxiosResponse) => void,
-    failed?: (err: object) => void
-  ): void {
-    ACENetwork.request(
-      ACENetwork.networkRequestTypeToParams(NetworkRequestType.POLICY),
-      completed,
-      failed
-    )
+  public static requestToPolicy(completed?: (response: AxiosResponse) => void, failed?: (err: object) => void): void {
+    ACENetwork.request(ACENetwork.networkRequestTypeToParams(NetworkRequestType.POLICY), completed, failed)
   }
 
-  public static requestToLog(
-    completed?: (response: AxiosResponse) => void,
-    failed?: (err: object) => void
-  ): void {
-    ACENetwork.request(
-      ACENetwork.networkRequestTypeToParams(NetworkRequestType.LOG),
-      completed,
-      failed
-    )
+  public static requestToLog(completed?: (response: AxiosResponse) => void, failed?: (err: object) => void): void {
+    ACENetwork.request(ACENetwork.networkRequestTypeToParams(NetworkRequestType.LOG), completed, failed)
   }
 
   private static request(
     networkParam: ACENetworkParams,
     completed?: (response: AxiosResponse) => void,
     failed?: (err: object) => void,
-    method: HTTP_METHOD = HTTP_METHOD.GET
+    method: HTTP_METHOD = HTTP_METHOD.GET,
   ): void {
     axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
     axios.defaults.headers.common['Content-Type'] = 'text/plain'
-    // axios.defaults.headers.common['User-Agent'] =
-    //   ACEParameterUtil.getUserAgentForSDK()
+    axios.defaults.headers.common['User-Agent'] = ACEParameterUtil.getUserAgentForSDK()
 
     const requestHeaders = mapValueStringToObject(networkParam.requestHeaders)
-    // ACELog.d(ACENetwork._TAG, 'request requestHeaders:', requestHeaders)
+    ACELog.d(ACENetwork._TAG, 'request requestHeaders:', requestHeaders)
     const requestConfig: AxiosRequestConfig = {
       url: networkParam.url,
       method: method,
       baseURL: networkParam.baseUrl,
       headers: requestHeaders,
       timeout: 1000,
-      params: networkParam.params
+      params: networkParam.params,
     }
 
     ACELog.d(ACENetwork._TAG, 'requestConfig', requestConfig)
     axios
       .create()
       .request(requestConfig)
-      .then((response) => {
+      .then(response => {
         if (completed) {
           completed(response)
         }
       })
-      .catch((error) => {
+      .catch(error => {
         if (failed) {
           failed(error)
         }

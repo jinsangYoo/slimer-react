@@ -1,5 +1,5 @@
 import ACProduct from './acproduct'
-// import {ACEGender, ACEMaritalStatus} from '../common/constant/ACEPublicStaticConfig'
+import {ACEGender, ACEMaritalStatus} from '../common/constant/ACEPublicStaticConfig'
 
 type ParamType =
   | 'addcart'
@@ -52,9 +52,9 @@ export type ACParams = {
   push?: string
   tel?: string
   userAge?: number
-  // userGender?: ACEGender
+  userGender?: ACEGender
   userId?: string
-  // userMaritalStatus?: ACEMaritalStatus
+  userMaritalStatus?: ACEMaritalStatus
 
   products?: ACProduct[]
 }

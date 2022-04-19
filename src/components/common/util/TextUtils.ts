@@ -74,16 +74,16 @@ export function decode(value: string) {
   return decodeURIComponent(value)
 }
 
-// export function getQueryVar(source: string): object {
-//   var query = {}
-//   var pairs = (source[0] === '?' ? source.substring(1) : source).split('&')
-//   for (var i = 0; i < pairs.length; i++) {
-//     var pair = pairs[i].split('=')
-//     query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '')
-//   }
-//   return query
-// }
+export function getQueryVar(source: string): object {
+  var query = {}
+  var pairs = (source[0] === '?' ? source.substring(1) : source).split('&')
+  for (var i = 0; i < pairs.length; i++) {
+    var pair = pairs[i].split('=')
+    query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '')
+  }
+  return query
+}
 
-// export function getQueryForKey(source: string, value: string): string | undefined {
-//   return getQueryVar(source)[value]
-// }
+export function getQueryForKey(source: string, value: string): string | undefined {
+  return getQueryVar(source)[value]
+}
