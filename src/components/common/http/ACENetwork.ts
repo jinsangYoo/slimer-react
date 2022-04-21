@@ -7,15 +7,14 @@ import {ACS} from '../../acone/acs'
 import {mapValueStringToObject} from '../util/MapUtil'
 import ACELog from '../logger/ACELog'
 
-// import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
+import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
 
 export class ACENetwork {
   private static _TAG = 'Net'
 
   private static networkRequestTypeToParams(requestType: NetworkRequestType): ACENetworkParams {
-    // const currentNetworkMode = ControlTowerSingleton.getInstance().getNetworkMode()
-    const currentNetworkMode = NetworkMode.HOME_dev
+    const currentNetworkMode = ControlTowerSingleton.getInstance().getNetworkMode()
 
     ACELog.d(
       ACENetwork._TAG,
@@ -85,7 +84,7 @@ export class ACENetwork {
         _map.set(POLICY.REQUEST_APPLICATION_ID, ACS.getPackageNameOrBundleID() ?? 'no packageName')
 
         _map.set(POLICY.REQUEST_CID, ACECommonStaticConfig.getKey())
-        _map.set(POLICY.REQUEST_PLATFORM, 'Platform.OS')
+        _map.set(POLICY.REQUEST_PLATFORM, 'react')
         _map.set(POLICY.REQUEST_SERVICE_ID, ACECommonStaticConfig.getKey())
         _map.set(POLICY.REQUEST_TIME, Date.now().toString())
         _map.set(POLICY.REQUEST_VERSION, ACS.SDKVersion())
