@@ -101,7 +101,7 @@ export default class ACEPolicyParameterUtil {
     const _debug_log_url = responseHeaders[POLICY.RESPONSE_DEBUG_LOG_URL.toLowerCase()]
     if (_debug_log_url) {
       ACELog.d(ACEPolicyParameterUtil._TAG, `9. in if key: ${POLICY.RESPONSE_DEBUG_LOG_URL}, value: ${_debug_log_url}`)
-      _policyParameters.setCpCrashDomain(_debug_log_url as string)
+      _policyParameters.setCpCrashDomain(_debug_log_url)
     }
 
     const _policy_interval = responseHeaders[POLICY.RESPONSE_POLICY_INTERVAL.toLowerCase()]
@@ -113,7 +113,7 @@ export default class ACEPolicyParameterUtil {
       var interval = ACEPolicyParameterUtil.REPEAT_PULLING_INTERVAL_SECOND
       const _value = _policy_interval
       if (_value && !isEmpty(_value)) {
-        interval = parseInt(_value as string)
+        interval = parseInt(_value)
         if (interval < ACEConstantInteger.TWO_MINUTES) {
           interval = ACEConstantInteger.TWO_MINUTES
         }
@@ -124,7 +124,7 @@ export default class ACEPolicyParameterUtil {
     const _toast_appkey = responseHeaders[POLICY.RESPONSE_TOAST_APPKEY.toLowerCase()]
     if (_toast_appkey) {
       ACELog.d(ACEPolicyParameterUtil._TAG, `11. in if key: ${POLICY.RESPONSE_TOAST_APPKEY}, value: ${_toast_appkey}`)
-      _policyParameters.setToastAppKey(_toast_appkey as string)
+      _policyParameters.setToastAppKey(_toast_appkey)
     }
 
     ACELog.d(ACEPolicyParameterUtil._TAG, 'done save policy.', _policyParameters)
