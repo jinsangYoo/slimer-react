@@ -59,7 +59,7 @@ export default class APIForPolicy extends Task {
 
   public completed(response: AxiosResponse) {
     super.completed(response)
-    ACELog.d(APIForPolicy._TAG, 'completed, before savePolicy')
+    // ACELog.d(APIForPolicy._TAG, `completed, before savePolicy:: ${JSON.stringify(response, null, 2)}`)
     ACEPolicyParameterUtil.getInstance().savePolicy(this._response)
     ACELog.d(APIForPolicy._TAG, 'completed, after savePolicy')
     ControlTowerSingleton.getInstance().succeedRequestPolicy()

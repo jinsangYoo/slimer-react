@@ -1,14 +1,15 @@
-import { AxiosResponse } from 'axios'
+import type {AxiosResponseHeaders} from 'axios'
+import {AxiosResponse} from 'axios'
 
 export default class ACENetworkResult {
   private _responseCode: number
   private _responseBody: string
-  private _responseHeaders: Record<string, string>
+  private _responseHeaders: AxiosResponseHeaders
 
   public constructor(response: AxiosResponse) {
     this._responseCode = response.status
-    this._responseBody = response.data
-    this._responseHeaders = response.headers
+    this._responseBody = Object.assign(response.data)
+    this._responseHeaders = Object.assign(response.headers)
   }
 
   public getCode(): number {
@@ -19,7 +20,7 @@ export default class ACENetworkResult {
     return this._responseBody
   }
 
-  public getHeaders(): Record<string, string> {
+  public getHeaders(): AxiosResponseHeaders {
     return this._responseHeaders
   }
 }

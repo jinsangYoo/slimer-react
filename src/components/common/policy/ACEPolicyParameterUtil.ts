@@ -29,72 +29,58 @@ export default class ACEPolicyParameterUtil {
     }
 
     ACELog.d(ACEPolicyParameterUtil._TAG, 'Receive policy.')
-    // console.log(`ACEPolicyParameterUtil::savePolicy::_response: ${JSON.stringify(result)}`)
+    // ACELog.d(ACEPolicyParameterUtil._TAG, `ACEPolicyParameterUtil::savePolicy::_response: ${JSON.stringify(result)}`)
 
     const _policyParameters = ACEPolicyParameters.getInstance()
     const responseHeaders = result.getHeaders()
-    if (responseHeaders[POLICY.RESPONSE_SDK_ENABLE.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_SDK_ENABLE.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_SDK_ENABLE.toLowerCase()]
-      //   }`,
-      // )
-      _policyParameters.setCpAllow(responseHeaders[POLICY.RESPONSE_SDK_ENABLE.toLowerCase()])
+    ACELog.d(
+      ACEPolicyParameterUtil._TAG,
+      `ACEPolicyParameterUtil::savePolicy::responseHeaders: ${JSON.stringify(responseHeaders, null, 2)}`,
+    )
+
+    const _sdk_enable = responseHeaders[POLICY.RESPONSE_SDK_ENABLE.toLowerCase()]
+    if (_sdk_enable) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `1. in if key: ${POLICY.RESPONSE_SDK_ENABLE}, value: ${_sdk_enable}`)
+      _policyParameters.setCpAllow(_sdk_enable)
       if (!ControlTowerSingleton.getInstance().isEnableByPolicy()) {
         ACELog.d(ACEPolicyParameterUtil._TAG, 'disabled by policy.')
         ControlTowerSingleton.getInstance().setSDKDisable()
       }
     }
 
-    if (responseHeaders[POLICY.RESPONSE_CID.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_CID.toLowerCase()}, value: ${responseHeaders[POLICY.RESPONSE_CID.toLowerCase()]}`,
-      // )
-      _policyParameters.setCpCid(responseHeaders[POLICY.RESPONSE_CID.toLowerCase()])
+    const _cid = responseHeaders[POLICY.RESPONSE_CID.toLowerCase()]
+    if (_cid) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `2. in if key: ${POLICY.RESPONSE_CID}, value: ${_cid}`)
+      _policyParameters.setCpCid(_cid)
     }
 
-    if (responseHeaders[POLICY.RESPONSE_DEBUG.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_DEBUG.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_DEBUG.toLowerCase()]
-      //   }`,
-      // )
-      _policyParameters.setCpDebug(responseHeaders[POLICY.RESPONSE_DEBUG.toLowerCase()])
+    const _debug = responseHeaders[POLICY.RESPONSE_DEBUG.toLowerCase()]
+    if (_debug) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `3. in if key: ${POLICY.RESPONSE_DEBUG}, value: ${_debug}`)
+      _policyParameters.setCpDebug(_debug)
     }
 
-    if (responseHeaders[POLICY.RESPONSE_DOMAIN.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_DOMAIN.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_DOMAIN.toLowerCase()]
-      //   }`,
-      // )
-      _policyParameters.setCpDomain(responseHeaders[POLICY.RESPONSE_DOMAIN.toLowerCase()])
+    const _domain = responseHeaders[POLICY.RESPONSE_DOMAIN.toLowerCase()]
+    if (_domain) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `4. in if key: ${POLICY.RESPONSE_DOMAIN}, value: ${_domain}`)
+      _policyParameters.setCpDomain(_domain)
     }
 
-    if (responseHeaders[POLICY.RESPONSE_PRIVATE.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_PRIVATE.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_PRIVATE.toLowerCase()]
-      //   }`,
-      // )
-      _policyParameters.setCpPrivate(responseHeaders[POLICY.RESPONSE_PRIVATE.toLowerCase()])
+    const _private = responseHeaders[POLICY.RESPONSE_PRIVATE.toLowerCase()]
+    if (_private) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `5. in if key: ${POLICY.RESPONSE_PRIVATE}, value: ${_private}`)
+      _policyParameters.setCpPrivate(_private)
     }
 
-    if (responseHeaders[POLICY.RESPONSE_SOURCE_IP.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_SOURCE_IP.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_SOURCE_IP.toLowerCase()]
-      //   }`,
-      // )
-      _policyParameters.setCpSourceIP(responseHeaders[POLICY.RESPONSE_SOURCE_IP.toLowerCase()])
+    const _source_ip = responseHeaders[POLICY.RESPONSE_SOURCE_IP.toLowerCase()]
+    if (_source_ip) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `6. in if key: ${POLICY.RESPONSE_SOURCE_IP}, value: ${_source_ip}`)
+      _policyParameters.setCpSourceIP(_source_ip)
     }
 
-    if (responseHeaders[POLICY.RESPONSE_FORCE_STOP.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_FORCE_STOP.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_FORCE_STOP.toLowerCase()]
-      //   }`,
-      // )
+    const _force_stop = responseHeaders[POLICY.RESPONSE_FORCE_STOP.toLowerCase()]
+    if (_force_stop) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `7. in if key: ${POLICY.RESPONSE_FORCE_STOP}, value: ${_force_stop}`)
       const _value = responseHeaders[POLICY.RESPONSE_SOURCE_IP.toLowerCase()]
       if (!isEmpty(_value) && _value === POLICY.FLAG_SDK_FORCE_STOP) {
         ACELog.d(ACEPolicyParameterUtil._TAG, 'force stop enabled.')
@@ -102,31 +88,32 @@ export default class ACEPolicyParameterUtil {
       }
     }
 
-    // if (responseHeaders.has(POLICY.RESPONSE_FORCE_DELETE_FAILEDFILE.toLowerCase())) {
-    //   const _value = responseHeaders.get(POLICY.RESPONSE_FORCE_DELETE_FAILEDFILE.toLowerCase())
-    //   if (!isEmpty(_value) && _value === POLICY.FLAG_FORCE_DELETE_FAILEDFILE) {
-    //   }
-    // }
-
-    if (responseHeaders[POLICY.RESPONSE_DEBUG_LOG_URL.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_DEBUG_LOG_URL.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_DEBUG_LOG_URL.toLowerCase()]
-      //   }`,
-      // )
-      _policyParameters.setCpCrashDomain(responseHeaders[POLICY.RESPONSE_DEBUG_LOG_URL.toLowerCase()])
+    const _force_delete_failedfile = responseHeaders[POLICY.RESPONSE_FORCE_DELETE_FAILEDFILE.toLowerCase()]
+    if (_force_delete_failedfile) {
+      ACELog.d(
+        ACEPolicyParameterUtil._TAG,
+        `8. in if key: ${POLICY.RESPONSE_FORCE_DELETE_FAILEDFILE}, value: ${_force_delete_failedfile}`,
+      )
+      if (!isEmpty(_force_delete_failedfile) && _force_delete_failedfile === POLICY.FLAG_FORCE_DELETE_FAILEDFILE) {
+      }
     }
 
-    if (responseHeaders[POLICY.RESPONSE_POLICY_INTERVAL.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_POLICY_INTERVAL.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_POLICY_INTERVAL.toLowerCase()]
-      //   }`,
-      // )
+    const _debug_log_url = responseHeaders[POLICY.RESPONSE_DEBUG_LOG_URL.toLowerCase()]
+    if (_debug_log_url) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `9. in if key: ${POLICY.RESPONSE_DEBUG_LOG_URL}, value: ${_debug_log_url}`)
+      _policyParameters.setCpCrashDomain(_debug_log_url as string)
+    }
+
+    const _policy_interval = responseHeaders[POLICY.RESPONSE_POLICY_INTERVAL.toLowerCase()]
+    if (_policy_interval) {
+      ACELog.d(
+        ACEPolicyParameterUtil._TAG,
+        `10. in if key: ${POLICY.RESPONSE_POLICY_INTERVAL}, value: ${_policy_interval}`,
+      )
       var interval = ACEPolicyParameterUtil.REPEAT_PULLING_INTERVAL_SECOND
-      const _value = responseHeaders[POLICY.RESPONSE_POLICY_INTERVAL.toLowerCase()]
+      const _value = _policy_interval
       if (_value && !isEmpty(_value)) {
-        interval = parseInt(_value)
+        interval = parseInt(_value as string)
         if (interval < ACEConstantInteger.TWO_MINUTES) {
           interval = ACEConstantInteger.TWO_MINUTES
         }
@@ -134,13 +121,10 @@ export default class ACEPolicyParameterUtil {
       }
     }
 
-    if (responseHeaders[POLICY.RESPONSE_TOAST_APPKEY.toLowerCase()]) {
-      // console.log(
-      //   `in if key: ${POLICY.RESPONSE_TOAST_APPKEY.toLowerCase()}, value: ${
-      //     responseHeaders[POLICY.RESPONSE_TOAST_APPKEY.toLowerCase()]
-      //   }`,
-      // )
-      _policyParameters.setToastAppKey(responseHeaders[POLICY.RESPONSE_TOAST_APPKEY.toLowerCase()])
+    const _toast_appkey = responseHeaders[POLICY.RESPONSE_TOAST_APPKEY.toLowerCase()]
+    if (_toast_appkey) {
+      ACELog.d(ACEPolicyParameterUtil._TAG, `11. in if key: ${POLICY.RESPONSE_TOAST_APPKEY}, value: ${_toast_appkey}`)
+      _policyParameters.setToastAppKey(_toast_appkey as string)
     }
 
     ACELog.d(ACEPolicyParameterUtil._TAG, 'done save policy.', _policyParameters)

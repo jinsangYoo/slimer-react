@@ -166,7 +166,7 @@ export class ACENetwork {
     method: HTTP_METHOD = HTTP_METHOD.GET,
   ): void {
     axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
-    axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8'
+    axios.defaults.headers.common['Content-Type'] = 'text/plain'
 
     const requestHeaders = mapValueStringToObject(networkParam.requestHeaders)
     ACELog.d(ACENetwork._TAG, 'request requestHeaders:', requestHeaders)
