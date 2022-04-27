@@ -1,8 +1,8 @@
 export enum BASE_URL {
   COMPANY_LOCAL_LOG = 'http://192.168.0.18:52274',
   COMPANY_LOCAL_POLICY = 'http://192.168.0.18:52274',
-  // HOME_LOCAL_LOG = 'http://192.168.0.18:52274',
-  HOME_LOCAL_LOG = 'https://gmb.acecounter.com',
+  HOME_LOCAL_LOG = 'http://192.168.0.18:52274/log',
+  // HOME_LOCAL_LOG = 'https://gmb.acecounter.com',
   HOME_LOCAL_POLICY = 'http://192.168.0.18:52274',
   PRO_LOG = 'https://gmb.acecounter.com',
   PRO_POLICY = 'https://policy.acecounter.com',
