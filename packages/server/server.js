@@ -5,8 +5,8 @@ const app = express()
 const cors = require('cors')
 app.use(cors())
 
-const commonFunction = require('@slimer/common')
-commonFunction()
+const common = require('@slimer/common')
+console.log(`common.sayHelloInEnglish(): ${common.sayHelloInEnglish()}`)
 
 app.use(express.static(path.join(__dirname, './view-with-react/build')))
 

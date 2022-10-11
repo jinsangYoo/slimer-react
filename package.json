@@ -1,6 +1,10 @@
 {
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ]
+  "name": "slimer-react",
+  "version": "1.0.0",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
 }
