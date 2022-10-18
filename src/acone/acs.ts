@@ -1,19 +1,15 @@
-import { ACParams } from './acparam'
-import { AceConfiguration } from './aceconfiguration'
+import {ACParams} from './acparam'
+import {AceConfiguration} from './aceconfiguration'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
-import { ACEResponseToCaller } from '..'
+import {ACEResponseToCaller} from '..'
 import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
-import {
-  ACEConstantCallback,
-  ACEResultCode,
-  DetailOfSDK,
-} from '../common/constant/ACEPublicStaticConfig'
+import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
 import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
-import { EventsForWorkerEmitter } from '../common/worker/EventsForWorkerEmitter'
-import { decode, getQueryForKey, isEmpty } from '../common/util/TextUtils'
+import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
+import {decode, getQueryForKey, isEmpty} from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
 
@@ -48,35 +44,28 @@ export class ACS {
   //#region configure of SDK
   public static configure(
     value: AceConfiguration,
-    callback: (error?: Error, result?: ACEResponseToCaller) => void
+    callback: (error?: Error, result?: ACEResponseToCaller) => void,
   ): void
   public static configure(value: AceConfiguration): Promise<ACEResponseToCaller>
   public static configure(
     value: AceConfiguration,
-    callback?: (error?: Error, result?: ACEResponseToCaller) => void
+    callback?: (error?: Error, result?: ACEResponseToCaller) => void,
   ): Promise<ACEResponseToCaller> | void {
     return ACS.getInstance().configure(value, callback)
   }
 
   configure(
     value: AceConfiguration,
-    callback:
-      | ((error?: Error, result?: ACEResponseToCaller) => void)
-      | undefined
+    callback: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
   ): void
   configure(value: AceConfiguration): Promise<ACEResponseToCaller>
   configure(
     value: AceConfiguration,
-    callback?:
-      | ((error?: Error, result?: ACEResponseToCaller) => void)
-      | undefined
+    callback?: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
   ): Promise<ACEResponseToCaller> | void {
-    this.storeConfigurationOfUser({ ...value })
+    this.storeConfigurationOfUser({...value})
     if (callback) {
-      const callbackAtInit = (
-        error?: object,
-        innerResult?: ACEResponseToCaller
-      ) => {
+      const callbackAtInit = (error?: object, innerResult?: ACEResponseToCaller) => {
         if (error) {
           callback(new Error(`0000, Can not init SDK.`), innerResult)
         } else {
@@ -89,21 +78,15 @@ export class ACS {
     } else {
       return new Promise((resolveToOut, rejectToOut) => {
         ACECommonStaticConfig.configure(value)
-          .then((res) => {
+          .then(res => {
             resolveToOut(res)
           })
-          .then((res) => {
-            ACELog.d(
-              ACS._TAG,
-              `0000::configure::then2: ${JSON.stringify(res, null, 2)}`
-            )
+          .then(res => {
+            ACELog.d(ACS._TAG, `0000::configure::then2: ${JSON.stringify(res, null, 2)}`)
             this.popWaitQueueEmit()
           })
-          .catch((err) => {
-            ACELog.d(
-              ACS._TAG,
-              `0000::configure::catch2: ${JSON.stringify(err, null, 2)}`
-            )
+          .catch(err => {
+            ACELog.d(ACS._TAG, `0000::configure::catch2: ${JSON.stringify(err, null, 2)}`)
             rejectToOut(err)
           })
       })
@@ -112,14 +95,11 @@ export class ACS {
   //#endregion
 
   //#region send of public
-  public static send(
-    value: ACParams,
-    callback: (error?: object, result?: ACEResponseToCaller) => void
-  ): void
+  public static send(value: ACParams, callback: (error?: object, result?: ACEResponseToCaller) => void): void
   public static send(value: ACParams): Promise<ACEResponseToCaller>
   public static send(
     value: ACParams,
-    callback?: (error?: object, result?: ACEResponseToCaller) => void
+    callback?: (error?: object, result?: ACEResponseToCaller) => void,
   ): Promise<ACEResponseToCaller> | void {
     if (!ControlTowerSingleton.isEnableByPolicy()) {
       ACS.setWaitQueue(value)
@@ -141,10 +121,7 @@ export class ACS {
       }
     }
 
-    ACELog.d(
-      ACS._TAG,
-      `send::getIsCompletePolicy: ${ControlTowerSingleton.getIsCompletePolicy()}`
-    )
+    ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerSingleton.getIsCompletePolicy()}`)
     if (!ControlTowerSingleton.getIsCompletePolicy()) {
       ACS.setWaitQueue(value)
       const result: ACEResponseToCaller = {
@@ -165,10 +142,7 @@ export class ACS {
       }
     }
 
-    ACELog.d(
-      ACS._TAG,
-      `send::isEnableByPolicy: ${ControlTowerSingleton.isEnableByPolicy()}`
-    )
+    ACELog.d(ACS._TAG, `send::isEnableByPolicy: ${ControlTowerSingleton.isEnableByPolicy()}`)
     if (!ControlTowerSingleton.isEnableByPolicy()) {
       ACS.setWaitQueue(value)
       const result: ACEResponseToCaller = {
@@ -235,7 +209,7 @@ export class ACS {
       return _parameterUtil.getSdkDetails(
         ACS.getInstance()._configuration ?? {
           key: 'not has configuration',
-        }
+        },
       )
     }
 
@@ -298,25 +272,18 @@ export class ACS {
   //#region private methods
   private static _send(
     value: ACParams,
-    callback:
-      | ((error?: object, result?: ACEResponseToCaller) => void)
-      | undefined
+    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
   ): void
   private static _send(value: ACParams): Promise<ACEResponseToCaller>
   private static _send(
     value: ACParams,
-    callback?:
-      | ((error?: object, result?: ACEResponseToCaller) => void)
-      | undefined
+    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
   ): Promise<ACEResponseToCaller> | void {
     ACS.toggleLock()
     ACELog.i(ACS._TAG, 'ACParams is ', value)
 
     if (callback) {
-      const callbackForCB = (
-        error?: object,
-        innerResult?: ACEResponseToCaller
-      ) => {
+      const callbackForCB = (error?: object, innerResult?: ACEResponseToCaller) => {
         if (error) {
           callback(new Error(`0001, Can not use ${value.type} api.`))
         } else {
@@ -327,11 +294,8 @@ export class ACS {
       }
 
       NetworkUtils.isNetworkAvailable()
-        .then((isConnected) => {
-          ACELog.d(
-            ACS._TAG,
-            `isNetworkAvailable::in then::isConnected: ${isConnected}`
-          )
+        .then(isConnected => {
+          ACELog.d(ACS._TAG, `isNetworkAvailable::in then::isConnected: ${isConnected}`)
           if (isConnected) {
             switch (value.type) {
               case ACParams.TYPE.APPEAR_PRODUCT:
@@ -342,7 +306,7 @@ export class ACS {
                   value.productId,
                   value.productName,
                   value.productCategoryName,
-                  value.productPrice
+                  value.productPrice,
                 )
                 break
               case ACParams.TYPE.BUY_CANCEL:
@@ -354,17 +318,12 @@ export class ACS {
                   value.memberKey,
                   value.orderNumber,
                   value.payMethodName,
-                  value.products
+                  value.products,
                 )
                 break
               case ACParams.TYPE.ADDCART:
               case ACParams.TYPE.DELCART:
-                ACEReducerForOne.cart(
-                  value.type,
-                  callbackForCB,
-                  value.memberKey,
-                  value.products
-                )
+                ACEReducerForOne.cart(value.type, callbackForCB, value.memberKey, value.products)
                 break
               case ACParams.TYPE.EVENT:
                 ACEReducerForOne.plWithPage(callbackForCB, value.name)
@@ -376,12 +335,7 @@ export class ACS {
                 ACEReducerForOne.leave(callbackForCB, value.name, value.userId)
                 break
               case ACParams.TYPE.LINK:
-                ACEReducerForOne.link(
-                  callbackForCB,
-                  value.name,
-                  value.linkName,
-                  value.memberKey
-                )
+                ACEReducerForOne.link(callbackForCB, value.name, value.linkName, value.memberKey)
                 break
               case ACParams.TYPE.LOGIN:
                 ACEReducerForOne.login(
@@ -390,17 +344,14 @@ export class ACS {
                   value.userAge,
                   value.userGender,
                   value.userId,
-                  value.userMaritalStatus
+                  value.userMaritalStatus,
                 )
                 break
               case ACParams.TYPE.PUSH:
                 ACEReducerForOne.push(callbackForCB, value.data, value.push)
                 break
               case ACParams.TYPE.REFERRER:
-                const _keyword = getQueryForKey(
-                  decode(value.keyword ?? ACECONSTANT.EMPTY),
-                  ACECONSTANT.ReferrerKeyName
-                )
+                const _keyword = getQueryForKey(decode(value.keyword ?? ACECONSTANT.EMPTY), ACECONSTANT.ReferrerKeyName)
                 if (isEmpty(_keyword)) {
                   const result: ACEResponseToCaller = {
                     taskHash: `${value.type}::0410`,
@@ -418,19 +369,10 @@ export class ACS {
                 ACEReducerForOne.referrer(callbackForCB, _keyword)
                 break
               case ACParams.TYPE.SEARCH:
-                ACEReducerForOne.search(
-                  callbackForCB,
-                  value.name,
-                  value.keyword
-                )
+                ACEReducerForOne.search(callbackForCB, value.name, value.keyword)
                 break
               case ACParams.TYPE.TEL:
-                ACEReducerForOne.tel(
-                  callbackForCB,
-                  value.name,
-                  value.memberKey,
-                  value.tel
-                )
+                ACEReducerForOne.tel(callbackForCB, value.name, value.memberKey, value.tel)
                 break
             }
           } else {
@@ -447,7 +389,7 @@ export class ACS {
             callback(undefined, result)
           }
         })
-        .catch((err) => {
+        .catch(err => {
           ACELog.e(ACS._TAG, 'isNetworkAvailable::in catch::err', err)
           const result: ACEResponseToCaller = {
             taskHash: `${value.type}::0408`,
@@ -463,10 +405,7 @@ export class ACS {
         })
     } else {
       return new Promise((resolveToOut, rejectToOut) => {
-        const callbackForPromise = (
-          error?: object,
-          innerResult?: ACEResponseToCaller
-        ) => {
+        const callbackForPromise = (error?: object, innerResult?: ACEResponseToCaller) => {
           if (error) {
             if (innerResult) {
               rejectToOut(innerResult)
@@ -481,11 +420,8 @@ export class ACS {
         }
 
         NetworkUtils.isNetworkAvailable()
-          .then((isConnected) => {
-            ACELog.d(
-              ACS._TAG,
-              `isNetworkAvailable::in then::isConnected: ${isConnected}`
-            )
+          .then(isConnected => {
+            ACELog.d(ACS._TAG, `isNetworkAvailable::in then::isConnected: ${isConnected}`)
             if (isConnected) {
               switch (value.type) {
                 case ACParams.TYPE.APPEAR_PRODUCT:
@@ -496,7 +432,7 @@ export class ACS {
                     value.productId,
                     value.productName,
                     value.productCategoryName,
-                    value.productPrice
+                    value.productPrice,
                   )
                   break
                 case ACParams.TYPE.BUY_CANCEL:
@@ -508,42 +444,24 @@ export class ACS {
                     value.memberKey,
                     value.orderNumber,
                     value.payMethodName,
-                    value.products
+                    value.products,
                   )
                   break
                 case ACParams.TYPE.ADDCART:
                 case ACParams.TYPE.DELCART:
-                  ACEReducerForOne.cart(
-                    value.type,
-                    callbackForPromise,
-                    value.memberKey,
-                    value.products
-                  )
+                  ACEReducerForOne.cart(value.type, callbackForPromise, value.memberKey, value.products)
                   break
                 case ACParams.TYPE.EVENT:
                   ACEReducerForOne.plWithPage(callbackForPromise, value.name)
                   break
                 case ACParams.TYPE.JOIN:
-                  ACEReducerForOne.join(
-                    callbackForPromise,
-                    value.name,
-                    value.userId
-                  )
+                  ACEReducerForOne.join(callbackForPromise, value.name, value.userId)
                   break
                 case ACParams.TYPE.LEAVE:
-                  ACEReducerForOne.leave(
-                    callbackForPromise,
-                    value.name,
-                    value.userId
-                  )
+                  ACEReducerForOne.leave(callbackForPromise, value.name, value.userId)
                   break
                 case ACParams.TYPE.LINK:
-                  ACEReducerForOne.link(
-                    callbackForPromise,
-                    value.name,
-                    value.linkName,
-                    value.memberKey
-                  )
+                  ACEReducerForOne.link(callbackForPromise, value.name, value.linkName, value.memberKey)
                   break
                 case ACParams.TYPE.LOGIN:
                   ACEReducerForOne.login(
@@ -552,20 +470,16 @@ export class ACS {
                     value.userAge,
                     value.userGender,
                     value.userId,
-                    value.userMaritalStatus
+                    value.userMaritalStatus,
                   )
                   break
                 case ACParams.TYPE.PUSH:
-                  ACEReducerForOne.push(
-                    callbackForPromise,
-                    value.data,
-                    value.push
-                  )
+                  ACEReducerForOne.push(callbackForPromise, value.data, value.push)
                   break
                 case ACParams.TYPE.REFERRER:
                   const _keyword = getQueryForKey(
                     decode(value.keyword ?? ACECONSTANT.EMPTY),
-                    ACECONSTANT.ReferrerKeyName
+                    ACECONSTANT.ReferrerKeyName,
                   )
                   if (isEmpty(_keyword)) {
                     const result: ACEResponseToCaller = {
@@ -584,19 +498,10 @@ export class ACS {
                   ACEReducerForOne.referrer(callbackForPromise, _keyword)
                   break
                 case ACParams.TYPE.SEARCH:
-                  ACEReducerForOne.search(
-                    callbackForPromise,
-                    value.name,
-                    value.keyword
-                  )
+                  ACEReducerForOne.search(callbackForPromise, value.name, value.keyword)
                   break
                 case ACParams.TYPE.TEL:
-                  ACEReducerForOne.tel(
-                    callbackForPromise,
-                    value.name,
-                    value.memberKey,
-                    value.tel
-                  )
+                  ACEReducerForOne.tel(callbackForPromise, value.name, value.memberKey, value.tel)
                   break
               }
             } else {
@@ -613,7 +518,7 @@ export class ACS {
               ACS.getInstance().popBufferQueueEmit()
             }
           })
-          .catch((err) => {
+          .catch(err => {
             ACELog.e(ACS._TAG, 'isNetworkAvailable::in catch::err', err)
             const result: ACEResponseToCaller = {
               taskHash: `${value.type}::0408`,
@@ -655,10 +560,7 @@ export class ACS {
     ACS.initBufferQueue()
     ACELog.i(ACS._TAG, `ACS.bufferQueue.length: ${ACS.bufferQueue.length}`)
     if (ACS.bufferQueue.length < ACEConstantInteger.QUEUE_MAX_BUFFER_COUNT) {
-      ACELog.i(
-        ACS._TAG,
-        `ACS.bufferQueue.push: ${value.type}, >>${value.name}<<`
-      )
+      ACELog.i(ACS._TAG, `ACS.bufferQueue.push: ${value.type}, >>${value.name}<<`)
       ACS.bufferQueue.push(value)
     }
   }
@@ -681,10 +583,6 @@ export class ACS {
   //#region AceWebViewInterface
   public static getKey(): string {
     return ACECommonStaticConfig.getKey()
-  }
-
-  public static getDevice(): string {
-    return ACEParameterUtil.getModel()
   }
 
   public static getTS(): string {

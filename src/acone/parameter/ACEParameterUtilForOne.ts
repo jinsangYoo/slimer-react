@@ -136,7 +136,6 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
 
     this.setSTS(ACECONSTANT.ZERO)
     _parametersForOne.setADELD(false)
-    _parametersForOne.setADID(ACEParameterUtil.getUniqueId())
 
     ACELog.d(ACEParameterUtilForOne._TAG, `tz: ${_parametersForOne.getTZ()}`)
 

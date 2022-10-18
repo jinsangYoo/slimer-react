@@ -1,7 +1,11 @@
-import NetInfo from '@react-native-community/netinfo'
 export default class NetworkUtils {
-  static async isNetworkAvailable() {
-    const response = await NetInfo.fetch()
-    return response.isConnected
+  static isNetworkAvailable() {
+    return new Promise((resolve, reject) => {
+      if (typeof window !== 'undefined') {
+        resolve(window.navigator.onLine)
+      } else {
+        resolve(true)
+      }
+    })
   }
 }

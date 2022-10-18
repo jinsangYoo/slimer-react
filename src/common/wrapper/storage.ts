@@ -1,4 +1,3 @@
-import React from 'react'
 import getErrorMessage from '../util/ErrorUtil'
 
 export function getItemOnStorage(key: string, callback: (error?: Error | null, result?: string | null) => void): void {

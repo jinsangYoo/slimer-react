@@ -1,50 +1,34 @@
-import {Platform} from 'react-native'
-import {Dimensions} from 'react-native'
-import DeviceInfo from 'react-native-device-info'
+import {detect} from 'detect-browser'
 import ACECONSTANT from '../constant/ACEConstant'
 import {VersionWithPatch} from '../constant/ACEPublicStaticConfig'
 
 export default class ACEParameterUtil {
   public static getResolution(): string {
-    return `${Math.floor(Dimensions.get('window').width)}*${Math.floor(Dimensions.get('window').height)}`
+    if (typeof window !== 'undefined') {
+      const {innerWidth, innerHeight} = window
+      return `${Math.floor(innerWidth)}*${Math.floor(innerHeight)}`
+    } else {
+      return '0*0'
+    }
   }
 
   public static getPackageNameOrBundleID(): string {
-    return DeviceInfo.getBundleId()
-  }
-
-  public static getModel(): string {
-    return DeviceInfo.getModel()
-  }
-
-  public static getSystemName(): string {
-    return DeviceInfo.getSystemName()
-  }
-
-  public static getSystemVersion(): string {
-    return DeviceInfo.getSystemVersion()
-  }
-
-  public static getUniqueId(): string {
-    return DeviceInfo.getUniqueId()
-  }
-
-  public static getPlatformName(): string {
-    if (Platform.OS === 'ios' && !Platform.isPad) {
-      return ACEParameterUtil.replace_iOS_To_iPhone_OS(ACEParameterUtil.getSystemName())
+    if (typeof window !== 'undefined') {
+      return window.location.hostname
     } else {
-      return ACEParameterUtil.getSystemName()
+      return String(document.location)
     }
   }
 
   public static getUserAgentForSDK(): string {
-    return `${ACEParameterUtil.getPlatformName()} ${ACEParameterUtil.getSystemVersion()} ${ACEParameterUtil.getModel()} on react-native`
-  }
-
-  private static replace_iOS_To_iPhone_OS(source: string): string {
-    const re = /iOS/gi
-
-    return source.replace(re, 'iPhone OS')
+    const browser = detect()
+    if (browser) {
+      return `${browser.os} ${browser.version} ${browser.name} on react`
+    } else if (typeof window !== 'undefined') {
+      return `${window.navigator.userAgent} on react`
+    } else {
+      return `web for reactjs.`
+    }
   }
 
   public static getSdkVersionWithPatch(): VersionWithPatch {

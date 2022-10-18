@@ -3,7 +3,6 @@ import {HTTP_METHOD, BASE_URL, HTTP_URL, ACENetworkParams} from '../constant/Net
 import POLICY from '../constant/Policy'
 import {NetworkMode, NetworkRequestType} from '../constant/SDKMode'
 import ACECommonStaticConfig from '../config/ACECommonStaticConfig'
-import {Platform} from 'react-native'
 import {ACS} from '../../acone/acs'
 import {mapValueStringToObject} from '../util/MapUtil'
 import ACELog from '../logger/ACELog'
@@ -87,7 +86,7 @@ export class ACENetwork {
         _map.set(POLICY.REQUEST_APPLICATION_ID, ACS.getPackageNameOrBundleID() ?? 'no packageName')
 
         _map.set(POLICY.REQUEST_CID, ACECommonStaticConfig.getKey())
-        _map.set(POLICY.REQUEST_PLATFORM, `${Platform.OS} with react-native`)
+        _map.set(POLICY.REQUEST_PLATFORM, 'react')
         _map.set(POLICY.REQUEST_SERVICE_ID, ACECommonStaticConfig.getKey())
         _map.set(POLICY.REQUEST_TIME, Date.now().toString())
         _map.set(POLICY.REQUEST_VERSION, ACECONSTANT.VERSION)
