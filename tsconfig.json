@@ -16,7 +16,18 @@
     "outDir": "dist",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+
+    // extra
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "strictPropertyInitialization": false
   },
 
   "exclude": ["src/stories", "**/*.stories.tsx"]

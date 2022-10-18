@@ -10,7 +10,7 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "scripts": {
-    "rollup": "rollup -c",
+    "rollup": "rm -rf dist && rollup -c",
     "test": "jest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
