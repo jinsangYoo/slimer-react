@@ -1,9 +1,9 @@
 export const BASE_URL = {
-  COMPANY_LOCAL_LOG: 'http://localhost:52274',
-  COMPANY_LOCAL_POLICY: 'http://localhost:52274',
-  HOME_LOCAL_LOG: 'http://localhost:52274',
+  COMPANY_LOCAL_LOG: 'http://localhost:8080',
+  COMPANY_LOCAL_POLICY: 'http://localhost:8080',
+  HOME_LOCAL_LOG: 'http://localhost:8080',
   // HOME_LOCAL_LOG: 'https://gmb.acecounter.com',
-  HOME_LOCAL_POLICY: 'http://localhost:52274',
+  HOME_LOCAL_POLICY: 'http://localhost:8080',
   PRO_POLICY: 'https://policy.acecounter.com',
 } as const
 

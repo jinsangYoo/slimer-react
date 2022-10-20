@@ -15,7 +15,7 @@ const ACECONSTANT = {
   SDK_PATCH: 'patch',
   SDK_VERSION: 'version',
   TASK_CREATE_TIME_FORMAT: 'yyyy-MM-dd HH:mm:ss.SSS',
-  VERSION: '1.0.11',
+  VERSION: '1.0.12',
   InstallReferrer: '_ACE.Received.InstallReferrer',
   ZERO: '0',
 } as const
