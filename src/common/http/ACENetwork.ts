@@ -10,7 +10,6 @@ import ACELog from '../logger/ACELog'
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
 import ACEPolicyParameters from '../policy/ACEPolicyParameters'
-import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import ACECONSTANT from '../constant/ACEConstant'
 
 export class ACENetwork {
@@ -168,7 +167,6 @@ export class ACENetwork {
   ): void {
     axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
     axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8'
-    axios.defaults.headers.common['User-Agent'] = ACEParameterUtil.getUserAgentForSDK()
 
     const requestHeaders = mapValueStringToObject(networkParam.requestHeaders)
     // ACELog.d(ACENetwork._TAG, 'request requestHeaders:', requestHeaders)
@@ -180,43 +178,6 @@ export class ACENetwork {
       timeout: 1000,
       params: networkParam.params,
     }
-
-    // let collectorConfig: AxiosRequestConfig = {
-    //   url: "mac",
-    //   method: "get",
-    //   baseURL: "https://gmb.acecounter.com",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Access-Control-Allow-Origin": "*",
-    //   },
-    //   params: {
-    //     tp: "site",
-    //     re: 0,
-    //     adeld: 1,
-    //     st: "1620722629634435895%7C1620722629634435895%7C0%7C0",
-    //     dm: "375*812",
-    //     url: "com.acecounter.aceappplus/LoginAceCounterViewController",
-    //     logsource: 100,
-    //     ri: 1,
-    //     sv: "ACA02.02.030",
-    //     sts: "1620722629634435895",
-    //     ag: 0,
-    //     vt:
-    //       "1620722508087038827%7C4%7C1619540480760523362%7C1%7C1619540480427865497",
-    //     ce: 1,
-    //     patch: "rev01",
-    //     adid: "00000000-0000-0000-0000-000000000000",
-    //     lg: "en",
-    //     tz: 20,
-    //     ref: "bookmark",
-    //     mid: "AK3A79964",
-    //     vk: 1,
-    //     udf1: 0,
-    //     udf2: 0,
-    //     udf3: 0,
-    //   },
-    //   timeout: 1000,
-    // };
 
     ACELog.d(ACENetwork._TAG, 'requestConfig', requestConfig)
     axios
