@@ -137,8 +137,6 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     this.setSTS(ACECONSTANT.ZERO)
     _parametersForOne.setADELD(false)
 
-    ACELog.d(ACEParameterUtilForOne._TAG, `tz: ${_parametersForOne.getTZ()}`)
-
     this.setNewSession()
     ACS.setPackageNameOrBundleID(ACEParameterUtil.getPackageNameOrBundleID())
 

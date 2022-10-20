@@ -164,7 +164,7 @@ export class ACENetwork {
     networkParam: ACENetworkParams,
     completed?: (response: AxiosResponse) => void,
     failed?: (err: object) => void,
-    method: HTTP_METHOD = HTTP_METHOD.GET,
+    method: string = HTTP_METHOD.GET,
   ): void {
     axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
     axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8'

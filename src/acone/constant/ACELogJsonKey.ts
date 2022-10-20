@@ -1,27 +1,27 @@
-enum ACELOG_JSON_KEY {
-  CAUSE = 'cause',
-  CREATETIME = 'createTime',
+const ACELOG_JSON_KEY = {
+  CAUSE: 'cause',
+  CREATETIME: 'createTime',
 
-  FAILED_COUNT = 'failedCount',
+  FAILED_COUNT: 'failedCount',
 
-  LOGTYPE = 'logType',
+  LOGTYPE: 'logType',
 
-  METHOD = 'method',
+  METHOD: 'method',
 
-  PARAMS = 'params',
+  PARAMS: 'params',
 
-  REQUEST = 'request',
-  REQUEST_COOKIE = 'cookie',
-  REQUEST_GSCK = 'GsCK_UAC',
-  REQUEST_SERVICE_ID = 'X-AceAPI-Key',
-  REQUEST_USER_AGENT = 'User-Agent',
+  REQUEST: 'request',
+  REQUEST_COOKIE: 'cookie',
+  REQUEST_GSCK: 'GsCK_UAC',
+  REQUEST_SERVICE_ID: 'X-AceAPI-Key',
+  REQUEST_USER_AGENT: 'User-Agent',
 
-  STACKTRACE = 'stackTrace',
+  STACKTRACE: 'stackTrace',
 
-  TaskHash = 'taskHash',
-  THROWABLE = 'throwable',
+  TaskHash: 'taskHash',
+  THROWABLE: 'throwable',
 
-  URL = 'url',
-}
+  URL: 'url',
+} as const
 
 export default ACELOG_JSON_KEY

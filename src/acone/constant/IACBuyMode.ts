@@ -1,10 +1,10 @@
-enum IACBuyMode {
-  Unknown = '',
+const IACBuyMode = {
+  Unknown: '',
 
-  AddProductAtCart = 'i',
-  Cancel = 'c',
-  Order = 'b',
-  RemoveProductAtCart = 'o',
-}
+  AddProductAtCart: 'i',
+  Cancel: 'c',
+  Order: 'b',
+  RemoveProductAtCart: 'o',
+} as const
 
 export default IACBuyMode

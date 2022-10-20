@@ -1,8 +1,8 @@
-enum JN {
-  Unknown = '',
+const JN = {
+  Unknown: '',
 
-  Join = 'join',
-  Withdraw = 'withdraw',
+  Join: 'join',
+  Withdraw: 'withdraw',
 }
 
 export default JN

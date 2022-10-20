@@ -62,11 +62,9 @@ export default class ACELog {
         console.log(
           `${ACECONSTANT.OFFICIAL_LOG_TAG} [SDK] [${new Date().toJSON()}] [${ACELog.logLevelToIdentity(
             priority,
-          )}]${_location}: ${msg}, debug: >>${moreDebugMessage ?? ACECONSTANT.EMPTY}<<, info: ${JSON.stringify(
-            info,
-            null,
-            2,
-          )}`,
+          )}]${_location}: ${msg}, debug: >>${moreDebugMessage ?? ACECONSTANT.EMPTY}<<, info: ${
+            info instanceof Error ? info.message.toString() : JSON.stringify(info, null, 2)
+          }`,
         )
       } else {
         console.log(
@@ -80,7 +78,9 @@ export default class ACELog {
         console.log(
           `${ACECONSTANT.OFFICIAL_LOG_TAG} [SDK] [${new Date().toJSON()}] [${ACELog.logLevelToIdentity(
             priority,
-          )}]${_location}: ${msg}, info: ${JSON.stringify(info, null, 2)}`,
+          )}]${_location}: ${msg}, info: ${
+            info instanceof Error ? info.message.toString() : JSON.stringify(info, null, 2)
+          }`,
         )
       } else {
         console.log(

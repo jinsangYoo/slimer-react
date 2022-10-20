@@ -223,7 +223,7 @@ export default class ACEParametersForOne extends ACEParameters {
   public getInstallReferrer(
     callback?: (error?: Error | null, result?: ResultOfStorage) => void,
   ): Promise<ResultOfStorage> | void {
-    if (!global.Promise) {
+    if (!globalThis.Promise) {
       ACELog.d(ACEParametersForOne._TAG, 'getInstallReferrer not support promise.')
       getItem(ACECONSTANT.InstallReferrer, (err, result) => {
         ACELog.d(ACEParametersForOne._TAG, `${ACECONSTANT.InstallReferrer}: ${result}`)
@@ -270,7 +270,7 @@ export default class ACEParametersForOne extends ACEParameters {
     }
 
     ACELog.d(ACEParametersForOne._TAG, `${ACECONSTANT.InstallReferrer}: ${value}`)
-    if (!global.Promise) {
+    if (!globalThis.Promise) {
       ACELog.d(ACEParametersForOne._TAG, 'setInstallReferrer not support promise.')
       setItem(ACECONSTANT.InstallReferrer, value, err => {
         if (callback) {
@@ -591,7 +591,7 @@ export default class ACEParametersForOne extends ACEParameters {
   public loadST(callback: ((error?: Error | null, result?: object) => void) | undefined): void
   public loadST(): Promise<object>
   public loadST(callback?: ((error?: Error | null, result?: object) => void) | undefined): Promise<object> | void {
-    if (!global.Promise) {
+    if (!globalThis.Promise) {
       ACELog.d(ACEParametersForOne._TAG, 'loadST not support promise.')
 
       getItem(ACOneConstantSt.KeyInStorage, (err, result) => {
@@ -651,7 +651,7 @@ export default class ACEParametersForOne extends ACEParameters {
     callback?: ((error?: Error | null, result?: ResultAfterSaveInStorage) => void) | undefined,
   ): Promise<ResultAfterSaveInStorage> | void {
     const _json = JSON.stringify(st)
-    if (!global.Promise) {
+    if (!globalThis.Promise) {
       setItem(ACOneConstantSt.KeyInStorage, _json, err => {
         // ACELog.d(ACEParametersForOne._TAG, `${ACOneConstantSt.KeyInStorage}: ${_json}`)
         if (callback) {
@@ -865,7 +865,7 @@ export default class ACEParametersForOne extends ACEParameters {
   public loadVT(callback: ((error?: Error | null, result?: object) => void) | undefined): void
   public loadVT(): Promise<object>
   public loadVT(callback?: ((error?: Error | null, result?: object) => void) | undefined): Promise<object> | void {
-    if (!global.Promise) {
+    if (!globalThis.Promise) {
       getItem(ACOneConstantVt.KeyInStorage, (err, result) => {
         ACELog.d(ACEParametersForOne._TAG, 'in loadVT::in cb::result', JSON.parse(result ?? '{"result":"undefined"}'))
         if (callback) {
@@ -887,6 +887,10 @@ export default class ACEParametersForOne extends ACEParameters {
                 result: ACEInnerCBResultKey[ACEInnerCBResultKey.NotExistKey],
               })
             }
+          }
+        } else {
+          if (err) {
+            ACELog.d(ACEParametersForOne._TAG, 'in loadVT::in cb::err', err)
           }
         }
       })
@@ -920,6 +924,7 @@ export default class ACEParametersForOne extends ACEParameters {
             }
           } else {
             if (err) {
+              ACELog.d(ACEParametersForOne._TAG, 'in loadVT::in Promise::err', err)
               reject(err)
             } else {
               if (result) {
@@ -951,7 +956,7 @@ export default class ACEParametersForOne extends ACEParameters {
     callback?: ((error?: Error | null, result?: ResultAfterSaveInStorage) => void) | undefined,
   ): Promise<ResultAfterSaveInStorage> | void {
     const _json = JSON.stringify(vt)
-    if (!global.Promise) {
+    if (!globalThis.Promise) {
       setItem(ACOneConstantVt.KeyInStorage, _json, err => {
         // ACELog.d(ACEParametersForOne._TAG, `${ACOneConstantSt.KeyInStorage}: ${_json}`)
         if (callback) {
