@@ -4,7 +4,6 @@ import ACEParameterUtil from '../../common/parameter/ACEParameterUtil'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import ACOneConstantInteger from '../constant/ACOneConstantInteger'
 import ACOneConstant from '../constant/ACOneConstant'
-import {ACS} from '../acs'
 import SESSION from '../../common/constant/Session'
 import ACEntityForST from './ACEntityForST'
 import ACEntityForVT from './ACEntityForVT'
@@ -138,7 +137,6 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     _parametersForOne.setADELD(false)
 
     this.setNewSession()
-    ACS.setPackageNameOrBundleID(ACEParameterUtil.getPackageNameOrBundleID())
 
     const promiseWorkLoadVT = this.loadVT()
     return new Promise((resolve, reject) => {
@@ -533,8 +531,8 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   public setURL(value: string): void {
     value = onlyLetteringAtStartIndex(value)
     const _parametersForOne = ACEParametersForOne.getInstance()
-    ACELog.d(ACEParameterUtilForOne._TAG, `>>${ACS.getPackageNameOrBundleID()}/${value}<<`)
-    _parametersForOne.setURL(`${ACS.getPackageNameOrBundleID()}/${value}`)
+    ACELog.d(ACEParameterUtilForOne._TAG, `>>${ACEParameterUtil.getPackageNameOrBundleID()}/${value}<<`)
+    _parametersForOne.setURL(`${ACEParameterUtil.getPackageNameOrBundleID()}/${value}`)
   }
 
   public updateUrlToRef(value: string): void {
@@ -553,8 +551,8 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     }
     ACELog.d(ACEParameterUtilForOne._TAG, `value: >>${value}<<`)
     value = onlyLetteringAtStartIndex(value)
-    ACELog.d(ACEParameterUtilForOne._TAG, `>>${ACS.getPackageNameOrBundleID()}/${value}<<`)
-    ACEParametersForOne.getInstance().setREF(`${ACS.getPackageNameOrBundleID()}/${value}`)
+    ACELog.d(ACEParameterUtilForOne._TAG, `>>${ACEParameterUtil.getPackageNameOrBundleID()}/${value}<<`)
+    ACEParametersForOne.getInstance().setREF(`${ACEParameterUtil.getPackageNameOrBundleID()}/${value}`)
   }
 
   public setRefForTel(value: string): void {

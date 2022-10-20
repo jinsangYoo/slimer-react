@@ -1,8 +1,8 @@
-import {ACS} from '../../acone/acs'
 import {AceConfiguration, ACEPlatform} from '../../acone/aceconfiguration'
 import ACEStaticConfig from './ACEStaticConfig'
 import ACEOneStaticConfig from '../../acone/config/ACEOneStaticConfig'
 import ACECONSTANT from '../constant/ACEConstant'
+import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 import {ACEResponseToCaller, ACEConstantCallback, ACEResultCode} from '../constant/ACEPublicStaticConfig'
@@ -28,7 +28,10 @@ export default class ACECommonStaticConfig {
       `SDK mode: ${ControlTowerSingleton.getCurrentSDKkModeName()}, network mode: ${ControlTowerSingleton.getCurrentNetworkModeName()}`,
     )
 
-    ACELog.i(ACECommonStaticConfig._TAG, `NHN DATA SDK version: ${ACS.getSdkVersion()}`)
+    ACELog.i(
+      ACECommonStaticConfig._TAG,
+      `NHN DATA SDK version: ${ACEParameterUtil.getSdkVersionWithPatchToJsonStringify()}`,
+    )
 
     if (ControlTowerSingleton.isEnableByPolicy()) {
       ACELog.d(ACECommonStaticConfig._TAG, 'Already init SDK.')

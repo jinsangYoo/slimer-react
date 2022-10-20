@@ -25,4 +25,8 @@ export default class ACEParameterUtil {
       patch: ACECONSTANT.PATCH,
     }
   }
+
+  public static getSdkVersionWithPatchToJsonStringify(): string {
+    return JSON.stringify(ACEParameterUtil.getSdkVersionWithPatch())
+  }
 }

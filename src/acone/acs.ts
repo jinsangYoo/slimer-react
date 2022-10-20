@@ -16,7 +16,6 @@ import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
 export class ACS {
   private static _TAG = 'ACS'
   private static instance: ACS
-  private static _packageNameOrBundleID: string | undefined
   private static waitQueue: ACParams[]
   private static bufferQueue: ACParams[]
   private emitter: EventsForWorkerEmitter
@@ -192,15 +191,11 @@ export class ACS {
   }
 
   public static getSdkVersion(): string {
-    return JSON.stringify(ACEParameterUtil.getSdkVersionWithPatch())
+    return ACEParameterUtil.getSdkVersionWithPatchToJsonStringify()
   }
 
   public static getPackageNameOrBundleID(): string | undefined {
-    return this._packageNameOrBundleID
-  }
-
-  public static setPackageNameOrBundleID(packageNameOrBundleID: string): void {
-    this._packageNameOrBundleID = packageNameOrBundleID
+    return ACEParameterUtil.getPackageNameOrBundleID()
   }
 
   public static getSdkDetails(): DetailOfSDK {
