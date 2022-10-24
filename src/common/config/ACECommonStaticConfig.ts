@@ -60,8 +60,8 @@ export default class ACECommonStaticConfig {
       }
 
       // ************************************************ development mode [S]
-      // ControlTowerSingleton.setDevSDKMode()
-      // ControlTowerSingleton.getInstance().setHomeDevNetworkMode()
+      ControlTowerSingleton.setDevSDKMode()
+      ControlTowerSingleton.getInstance().setHomeDevNetworkMode()
       // ControlTowerSingleton.setDefaultNetworkMode() // 공개 정책 서버를 쓰도록
       // ************************************************ development mode [E]
     }
@@ -106,7 +106,7 @@ export default class ACECommonStaticConfig {
         .then(res => {
           ACELog.d(ACECommonStaticConfig._TAG, 'SDK init step two request policy')
           if (_commonAPI) {
-            _commonAPI.requestPolicy((error?: object, innerResult?: ACEResponseToCaller) => {
+            _commonAPI.requestPolicy(configuration.key, (error?: object, innerResult?: ACEResponseToCaller) => {
               if (error) {
                 ACELog.d(ACECommonStaticConfig._TAG, JSON.stringify(error, null, 2))
                 callback(new Error('0001, Can not request policy.'), innerResult)
@@ -140,7 +140,7 @@ export default class ACECommonStaticConfig {
           .then(res => {
             if (_commonAPI) {
               ACELog.d(ACECommonStaticConfig._TAG, 'SDK init step two request policy')
-              _commonAPI.requestPolicy((error?: object, innerResult?: ACEResponseToCaller) => {
+              _commonAPI.requestPolicy(configuration.key, (error?: object, innerResult?: ACEResponseToCaller) => {
                 if (error) {
                   if (innerResult) {
                     rejectToOut(innerResult)

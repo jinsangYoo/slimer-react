@@ -6,9 +6,10 @@ import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 export default class ACEInternalAPIForOne implements IACECommonAPI {
   public constructor() {}
 
-  requestPolicy(callback: (error?: object, result?: ACEResponseToCaller) => void): void
-  requestPolicy(): Promise<ACEResponseToCaller>
+  requestPolicy(key: string, callback: (error?: object, result?: ACEResponseToCaller) => void): void
+  requestPolicy(key: string): Promise<ACEResponseToCaller>
   requestPolicy(
+    key: string,
     callback?: (error?: object, result?: ACEResponseToCaller) => void,
   ): void | Promise<ACEResponseToCaller> {
     return ACEReducerForOne.policy(callback)

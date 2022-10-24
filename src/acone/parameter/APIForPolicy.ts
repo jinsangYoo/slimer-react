@@ -8,11 +8,16 @@ import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/ut
 import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPublicStaticConfig'
+import ACECONSTANT from '../../common/constant/ACEConstant'
 
 export default class APIForPolicy extends Task {
   private static _TAG = 'APIForPolicy'
+  protected key: string
+
   public constructor(params: ITaskParams) {
     super(params)
+    ACELog.d(APIForPolicy._TAG, 'in constructor, params:', params)
+    this.key = params.payload.key ?? ACECONSTANT.EMPTY
   }
 
   public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
@@ -33,6 +38,7 @@ export default class APIForPolicy extends Task {
     super.didWork(callback)
 
     ACENetwork.requestToPolicy(
+      {key: this.key},
       response => {
         ACELog.d(APIForPolicy._TAG, 'in requestToPolicy, completed')
         this.completed(response)

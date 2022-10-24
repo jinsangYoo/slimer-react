@@ -2,7 +2,6 @@ import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
 import {HTTP_METHOD, BASE_URL, HTTP_URL, ACENetworkParams} from '../constant/Network'
 import POLICY from '../constant/Policy'
 import {NetworkMode, NetworkRequestType} from '../constant/SDKMode'
-import ACECommonStaticConfig from '../config/ACECommonStaticConfig'
 import {ACS} from '../../acone/acs'
 import {mapValueStringToObject} from '../util/MapUtil'
 import ACELog from '../logger/ACELog'
@@ -12,10 +11,14 @@ import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne
 import ACEPolicyParameters from '../policy/ACEPolicyParameters'
 import ACECONSTANT from '../constant/ACEConstant'
 
+export type requestParams = {
+  key?: string
+}
+
 export class ACENetwork {
   private static _TAG = 'Net'
 
-  private static networkRequestTypeToParams(requestType: NetworkRequestType): ACENetworkParams {
+  private static networkRequestTypeToParams(requestType: NetworkRequestType, parmas?: requestParams): ACENetworkParams {
     const currentNetworkMode = ControlTowerSingleton.getInstance().getNetworkMode()
     ACELog.d(
       ACENetwork._TAG,
@@ -75,7 +78,7 @@ export class ACENetwork {
     }
   }
 
-  private static policyToRequestHeaders(networkMode: NetworkMode): Map<string, string> {
+  private static policyToRequestHeaders(networkMode: NetworkMode, parmas?: requestParams): Map<string, string> {
     const _map = new Map<string, string>()
 
     switch (networkMode) {
@@ -84,9 +87,9 @@ export class ACENetwork {
       case NetworkMode.Pro:
         _map.set(POLICY.REQUEST_APPLICATION_ID, ACS.getPackageNameOrBundleID() ?? 'no packageName')
 
-        _map.set(POLICY.REQUEST_CID, ACECommonStaticConfig.getKey())
+        _map.set(POLICY.REQUEST_CID, parmas?.key || 'unknown')
         _map.set(POLICY.REQUEST_PLATFORM, 'react')
-        _map.set(POLICY.REQUEST_SERVICE_ID, ACECommonStaticConfig.getKey())
+        _map.set(POLICY.REQUEST_SERVICE_ID, parmas?.key || 'unknown')
         _map.set(POLICY.REQUEST_TIME, Date.now().toString())
         _map.set(POLICY.REQUEST_VERSION, ACECONSTANT.VERSION)
         break
@@ -98,6 +101,7 @@ export class ACENetwork {
   private static networkRequestTypeToHeaders(
     networkMode: NetworkMode,
     requestType: NetworkRequestType,
+    parmas?: requestParams,
   ): Map<string, string> {
     switch (requestType) {
       case NetworkRequestType.LOG:
@@ -151,7 +155,11 @@ export class ACENetwork {
   //#endregion
 
   //#region request
-  public static requestToPolicy(completed?: (response: AxiosResponse) => void, failed?: (err: object) => void): void {
+  public static requestToPolicy(
+    parmas?: requestParams,
+    completed?: (response: AxiosResponse) => void,
+    failed?: (err: object) => void,
+  ): void {
     ACENetwork.request(ACENetwork.networkRequestTypeToParams(NetworkRequestType.POLICY), completed, failed)
   }
 

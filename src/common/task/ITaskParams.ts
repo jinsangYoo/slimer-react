@@ -5,6 +5,7 @@ import {ACEGender, ACEMaritalStatus} from '../constant/ACEPublicStaticConfig'
 export type IDebugParams = {}
 
 export type IPayload = {
+  key?: string
   keyword?: string
   linkName?: string
   memberKey?: string

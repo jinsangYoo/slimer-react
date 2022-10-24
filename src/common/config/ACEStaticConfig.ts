@@ -4,8 +4,6 @@ import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import {ACEResponseToCaller} from '../constant/ACEPublicStaticConfig'
 
 export default interface ACEStaticConfig {
-  _debug: boolean
-  _key: string
   // ACEQueueManagerFactory _queueManagerFactory;
   _commonAPI: IACECommonAPI
 

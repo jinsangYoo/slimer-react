@@ -5,17 +5,12 @@ import IACECommonAPI from '../../common/parameter/IACECommonAPI'
 import ACEInternalAPIForOne from '../parameter/ACEInternalAPIForOne'
 import IACEParameterUtil from '../../common/parameter/IACEParameterUtil'
 import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import Configuration from './Configuration'
 
 export default class ACEOneStaticConfig implements ACEStaticConfig {
-  _debug: boolean
-  _key: string
   _commonAPI: IACECommonAPI
-  private _enablePrivacyPolicy: boolean
 
   public constructor() {
-    this._enablePrivacyPolicy = false
-    this._debug = true
-    this._key = 'empty'
     this._commonAPI = new ACEInternalAPIForOne()
   }
 
@@ -28,20 +23,21 @@ export default class ACEOneStaticConfig implements ACEStaticConfig {
     configuration: AceConfiguration,
     callback?: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
   ): Promise<ACEResponseToCaller> | void {
-    this._key = configuration.key
-    if (configuration.enablePrivacyPolicy) this._enablePrivacyPolicy = configuration.enablePrivacyPolicy
-    if (configuration.debug) this._debug = configuration.debug
-
-    return ACEParameterUtilForOne.getInstance().initParameters(this._key, this._enablePrivacyPolicy, callback)
+    Configuration.getInstance().configure(configuration)
+    return ACEParameterUtilForOne.getInstance().initParameters(
+      Configuration.getKey(),
+      Configuration.getEnablePrivacyPolicy(),
+      callback,
+    )
   }
   isDebug(): boolean {
-    return this._debug
+    return Configuration.isDebug()
   }
   getEnablePrivacyPolicy(): boolean {
-    return this._enablePrivacyPolicy
+    return Configuration.getEnablePrivacyPolicy()
   }
   getKey(): string {
-    return this._key
+    return Configuration.getKey()
   }
   getCommonAPI(): IACECommonAPI | undefined {
     if (this._commonAPI) {
