@@ -2,11 +2,11 @@ import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
 import {HTTP_METHOD, BASE_URL, HTTP_URL, ACENetworkParams} from '../constant/Network'
 import POLICY from '../constant/Policy'
 import {NetworkMode, NetworkRequestType} from '../constant/SDKMode'
-import {ACS} from '../../acone/acs'
 import {mapValueStringToObject} from '../util/MapUtil'
 import ACELog from '../logger/ACELog'
 
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
+import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
 import ACEPolicyParameters from '../policy/ACEPolicyParameters'
 import ACECONSTANT from '../constant/ACEConstant'
@@ -85,7 +85,7 @@ export class ACENetwork {
       case NetworkMode.COMPANY_dev:
       case NetworkMode.HOME_dev:
       case NetworkMode.Pro:
-        _map.set(POLICY.REQUEST_APPLICATION_ID, ACS.getPackageNameOrBundleID() ?? 'no packageName')
+        _map.set(POLICY.REQUEST_APPLICATION_ID, ACEParameterUtil.getPackageNameOrBundleID() ?? 'no packageName')
 
         _map.set(POLICY.REQUEST_CID, parmas?.key || 'unknown')
         _map.set(POLICY.REQUEST_PLATFORM, 'react')
