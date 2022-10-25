@@ -12,11 +12,12 @@ export default class ACEParameterUtil {
   }
 
   public static getPackageNameOrBundleID(): string {
-    if (typeof window !== 'undefined') {
-      return window.location.hostname
-    } else {
-      return String(document.location)
-    }
+    // if (typeof window !== 'undefined') {
+    //   return window.location.hostname
+    // } else {
+    //   return String(document.location)
+    // }
+    return 'http://jinsang.myds.me'
   }
 
   public static getSdkVersionWithPatch(): VersionWithPatch {
