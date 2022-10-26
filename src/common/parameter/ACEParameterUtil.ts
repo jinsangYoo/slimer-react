@@ -1,5 +1,6 @@
 import ACECONSTANT from '../constant/ACEConstant'
 import {VersionWithPatch} from '../constant/ACEPublicStaticConfig'
+import {LIB_VERSION} from '../../version'
 
 export default class ACEParameterUtil {
   public static getResolution(): string {
@@ -22,7 +23,7 @@ export default class ACEParameterUtil {
 
   public static getSdkVersionWithPatch(): VersionWithPatch {
     return {
-      version: ACECONSTANT.VERSION,
+      version: LIB_VERSION,
       patch: ACECONSTANT.PATCH,
     }
   }

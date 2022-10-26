@@ -25,6 +25,7 @@ import JN from '../constant/JN'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import {AceConfiguration} from '../aceconfiguration'
 import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
+import {LIB_VERSION} from '../../version'
 
 export default class ACEParameterUtilForOne implements IACEParameterUtil {
   private static _TAG = 'paramUtilForOne'
@@ -521,7 +522,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
 
   public makeSV(): string {
-    return `${ACOneConstant.DefaultServiceCode}${ACECONSTANT.VERSION}${ACOneConstant.DefaultNotCustomSDKForCustomer}`
+    return `${ACOneConstant.DefaultServiceCode}${LIB_VERSION}${ACOneConstant.DefaultNotCustomSDKForCustomer}`
   }
 
   public setTP(value: string): void {
