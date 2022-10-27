@@ -124,6 +124,10 @@ export default class ControlTower {
     return this._isSDKForceStop
   }
 
+  public isDevSDKMode(): boolean {
+    return this.getSDKMode() === SDKMode.development
+  }
+
   public setDevSDKMode(): void {
     this.setSDKMode(SDKMode.development)
     ACELog.setDevMode()
