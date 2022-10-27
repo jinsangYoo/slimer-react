@@ -515,7 +515,10 @@ export default class ACEParametersForOne extends ACEParameters {
 
   public getREF(): string {
     if (isEmpty(this.ref)) {
-      this.ref = ACECONSTANT.BOOKMARK
+      this.ref = document.referrer
+      if (isEmpty(this.ref)) {
+        this.ref = ACECONSTANT.BOOKMARK
+      }
     }
     return this.ref
   }
