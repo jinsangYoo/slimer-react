@@ -182,6 +182,7 @@ export default class ACEReducerForOne {
       {
         type: type == ACParams.TYPE.BUY_DONE ? ACEofAPIForOne.BuyDone : ACEofAPIForOne.BuyCancel,
         payload: {
+          pageName: pageName,
           memberKey: memberKey,
           orderNumber: orderNumber,
           paymentMethod: payMethodName,
