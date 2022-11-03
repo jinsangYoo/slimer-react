@@ -15,7 +15,7 @@ export default class ACEParameterUtil {
 
   public static getPackageNameOrBundleID(): string {
     if (ControlTowerSingleton.isDevSDKMode()) {
-      return 'http://jinsang.myds.me'
+      return 'jinsang.myds.me'
     } else {
       if (typeof window !== 'undefined') {
         return window.location.hostname
