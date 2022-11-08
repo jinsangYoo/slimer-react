@@ -1,6 +1,6 @@
 # @jinsang/slimer-react
 
-Library for [ACE Counter]('https://www.acecounter.com/www2/main.amz').
+Library for [ACE Counter](https://www.acecounter.com/www2/main.amz).
 
 ## TOC
 
