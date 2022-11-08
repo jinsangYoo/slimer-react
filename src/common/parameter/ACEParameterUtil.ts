@@ -6,8 +6,8 @@ import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 export default class ACEParameterUtil {
   public static getResolution(): string {
     if (typeof window !== 'undefined') {
-      const {innerWidth, innerHeight} = window
-      return `${Math.floor(innerWidth)}*${Math.floor(innerHeight)}`
+      const {width, height} = window.screen
+      return `${Math.floor(width)}*${Math.floor(height)}`
     } else {
       return '0*0'
     }
