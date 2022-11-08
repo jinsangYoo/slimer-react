@@ -127,6 +127,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     _parametersForOne.setIsNeedSetNewSession(false)
     _parametersForOne.setPatch(ACECONSTANT.PATCH)
     _parametersForOne.setRE(ACOneConstantInteger.DefaultRE)
+    _parametersForOne.setURL(document.referrer)
     _parametersForOne.setREF(document.referrer)
     _parametersForOne.setRI(ACOneConstant.DefaultRI)
     this.loadSV()
