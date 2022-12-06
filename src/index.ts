@@ -1,6 +1,6 @@
-import { AceConfiguration } from './acone/aceconfiguration'
-import { ACParams } from './acone/acparam'
-import { ACS } from './acone/acs'
+import {AceConfiguration} from './acone/aceconfiguration'
+import {ACParams} from './acone/acparam'
+import {ACS} from './acone/acs'
 import {
   ACEResponseToCaller,
   ControlTowerOfSDK,
@@ -8,7 +8,7 @@ import {
   ACEMaritalStatus,
 } from './common/constant/ACEPublicStaticConfig'
 import ACProduct from './acone/acproduct'
-import { Button } from './components'
+import {Button} from './components'
 
 export {
   AceConfiguration,

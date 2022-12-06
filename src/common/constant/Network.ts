@@ -1,5 +1,5 @@
 export const BASE_URL = {
-  COMPANY_LOCAL_LOG: 'http://jinsang.myds.me',
+  COMPANY_LOCAL_LOG: 'https://gmb.acecounter.com',
   COMPANY_LOCAL_POLICY: 'http://jinsang.myds.me',
   // HOME_LOCAL_LOG: 'http://jinsang.myds.me',
   HOME_LOCAL_LOG: 'https://gmb.acecounter.com',
