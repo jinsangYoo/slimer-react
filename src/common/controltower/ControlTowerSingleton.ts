@@ -88,6 +88,10 @@ export default class ControlTowerSingleton {
     return this._controlTower.isEnableForceStop()
   }
 
+  public isDevSDKMode(): boolean {
+    return this._controlTower.isDevSDKMode()
+  }
+
   public setDevSDKMode(): void {
     this._controlTower.setDevSDKMode()
   }
@@ -131,6 +135,10 @@ export default class ControlTowerSingleton {
 
   public static setDefaultNetworkMode(): void {
     ControlTowerSingleton.getInstance().setNetworkMode(ControlTowerSingleton.getDefaultNetworkMode())
+  }
+
+  public static isDevSDKMode(): boolean {
+    return ControlTowerSingleton.getInstance().isDevSDKMode()
   }
 
   public static setDevSDKMode(): void {

@@ -1,8 +1,8 @@
 export const BASE_URL = {
-  COMPANY_LOCAL_LOG: 'http://jinsang.myds.me',
+  COMPANY_LOCAL_LOG: 'https://gmb.acecounter.com',
   COMPANY_LOCAL_POLICY: 'http://jinsang.myds.me',
-  HOME_LOCAL_LOG: 'http://jinsang.myds.me',
-  // HOME_LOCAL_LOG: 'https://gmb.acecounter.com',
+  // HOME_LOCAL_LOG: 'http://jinsang.myds.me',
+  HOME_LOCAL_LOG: 'https://gmb.acecounter.com',
   HOME_LOCAL_POLICY: 'http://jinsang.myds.me',
   PRO_POLICY: 'https://policy.acecounter.com',
 } as const
@@ -15,7 +15,7 @@ export const HTTP_METHOD = {
 export const HTTP_URL = {
   COMPANY_LOCAL_LOG: 'log',
   COMPANY_LOCAL_POLICY: 'policy',
-  HOME_LOCAL_LOG: 'mac',
+  HOME_LOCAL_LOG: 'mac2/',
   HOME_LOCAL_POLICY: 'policy',
   PRO_LOG: '',
   PRO_POLICY: 'policy',

@@ -1,6 +1,6 @@
 {
   "name": "@jinsang/slimer-react",
-  "version": "1.0.13",
+  "version": "1.0.34",
   "description": "Practice lib for react.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -10,7 +10,8 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "scripts": {
-    "rollup": "rm -rf dist && rollup -c",
+    "prebuild": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version)\" > src/version.ts",
+    "rollup": "npm run prebuild && rm -rf dist && rollup -c",
     "test": "jest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"

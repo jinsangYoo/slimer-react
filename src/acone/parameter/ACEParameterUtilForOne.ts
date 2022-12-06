@@ -25,6 +25,7 @@ import JN from '../constant/JN'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import {AceConfiguration} from '../aceconfiguration'
 import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
+import {LIB_VERSION} from '../../version'
 
 export default class ACEParameterUtilForOne implements IACEParameterUtil {
   private static _TAG = 'paramUtilForOne'
@@ -126,7 +127,8 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     _parametersForOne.setIsNeedSetNewSession(false)
     _parametersForOne.setPatch(ACECONSTANT.PATCH)
     _parametersForOne.setRE(ACOneConstantInteger.DefaultRE)
-    _parametersForOne.setREF(ACECONSTANT.BOOKMARK)
+    _parametersForOne.setURL(document.referrer)
+    _parametersForOne.setREF(document.referrer)
     _parametersForOne.setRI(ACOneConstant.DefaultRI)
     this.loadSV()
     _parametersForOne.getUDF1()
@@ -521,7 +523,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
 
   public makeSV(): string {
-    return `${ACOneConstant.DefaultServiceCode}${ACECONSTANT.VERSION}${ACOneConstant.DefaultNotCustomSDKForCustomer}`
+    return `${ACOneConstant.DefaultServiceCode}${LIB_VERSION}${ACOneConstant.DefaultNotCustomSDKForCustomer}`
   }
 
   public setTP(value: string): void {

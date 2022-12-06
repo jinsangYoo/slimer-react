@@ -7,7 +7,7 @@ import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 import {ACEResponseToCaller, ACEConstantCallback, ACEResultCode} from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
-import {isEmpty, isStartIndexAkAtGCodeString} from '../util/TextUtils'
+import {isEmpty, isStartIndexAkAtGCodeString, printMode} from '../util'
 
 export default class ACECommonStaticConfig {
   private static _TAG = 'comInit'
@@ -66,6 +66,10 @@ export default class ACECommonStaticConfig {
       // ************************************************ development mode [E]
     }
 
+    if (ControlTowerSingleton.isDevSDKMode()) {
+      ACELog.d(ACECommonStaticConfig._TAG, 'Enable development mode in SDK.')
+      ACELog.d(ACECommonStaticConfig._TAG, printMode())
+    }
     ACELog.d(ACECommonStaticConfig._TAG, 'AceConfiguration information:', configuration)
 
     if (!ACECommonStaticConfig.validateForAceConfiguration(configuration)) {

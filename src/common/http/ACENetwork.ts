@@ -9,7 +9,7 @@ import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
 import ACEPolicyParameters from '../policy/ACEPolicyParameters'
-import ACECONSTANT from '../constant/ACEConstant'
+import {LIB_VERSION} from '../../version'
 
 export type requestParams = {
   key?: string
@@ -91,7 +91,7 @@ export class ACENetwork {
         _map.set(POLICY.REQUEST_PLATFORM, 'react')
         _map.set(POLICY.REQUEST_SERVICE_ID, parmas?.key || 'unknown')
         _map.set(POLICY.REQUEST_TIME, Date.now().toString())
-        _map.set(POLICY.REQUEST_VERSION, ACECONSTANT.VERSION)
+        _map.set(POLICY.REQUEST_VERSION, LIB_VERSION)
         break
     }
 
