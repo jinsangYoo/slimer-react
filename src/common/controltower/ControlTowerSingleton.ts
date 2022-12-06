@@ -104,6 +104,19 @@ export default class ControlTowerSingleton {
     this._controlTower.setNetworkMode(NetworkMode.HOME_dev)
   }
 
+  public printNetworkMode(): string {
+    switch (this._controlTower.getNetworkMode()) {
+      case NetworkMode.COMPANY_dev:
+        return 'COMPANY_dev'
+      case NetworkMode.HOME_dev:
+        return 'HOME_dev'
+      case NetworkMode.Pro:
+        return 'Pro'
+      default:
+        return 'unknown'
+    }
+  }
+
   public succeedRequestPolicy(): void {
     this._controlTower.setIsCompletePolicy(true, true)
   }

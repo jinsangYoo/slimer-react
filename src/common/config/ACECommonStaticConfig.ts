@@ -68,6 +68,10 @@ export default class ACECommonStaticConfig {
 
     if (ControlTowerSingleton.isDevSDKMode()) {
       ACELog.d(ACECommonStaticConfig._TAG, 'Enable development mode in SDK.')
+      ACELog.d(
+        ACECommonStaticConfig._TAG,
+        `Current network mode: ${ControlTowerSingleton.getInstance().printNetworkMode()}`,
+      )
       ACELog.d(ACECommonStaticConfig._TAG, printMode())
     }
     ACELog.d(ACECommonStaticConfig._TAG, 'AceConfiguration information:', configuration)

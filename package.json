@@ -1,6 +1,6 @@
 {
   "name": "@jinsang/slimer-react",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "description": "Practice lib for react.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
