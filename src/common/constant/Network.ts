@@ -1,9 +1,9 @@
 export const BASE_URL = {
-  COMPANY_LOCAL_LOG: 'https://gmb.acecounter.com',
-  COMPANY_LOCAL_POLICY: 'http://jinsang.myds.me',
-  // HOME_LOCAL_LOG: 'http://jinsang.myds.me',
+  COMPANY_LOCAL_LOG: 'https://jinsang.myds.me',
+  COMPANY_LOCAL_POLICY: 'https://policy2.acecounter.com/policy.php',
+  // HOME_LOCAL_LOG: 'https://jinsang.myds.me',
   HOME_LOCAL_LOG: 'https://gmb.acecounter.com',
-  HOME_LOCAL_POLICY: 'http://jinsang.myds.me',
+  HOME_LOCAL_POLICY: 'https://policy2.acecounter.com/policy.php',
   PRO_POLICY: 'https://policy.acecounter.com',
 } as const
 

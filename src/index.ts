@@ -8,16 +8,5 @@ import {
   ACEMaritalStatus,
 } from './common/constant/ACEPublicStaticConfig'
 import ACProduct from './acone/acproduct'
-import {Button} from './components'
 
-export {
-  AceConfiguration,
-  ACParams,
-  ACS,
-  ACEGender,
-  ACEMaritalStatus,
-  ACEResponseToCaller,
-  ControlTowerOfSDK,
-  ACProduct,
-  Button,
-}
+export {AceConfiguration, ACParams, ACS, ACEGender, ACEMaritalStatus, ACEResponseToCaller, ControlTowerOfSDK, ACProduct}
