@@ -1,15 +1,22 @@
 import Task from './Task'
+import ITask from './ITask'
 import {ACEResponseToCaller} from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
 
 export default class TaskAdapter {
   private static _TAG = 'taskAdap'
-  private _task: Task
+  private _task: Task & ITask
   private _callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined
 
-  public addTask(argTask: Task): void
-  public addTask(argTask: Task, callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void
-  public addTask(argTask: Task, callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public addTask(argTask: Task & ITask): void
+  public addTask(
+    argTask: Task & ITask,
+    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+  ): void
+  public addTask(
+    argTask: Task & ITask,
+    callback?: ((error?: object, result?: ACEResponseToCaller) => void & ITask) | undefined,
+  ): void {
     this._task = argTask
     this._callback = callback
   }

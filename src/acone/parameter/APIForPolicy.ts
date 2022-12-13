@@ -1,4 +1,4 @@
-import Task from '../../common/task/Task'
+import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
@@ -10,7 +10,7 @@ import ACELog from '../../common/logger/ACELog'
 import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 
-export default class APIForPolicy extends Task {
+export default class APIForPolicy extends ACOTask {
   private static _TAG = 'APIForPolicy'
   protected key: string
 

@@ -1,6 +1,7 @@
 import {ACEConstantCallback, ACEResponseToCaller, ACEResultCode} from '../constant/ACEPublicStaticConfig'
 import {isEmpty} from './TextUtils'
 import Task from '../task/Task'
+import ITask from '../task/ITask'
 
 export function printConsoleMap(map: Map<string, string | object>): void {
   for (var i = 0, keys = Object.keys(map), ii = keys.length; i < ii; i++) {
@@ -22,9 +23,9 @@ export function mapValueStringToObject(map: Map<string, string>) {
   }, {})
 }
 
-export function makeSuccessCallbackParams(task: Task): ACEResponseToCaller
-export function makeSuccessCallbackParams(task: Task, message: string): ACEResponseToCaller
-export function makeSuccessCallbackParams(task: Task, message?: string): ACEResponseToCaller {
+export function makeSuccessCallbackParams(task: Task & ITask): ACEResponseToCaller
+export function makeSuccessCallbackParams(task: Task & ITask, message: string): ACEResponseToCaller
+export function makeSuccessCallbackParams(task: Task & ITask, message?: string): ACEResponseToCaller {
   var innerMsg: string = ACEConstantCallback.DefaultMessage
   if (!isEmpty(message) && message) {
     innerMsg = message
@@ -54,9 +55,9 @@ export function makeSuccessCallbackParams(task: Task, message?: string): ACEResp
   }
 }
 
-export function makeFailCallbackParams(task: Task): ACEResponseToCaller
-export function makeFailCallbackParams(task: Task, message: string): ACEResponseToCaller
-export function makeFailCallbackParams(task: Task, message?: string): ACEResponseToCaller {
+export function makeFailCallbackParams(task: Task & ITask): ACEResponseToCaller
+export function makeFailCallbackParams(task: Task & ITask, message: string): ACEResponseToCaller
+export function makeFailCallbackParams(task: Task & ITask, message?: string): ACEResponseToCaller {
   var innerMsg: string = ACEConstantCallback.DefaultMessage
   if (message && !isEmpty(message)) {
     innerMsg = message

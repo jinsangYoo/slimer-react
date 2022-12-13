@@ -1,5 +1,4 @@
 import {ITaskParams} from './ITaskParams'
-import ACEofAPIForOne from '../../acone/constant/ACEofAPIForOne'
 import {AxiosResponse} from 'axios'
 import ACENetworkResult from '../http/ACENetworkResult'
 import {
@@ -10,45 +9,27 @@ import {
 import ACELog from '../logger/ACELog'
 
 export default class Task {
-  private static _p0TAG = 'pTask'
-  protected _logSource: ACEofAPIForOne
+  // private static _c_TAG = 'Task'
   protected _date: number
   protected _response: ACENetworkResult
   protected _error: JSON
 
   protected constructor(params: ITaskParams) {
-    this._logSource = params.type
     this._date = Date.now()
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
-    ACELog.d(Task._p0TAG, `doWork: ${ACEofAPIForOne[this._logSource]}`)
-  }
+  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {}
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
-    ACELog.d(Task._p0TAG, `didWork: ${ACEofAPIForOne[this._logSource]}`)
-  }
+  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {}
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
-    ACELog.d(Task._p0TAG, `doneWork: ${ACEofAPIForOne[this._logSource]}`)
-  }
+  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {}
 
   protected completed(response: AxiosResponse) {
-    ACELog.d(Task._p0TAG, `completed: ${ACEofAPIForOne[this._logSource]}`)
     this._response = new ACENetworkResult(response)
   }
 
   protected failed(err: any) {
-    ACELog.d(Task._p0TAG, `failed: ${ACEofAPIForOne[this._logSource]}`, err)
     this._error = JSON.parse(JSON.stringify(err))
-  }
-
-  public getLogSource(): number {
-    return this._logSource
-  }
-
-  public getDescription(): string {
-    return ACEofAPIForOne[this._logSource]
   }
 
   public getCreateTime(): number {

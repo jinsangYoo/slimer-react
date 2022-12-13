@@ -1,4 +1,4 @@
-import Task from '../../common/task/Task'
+import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
@@ -15,7 +15,7 @@ import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import IACBuyMode from '../constant/IACBuyMode'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 
-export default class APIForCart extends Task {
+export default class APIForCart extends ACOTask {
   private static _TAG = 'APIForCart'
 
   protected _willUpdateVt?: ACEntityForVT
