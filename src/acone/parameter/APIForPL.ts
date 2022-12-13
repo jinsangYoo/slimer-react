@@ -1,4 +1,4 @@
-import Task from '../../common/task/Task'
+import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
@@ -12,7 +12,7 @@ import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPubli
 import ACEntityForVT from './ACEntityForVT'
 import ACEntityForST from './ACEntityForVT'
 
-export default class APIForPL extends Task {
+export default class APIForPL extends ACOTask {
   private static _p1TAG = 'APIForPL'
   protected _willUpdateVt?: ACEntityForVT
   protected _willUpdateSt?: ACEntityForST

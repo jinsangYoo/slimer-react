@@ -14,9 +14,9 @@ export const HTTP_METHOD = {
 
 export const HTTP_URL = {
   COMPANY_LOCAL_LOG: 'log',
-  COMPANY_LOCAL_POLICY: 'policy',
+  COMPANY_LOCAL_POLICY: '',
   HOME_LOCAL_LOG: 'mac2/',
-  HOME_LOCAL_POLICY: 'policy',
+  HOME_LOCAL_POLICY: '',
   PRO_LOG: '',
   PRO_POLICY: 'policy',
 } as const

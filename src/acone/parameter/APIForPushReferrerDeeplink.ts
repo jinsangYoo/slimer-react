@@ -1,4 +1,4 @@
-import Task from '../../common/task/Task'
+import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
@@ -14,7 +14,7 @@ import ACEntityForST from './ACEntityForVT'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import SRC from '../../common/constant/SRC'
 
-export default class APIForPushReferrerDeeplink extends Task {
+export default class APIForPushReferrerDeeplink extends ACOTask {
   private static _p1TAG = 'APIForPushReferrerDeeplink'
   protected _willUpdateVt?: ACEntityForVT
   protected _willUpdateSt?: ACEntityForST

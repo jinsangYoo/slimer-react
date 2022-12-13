@@ -26,6 +26,7 @@ import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import {AceConfiguration} from '../aceconfiguration'
 import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
 import {LIB_VERSION} from '../../version'
+import Incoming from '../../common/constant/Incoming'
 
 export default class ACEParameterUtilForOne implements IACEParameterUtil {
   private static _TAG = 'paramUtilForOne'
@@ -129,7 +130,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     _parametersForOne.setRE(ACOneConstantInteger.DefaultRE)
     _parametersForOne.setURL(document.referrer)
     _parametersForOne.setREF(document.referrer)
-    _parametersForOne.setRI(ACOneConstant.DefaultRI)
+    this.makeAndSetRI()
     this.loadSV()
     _parametersForOne.getUDF1()
     _parametersForOne.getUDF2()
@@ -303,6 +304,36 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     ACEParametersForOne.getInstance().setAMT(value)
   }
 
+  //#region RI
+  public isOuterIncomingRI(): boolean {
+    const _parametersForOne = ACEParametersForOne.getInstance()
+    return _parametersForOne.getRI() === Incoming.Outer
+  }
+
+  public setInnerIncomingRI(): void {
+    const _parametersForOne = ACEParametersForOne.getInstance()
+    _parametersForOne.setRI(Incoming.Inner)
+  }
+
+  public makeAndSetRI(): void {
+    const _parametersForOne = ACEParametersForOne.getInstance()
+    _parametersForOne.setRI(this.makeRI())
+  }
+
+  private makeRI(): string {
+    if (document.referrer) {
+      let url = document.referrer
+      let refDomain = url.match(/:\/\/(.[^/]+)/)
+
+      return refDomain && refDomain.length > 1 && refDomain[1] === ACEParameterUtil.getPackageNameOrBundleID()
+        ? Incoming.Inner
+        : Incoming.Outer
+    }
+
+    return Incoming.Outer
+  }
+  //#endregion
+
   //#region Session
   public isFirstLog(): boolean {
     return this.getSession() == SESSION.NEW
@@ -315,6 +346,10 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   public resetSessionAndParameterAfterSendWithParams(params?: ParameterAfterSend): Promise<boolean> {
     if (this.isFirstLog()) {
       this.setKeepSession()
+    }
+
+    if (this.isOuterIncomingRI()) {
+      this.setInnerIncomingRI()
     }
 
     if (params) {
