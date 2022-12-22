@@ -14,7 +14,8 @@ export default class ACEParameterUtil {
   }
 
   public static getPackageNameOrBundleID(): string {
-    if (ControlTowerSingleton.isDevSDKMode()) {
+    const hostname = window && window.location && window.location.hostname
+    if (hostname === 'localhost' && ControlTowerSingleton.isDevSDKMode()) {
       return 'jinsang.myds.me'
     } else {
       if (typeof window !== 'undefined') {
