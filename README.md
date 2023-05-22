@@ -1,6 +1,6 @@
 # @jinsang/slimer-react
 
-Library for [ACE Counter](https://www.acecounter.com/www2/main.amz).
+Library for [ACE COUNTER in NHN DATA](https://www.acecounter.com/www2/main.amz).
 
 ## TOC
 
@@ -39,30 +39,10 @@ import {
 
 ## API
 
-Note that many APIs are platform-specific.
-
----
-
-### getApiLevel()
-
-Gets the API level.
-
-#### Examples
-
-```js
-DeviceInfo.getApiLevel().then(apiLevel => {
-  // iOS: ?
-  // Android: 25
-  // Windows: ?
-})
-```
-
-#### Notes
-
-> See [API Levels](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels)
+> See [Wiki](https://github.com/jinsangYoo/slimer-react/wiki/)
 
 ---
 
 ## Release Notes
 
-See the [CHANGELOG.md](https://github.com/react-native-device-info/react-native-device-info/blob/master/CHANGELOG.md).
+See the [배포-내역.md](https://github.com/jinsangYoo/slimer-react/wiki/%EB%B0%B0%ED%8F%AC-%EB%82%B4%EC%97%AD).
