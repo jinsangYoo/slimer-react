@@ -3,6 +3,7 @@ import ACOneConstantVt from '../constant/ACOneConstantVt'
 import {getRandom6CharForSTVT} from '../../common/util/NumberUtil'
 import ACELog from '../../common/logger/ACELog'
 import {objectForVT} from '../../common/constant/ACEPublicStaticConfig'
+import ACOneConstantInteger from '../constant/ACOneConstantInteger'
 
 export default class ACEntityForVT {
   private static _TAG = 'vt'
@@ -145,6 +146,7 @@ export default class ACEntityForVT {
   }
 
   public setVisitCount(value: number): void {
+    value = value > ACOneConstantInteger.VtVisitCountMax ? ACOneConstantInteger.VtVisitCountMax : value
     this._map.set(ACOneConstantVt.KeyVisitCount, value.toString())
   }
   // #endregion
