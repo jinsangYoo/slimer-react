@@ -14,6 +14,7 @@ import {
   ACEGender,
   ACEMaritalStatus,
   DetailOfSDK,
+  STVT,
 } from '../../common/constant/ACEPublicStaticConfig'
 import {isEmpty, onlyLetteringAtStartIndex, stringToNumber} from '../../common/util/TextUtils'
 import ACELog from '../../common/logger/ACELog'
@@ -102,11 +103,11 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     })
   }
 
-  getTS(): string {
-    return JSON.stringify({
+  getTS(): STVT {
+    return {
       st: this.getST().getObjectForTS(),
       vt: this.getVT().getObjectForTS(),
-    })
+    }
   }
 
   public initParameters(

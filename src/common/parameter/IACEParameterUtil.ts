@@ -1,5 +1,5 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
-import {DetailOfSDK} from '../constant/ACEPublicStaticConfig'
+import {DetailOfSDK, STVT} from '../constant/ACEPublicStaticConfig'
 
 export default interface IACEParameterUtil {
   loadUniqueKeyForSDK(): void
@@ -18,5 +18,5 @@ export default interface IACEParameterUtil {
 
   isDuplicateInstallReferrer(value: string): Promise<boolean>
 
-  getTS(): string
+  getTS(): STVT
 }

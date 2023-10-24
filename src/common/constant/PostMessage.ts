@@ -3,6 +3,11 @@ export type MessageForIFrame = {
   location: string
 }
 
+export type PayloadForAdTracking = {
+  adid: string
+  adeld: string
+}
+
 export type PayloadForTS = {
   st: {
     getts: string
@@ -41,4 +46,15 @@ export type ACSForMessage =
   | ({
       type: 'ACS.notRoot'
       payload: PayloadForTS
+    } & MessageForIFrame)
+  | ({
+      type: 'ACS.reqAceApp'
+    } & MessageForIFrame)
+  | ({
+      type: 'ACS.resAceApp'
+      payload: {
+        key: string
+        device: string
+      } & PayloadForTS &
+        PayloadForAdTracking
     } & MessageForIFrame)

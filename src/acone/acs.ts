@@ -4,7 +4,7 @@ import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {ACEResponseToCaller} from '..'
 import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
-import type {ACSForMessage, MessageForIFrame} from '../common/constant/PostMessage'
+import type {ACSForMessage, MessageForIFrame, PayloadForTS, PayloadForAdTracking} from '../common/constant/PostMessage'
 import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
 import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
@@ -584,11 +584,11 @@ export class ACS {
 
   public static getTS(): string {
     const parameterUtil = ACECommonStaticConfig.getParameterUtil()
-    return parameterUtil ? parameterUtil.getTS() : '{}'
+    return parameterUtil ? JSON.stringify(parameterUtil.getTS()) : '{}'
   }
   //#endregion
 
-  //#region postMessage
+  //#region iframeRef
   public static addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
     ACS.getInstance().addIframeRef(iframeRef, destinationDomain)
   }
@@ -634,7 +634,9 @@ export class ACS {
     ACELog.i(ACS._TAG, `iframes size: ${this._iframeRefMap.size}`)
     ACELog.i(ACS._TAG, 'iframes keys: ', Array.from(this._iframeRefMap.keys()))
   }
+  //#endregion
 
+  //#region postMessage
   public static handleMessage(e: Event) {
     return ACS.getInstance().handleMessage(e)
   }
@@ -648,13 +650,95 @@ export class ACS {
     ) => {
       console.log(`params: ${JSON.stringify(params, null, 2)}`)
     }
-    const didAddedToMap = (params: ACSForMessage) => {
+    const didAddedToMap = (params: {type: 'ACS.didAddedToMap'} & MessageForIFrame) => {
       console.log(`params: ${JSON.stringify(params, null, 2)}`)
     }
     const initInIframe = (params: ACSForMessage) => {
       console.log(`params: ${JSON.stringify(params, null, 2)}`)
     }
-    const injectTS = (params: ACSForMessage) => {
+    const injectTS = (
+      params: {
+        type: 'ACS.injectTS'
+        payload: {
+          key: string
+          device: string
+          adToken: string
+          adTrackingEnabled: boolean
+        } & PayloadForTS
+      } & MessageForIFrame,
+    ) => {
+      console.log(`params: ${JSON.stringify(params, null, 2)}`)
+    }
+    const reqAceApp = (
+      params: {
+        type: 'ACS.reqAceApp'
+      } & MessageForIFrame,
+    ) => {
+      ACELog.v(ACS._TAG, 'params:', params)
+      const token = params.token
+      if (!this._iframeRefMap) {
+        ACELog.e(ACS._TAG, '_iframeRefMap not init.')
+        return
+      }
+      if (!this._iframeRefMap.has(token)) {
+        ACELog.e(ACS._TAG, `not found token: >>${token}<< in _iframeRefMap.`)
+        return
+      }
+      const parameterUtil = ACECommonStaticConfig.getParameterUtil()
+      const _ts: PayloadForTS = parameterUtil
+        ? {
+            st: parameterUtil.getTS().st,
+            vt: {
+              vts: parameterUtil.getTS().vt.vts,
+              visitCount: parseInt(parameterUtil.getTS().vt.visitCount, 10),
+              buyTimeTS: parameterUtil.getTS().vt.buyTimeTS,
+              buyCount: parseInt(parameterUtil.getTS().vt.buyCount, 10),
+              pcStamp: parameterUtil.getTS().vt.pcStamp,
+            },
+          }
+        : {
+            st: {
+              getts: '-1',
+              insenginets: '-1',
+              referts: '-1',
+              startts: '-1',
+            },
+            vt: {
+              vts: '-1',
+              visitCount: -1,
+              buyTimeTS: '-1',
+              buyCount: -1,
+              pcStamp: '-1',
+            },
+          }
+
+      let iframeRef = this._iframeRefMap.get(token)
+      iframeRef?.current?.contentWindow?.postMessage(
+        {
+          type: 'ACS.resAceApp',
+          token,
+          location: window.location.origin.toString(),
+          key: ACS.getInstance()._configuration?.key ?? {
+            key: 'not has configuration',
+          },
+          device: 'react',
+          adid: 'adid_test',
+          adeld: 'adeld_test',
+          _ts,
+        },
+        params.location,
+      )
+    }
+    const resAceApp = (
+      params: {
+        type: 'ACS.resAceApp'
+        payload: {
+          key: string
+          device: string
+        } & PayloadForTS &
+          PayloadForAdTracking
+      } & MessageForIFrame,
+    ) => {
       console.log(`params: ${JSON.stringify(params, null, 2)}`)
     }
 
@@ -671,6 +755,12 @@ export class ACS {
         break
       case 'ACS.injectTS':
         injectTS(_event.data)
+        break
+      case 'ACS.reqAceApp':
+        reqAceApp(_event.data)
+        break
+      case 'ACS.resAceApp':
+        resAceApp(_event.data)
         break
       default:
         break

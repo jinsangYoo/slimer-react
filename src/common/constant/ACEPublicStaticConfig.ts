@@ -6,6 +6,11 @@ export const ACEConstantCallback = {
   Success: 'success',
 } as const
 
+export type STVT = {
+  st: objectForST
+  vt: objectForVT
+}
+
 export type DetailOfSDK = {
   statuses?: {
     configuration?: AceConfiguration
