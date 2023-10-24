@@ -87,3 +87,7 @@ export function getQueryVar(source: string): object {
 export function getQueryForKey(source: string, value: string): string | undefined {
   return getQueryVar(source)[value]
 }
+
+export function getDateToString(): string {
+  return new Date().valueOf().toString()
+}

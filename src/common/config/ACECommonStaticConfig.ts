@@ -14,16 +14,6 @@ export default class ACECommonStaticConfig {
   private static _staticConfigImpl: ACEStaticConfig
   private static _platform: ACEPlatform
 
-  private static didMounted = (e: Event) => {
-    ACELog.i(ACECommonStaticConfig._TAG, `in didMounted`)
-    ACELog.i(ACECommonStaticConfig._TAG, `e.currentTarget?.name: ${e.currentTarget?.name}`)
-    // if (e.currentTarget?.name .origin !== "http://localhost:3001") {
-    //     // console.log("wrong");
-    //     return;
-    //   }
-    //   console.log(e);
-  }
-
   public static configure(
     configuration: AceConfiguration,
     callback: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
@@ -88,7 +78,6 @@ export default class ACECommonStaticConfig {
 
     if (!ACECommonStaticConfig.validateForAceConfiguration(configuration)) {
       ACELog.d(ACECommonStaticConfig._TAG, 'Initialization SDK failed.')
-      global.window.addEventListener('didMounted', ACECommonStaticConfig.didMounted)
 
       const response: ACEResponseToCaller = {
         taskHash: '0000',

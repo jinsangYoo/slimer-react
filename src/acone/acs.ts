@@ -4,12 +4,13 @@ import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {ACEResponseToCaller} from '..'
 import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
+import type {ACSForMessage, MessageForIFrame} from '../common/constant/PostMessage'
 import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
 import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
 import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
-import {decode, getQueryForKey, isEmpty} from '../common/util/TextUtils'
+import {decode, getQueryForKey, isEmpty, getDateToString} from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
 
@@ -21,6 +22,7 @@ export class ACS {
   private emitter: EventsForWorkerEmitter
   private static lock = false
   private _configuration?: AceConfiguration
+  private _iframeRefMap: Map<string, React.RefObject<HTMLIFrameElement>>
 
   public static getInstance(): ACS {
     return this.instance || (this.instance = new this())
@@ -583,6 +585,96 @@ export class ACS {
   public static getTS(): string {
     const parameterUtil = ACECommonStaticConfig.getParameterUtil()
     return parameterUtil ? parameterUtil.getTS() : '{}'
+  }
+  //#endregion
+
+  //#region postMessage
+  public static addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
+    ACS.getInstance().addIframeRef(iframeRef, destinationDomain)
+  }
+
+  private addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
+    if (!this._iframeRefMap) {
+      this._iframeRefMap = new Map<string, React.RefObject<HTMLIFrameElement>>()
+    }
+    const token = getDateToString()
+    this._iframeRefMap.set(token, iframeRef)
+
+    iframeRef.current?.contentWindow?.postMessage(
+      {
+        type: 'ACS.didAddedToMap',
+        token,
+        location: window.location.origin.toString(),
+      },
+      destinationDomain,
+    )
+  }
+
+  public static removeAllIfreameRefs() {
+    ACS.getInstance().removeAllIfreameRefs()
+  }
+
+  private removeAllIfreameRefs() {
+    if (!this._iframeRefMap) {
+      return
+    }
+    this._iframeRefMap.clear()
+  }
+
+  public static printIfreameRefs() {
+    ACS.getInstance().printIfreameRefs()
+  }
+
+  private printIfreameRefs() {
+    if (!this._iframeRefMap) {
+      ACELog.i(ACS._TAG, 'iframes is empty.')
+      return
+    }
+
+    ACELog.i(ACS._TAG, `iframes size: ${this._iframeRefMap.size}`)
+    ACELog.i(ACS._TAG, 'iframes keys: ', Array.from(this._iframeRefMap.keys()))
+  }
+
+  public static handleMessage(e: Event) {
+    return ACS.getInstance().handleMessage(e)
+  }
+
+  private handleMessage(e: Event) {
+    const _event = e as MessageEvent<ACSForMessage>
+    const didMounted = (
+      params: {
+        type: 'ACS.didMounted'
+      } & MessageForIFrame,
+    ) => {
+      console.log(`params: ${JSON.stringify(params, null, 2)}`)
+    }
+    const didAddedToMap = (params: ACSForMessage) => {
+      console.log(`params: ${JSON.stringify(params, null, 2)}`)
+    }
+    const initInIframe = (params: ACSForMessage) => {
+      console.log(`params: ${JSON.stringify(params, null, 2)}`)
+    }
+    const injectTS = (params: ACSForMessage) => {
+      console.log(`params: ${JSON.stringify(params, null, 2)}`)
+    }
+
+    if (_event.origin !== 'http://localhost:52274') return
+    switch (_event.data.type) {
+      case 'ACS.didMounted':
+        didMounted(_event.data)
+        break
+      case 'ACS.didAddedToMap':
+        didAddedToMap(_event.data)
+        break
+      case 'ACS.initInIframe':
+        initInIframe(_event.data)
+        break
+      case 'ACS.injectTS':
+        injectTS(_event.data)
+        break
+      default:
+        break
+    }
   }
   //#endregion
 }
