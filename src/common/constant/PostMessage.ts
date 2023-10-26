@@ -25,27 +25,12 @@ export type PayloadForTS = {
 }
 
 export type ACSForMessage =
-  | ({
-      type: 'ACS.injectTS'
-      payload: {
-        key: string
-        device: string
-        adToken: string
-        adTrackingEnabled: boolean
-      } & PayloadForTS
-    } & MessageForIFrame)
-  | ({type: 'ACS.didMounted'} & MessageForIFrame)
   | ({type: 'ACS.didAddedToMap'} & MessageForIFrame)
-  | ({type: 'ACS.initInIframe'} & MessageForIFrame)
   | ({
       type: 'ACS.versionOfMessage'
       payload: {
         version: string
       }
-    } & MessageForIFrame)
-  | ({
-      type: 'ACS.notRoot'
-      payload: PayloadForTS
     } & MessageForIFrame)
   | ({
       type: 'ACS.reqAceApp'
