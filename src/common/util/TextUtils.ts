@@ -29,10 +29,27 @@ export function isAlphabetOrNumberAtStringStartIndex(value: string): boolean {
   return regex.test(value)
 }
 
+export function isAlphabetOrNumberAtStringEndIndex(value: string): boolean {
+  const regex = /.*[\w]$/
+  return regex.test(value)
+}
+
 export function onlyAlphabetOrNumberAtStringStartIndex(value: string): string {
   if (!isEmpty(value)) {
     while (!isAlphabetOrNumberAtStringStartIndex(value)) {
       value = value.substring(1)
+      if (isEmpty(value)) {
+        break
+      }
+    }
+  }
+  return value
+}
+
+export function onlyAlphabetOrNumberAtStringEndIndex(value: string): string {
+  if (!isEmpty(value)) {
+    while (!isAlphabetOrNumberAtStringEndIndex(value)) {
+      value = value.substring(0, value.length - 1)
       if (isEmpty(value)) {
         break
       }
@@ -75,10 +92,10 @@ export function decode(value: string) {
 }
 
 export function getQueryVar(source: string): object {
-  var query = {}
-  var pairs = (source[0] === '?' ? source.substring(1) : source).split('&')
-  for (var i = 0; i < pairs.length; i++) {
-    var pair = pairs[i].split('=')
+  let query = {}
+  let pairs = (source[0] === '?' ? source.substring(1) : source).split('&')
+  for (let i = 0; i < pairs.length; i++) {
+    let pair = pairs[i].split('=')
     query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '')
   }
   return query

@@ -10,7 +10,13 @@ import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
 import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
-import {decode, getQueryForKey, isEmpty, getDateToString} from '../common/util/TextUtils'
+import {
+  decode,
+  getQueryForKey,
+  isEmpty,
+  getDateToString,
+  onlyAlphabetOrNumberAtStringEndIndex,
+} from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
 
@@ -23,6 +29,7 @@ export class ACS {
   private static lock = false
   private _configuration?: AceConfiguration
   private _iframeRefMap: Map<string, React.RefObject<HTMLIFrameElement>>
+  private _originSet: Set<string>
 
   public static getInstance(): ACS {
     return this.instance || (this.instance = new this())
@@ -589,8 +596,10 @@ export class ACS {
   //#endregion
 
   //#region iframeRef
-  public static addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
-    ACS.getInstance().addIframeRef(iframeRef, destinationDomain)
+  public static addDependency(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
+    let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
+    ACS.getInstance().addOrigin(_destinationDomain)
+    ACS.getInstance().addIframeRef(iframeRef, _destinationDomain)
   }
 
   private addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
@@ -610,8 +619,26 @@ export class ACS {
     )
   }
 
-  public static removeAllIfreameRefs() {
+  private addOrigin(destinationDomain: string) {
+    if (!this._originSet) {
+      this._originSet = new Set<string>()
+    }
+    if (!this._originSet.has(destinationDomain)) {
+      this._originSet.add(destinationDomain)
+    }
+  }
+
+  private hasOrigin(destinationDomain: string): boolean {
+    if (this._originSet.size > 0) {
+      return this._originSet.has(destinationDomain)
+    }
+
+    return false
+  }
+
+  public static removeDependencices() {
     ACS.getInstance().removeAllIfreameRefs()
+    ACS.getInstance().removeAllOrigins()
   }
 
   private removeAllIfreameRefs() {
@@ -621,8 +648,16 @@ export class ACS {
     this._iframeRefMap.clear()
   }
 
-  public static printIfreameRefs() {
+  private removeAllOrigins() {
+    if (!this._originSet) {
+      return
+    }
+    this._originSet.clear()
+  }
+
+  public static printDependencies() {
     ACS.getInstance().printIfreameRefs()
+    ACS.getInstance().printOrigins()
   }
 
   private printIfreameRefs() {
@@ -633,6 +668,16 @@ export class ACS {
 
     ACELog.i(ACS._TAG, `iframes size: ${this._iframeRefMap.size}`)
     ACELog.i(ACS._TAG, 'iframes keys: ', Array.from(this._iframeRefMap.keys()))
+  }
+
+  private printOrigins() {
+    if (!this._originSet) {
+      ACELog.i(ACS._TAG, 'origins is empty.')
+      return
+    }
+
+    ACELog.i(ACS._TAG, `origins size: ${this._originSet.size}`)
+    ACELog.i(ACS._TAG, 'origins keys: ', Array.from(this._originSet.keys()))
   }
   //#endregion
 
@@ -724,7 +769,7 @@ export class ACS {
           device: 'react',
           adid: 'adid_test',
           adeld: 'adeld_test',
-          _ts,
+          ts: _ts,
         },
         params.location,
       )
@@ -742,7 +787,7 @@ export class ACS {
       console.log(`params: ${JSON.stringify(params, null, 2)}`)
     }
 
-    if (_event.origin !== 'http://localhost:52274') return
+    if (!this.hasOrigin(_event.origin)) return
     switch (_event.data.type) {
       case 'ACS.didMounted':
         didMounted(_event.data)
