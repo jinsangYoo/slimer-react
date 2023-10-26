@@ -12,7 +12,7 @@
       }
     }
   },
-  "version": "1.0.77",
+  "version": "1.0.79",
   "description": "Practice lib for react.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

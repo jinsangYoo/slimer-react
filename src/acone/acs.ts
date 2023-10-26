@@ -629,7 +629,7 @@ export class ACS {
   }
 
   private hasOrigin(destinationDomain: string): boolean {
-    if (this._originSet.size > 0) {
+    if (this._originSet) {
       return this._originSet.has(destinationDomain)
     }
 
@@ -688,38 +688,14 @@ export class ACS {
 
   private handleMessage(e: Event) {
     const _event = e as MessageEvent<ACSForMessage>
-    const didMounted = (
-      params: {
-        type: 'ACS.didMounted'
-      } & MessageForIFrame,
-    ) => {
-      console.log(`params: ${JSON.stringify(params, null, 2)}`)
-    }
     const didAddedToMap = (params: {type: 'ACS.didAddedToMap'} & MessageForIFrame) => {
-      console.log(`params: ${JSON.stringify(params, null, 2)}`)
-    }
-    const initInIframe = (params: ACSForMessage) => {
-      console.log(`params: ${JSON.stringify(params, null, 2)}`)
-    }
-    const injectTS = (
-      params: {
-        type: 'ACS.injectTS'
-        payload: {
-          key: string
-          device: string
-          adToken: string
-          adTrackingEnabled: boolean
-        } & PayloadForTS
-      } & MessageForIFrame,
-    ) => {
-      console.log(`params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.i(ACS._TAG, `didAddedToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
     const reqAceApp = (
       params: {
         type: 'ACS.reqAceApp'
       } & MessageForIFrame,
     ) => {
-      ACELog.v(ACS._TAG, 'params:', params)
       const token = params.token
       if (!this._iframeRefMap) {
         ACELog.e(ACS._TAG, '_iframeRefMap not init.')
@@ -784,22 +760,13 @@ export class ACS {
           PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
-      console.log(`params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.i(ACS._TAG, `resAceApp in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
 
     if (!this.hasOrigin(_event.origin)) return
     switch (_event.data.type) {
-      case 'ACS.didMounted':
-        didMounted(_event.data)
-        break
       case 'ACS.didAddedToMap':
         didAddedToMap(_event.data)
-        break
-      case 'ACS.initInIframe':
-        initInIframe(_event.data)
-        break
-      case 'ACS.injectTS':
-        injectTS(_event.data)
         break
       case 'ACS.reqAceApp':
         reqAceApp(_event.data)
