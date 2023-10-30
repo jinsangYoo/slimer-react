@@ -25,7 +25,7 @@ export type PayloadForTS = {
 }
 
 export type ACSForMessage =
-  | ({type: 'ACS.didAddedToMap'} & MessageForIFrame)
+  | ({type: 'ACS.didAddToMap'} & MessageForIFrame)
   | ({
       type: 'ACS.versionOfMessage'
       payload: {

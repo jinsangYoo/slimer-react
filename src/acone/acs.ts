@@ -611,7 +611,7 @@ export class ACS {
 
     iframeRef.current?.contentWindow?.postMessage(
       {
-        type: 'ACS.didAddedToMap',
+        type: 'ACS.didAddToMap',
         token,
         location: window.location.origin.toString(),
       },
@@ -688,8 +688,8 @@ export class ACS {
 
   private handleMessage(e: Event) {
     const _event = e as MessageEvent<ACSForMessage>
-    const didAddedToMap = (params: {type: 'ACS.didAddedToMap'} & MessageForIFrame) => {
-      ACELog.i(ACS._TAG, `didAddedToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
+    const didAddToMap = (params: {type: 'ACS.didAddToMap'} & MessageForIFrame) => {
+      ACELog.i(ACS._TAG, `didAddToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
     const reqAceApp = (
       params: {
@@ -765,8 +765,8 @@ export class ACS {
 
     if (!this.hasOrigin(_event.origin)) return
     switch (_event.data.type) {
-      case 'ACS.didAddedToMap':
-        didAddedToMap(_event.data)
+      case 'ACS.didAddToMap':
+        didAddToMap(_event.data)
         break
       case 'ACS.reqAceApp':
         reqAceApp(_event.data)
