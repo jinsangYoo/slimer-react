@@ -10,7 +10,13 @@ import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
 import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
-import {decode, getQueryForKey, isEmpty, onlyAlphabetOrNumberAtStringEndIndex} from '../common/util/TextUtils'
+import {
+  decode,
+  getQueryForKey,
+  isEmpty,
+  onlyAlphabetOrNumberAtStringEndIndex,
+  getDateToString,
+} from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
 
@@ -22,7 +28,7 @@ export class ACS {
   private emitter: EventsForWorkerEmitter
   private static lock = false
   private _configuration?: AceConfiguration
-  private _messageChannels: Set<MessageChannel>
+  private _messageChannels: Map<string, MessageChannel> | null
   private _originSet: Set<string>
 
   public static getInstance(): ACS {
@@ -599,9 +605,9 @@ export class ACS {
   private addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
     const _messageChannel = new MessageChannel()
     if (!this._messageChannels) {
-      this._messageChannels = new Set<MessageChannel>()
+      this._messageChannels = new Map<string, MessageChannel>()
     }
-    this._messageChannels.add(_messageChannel)
+    this._messageChannels.set(getDateToString(), _messageChannel)
     iframeRef.current?.contentWindow?.postMessage(
       {
         type: 'ACS.didAddToMap',
@@ -706,9 +712,12 @@ export class ACS {
     }
     this._messageChannels.forEach(({port1, port2}) => {
       port1.close()
+      port1.onmessage = null
       port2.close()
+      port2.onmessage = null
     })
     this._messageChannels.clear()
+    this._messageChannels = null
   }
 
   private removeAllOrigins() {

@@ -106,5 +106,5 @@ export function getQueryForKey(source: string, value: string): string | undefine
 }
 
 export function getDateToString(): string {
-  return new Date().valueOf().toString()
+  return Date.now().toString()
 }
