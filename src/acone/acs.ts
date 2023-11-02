@@ -10,13 +10,7 @@ import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
 import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
-import {
-  decode,
-  getQueryForKey,
-  isEmpty,
-  getDateToString,
-  onlyAlphabetOrNumberAtStringEndIndex,
-} from '../common/util/TextUtils'
+import {decode, getQueryForKey, isEmpty, onlyAlphabetOrNumberAtStringEndIndex} from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
 
@@ -28,7 +22,7 @@ export class ACS {
   private emitter: EventsForWorkerEmitter
   private static lock = false
   private _configuration?: AceConfiguration
-  private _iframeRefMap: Map<string, React.RefObject<HTMLIFrameElement>>
+  private _messageChannels: Set<MessageChannel>
   private _originSet: Set<string>
 
   public static getInstance(): ACS {
@@ -603,108 +597,27 @@ export class ACS {
   }
 
   private addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
-    if (!this._iframeRefMap) {
-      this._iframeRefMap = new Map<string, React.RefObject<HTMLIFrameElement>>()
+    const _messageChannel = new MessageChannel()
+    if (!this._messageChannels) {
+      this._messageChannels = new Set<MessageChannel>()
     }
-    const token = getDateToString()
-    this._iframeRefMap.set(token, iframeRef)
-
+    this._messageChannels.add(_messageChannel)
     iframeRef.current?.contentWindow?.postMessage(
       {
         type: 'ACS.didAddToMap',
-        token,
         location: window.location.origin.toString(),
       },
       destinationDomain,
+      [_messageChannel.port2],
     )
-  }
 
-  private addOrigin(destinationDomain: string) {
-    if (!this._originSet) {
-      this._originSet = new Set<string>()
-    }
-    if (!this._originSet.has(destinationDomain)) {
-      this._originSet.add(destinationDomain)
-    }
-  }
-
-  private hasOrigin(destinationDomain: string): boolean {
-    if (this._originSet) {
-      return this._originSet.has(destinationDomain)
-    }
-
-    return false
-  }
-
-  public static removeDependencices() {
-    ACS.getInstance().removeAllIfreameRefs()
-    ACS.getInstance().removeAllOrigins()
-  }
-
-  private removeAllIfreameRefs() {
-    if (!this._iframeRefMap) {
-      return
-    }
-    this._iframeRefMap.clear()
-  }
-
-  private removeAllOrigins() {
-    if (!this._originSet) {
-      return
-    }
-    this._originSet.clear()
-  }
-
-  public static printDependencies() {
-    ACS.getInstance().printIfreameRefs()
-    ACS.getInstance().printOrigins()
-  }
-
-  private printIfreameRefs() {
-    if (!this._iframeRefMap) {
-      ACELog.i(ACS._TAG, 'iframes is empty.')
-      return
-    }
-
-    ACELog.i(ACS._TAG, `iframes size: ${this._iframeRefMap.size}`)
-    ACELog.i(ACS._TAG, 'iframes keys: ', Array.from(this._iframeRefMap.keys()))
-  }
-
-  private printOrigins() {
-    if (!this._originSet) {
-      ACELog.i(ACS._TAG, 'origins is empty.')
-      return
-    }
-
-    ACELog.i(ACS._TAG, `origins size: ${this._originSet.size}`)
-    ACELog.i(ACS._TAG, 'origins keys: ', Array.from(this._originSet.keys()))
-  }
-  //#endregion
-
-  //#region postMessage
-  public static handleMessage(e: Event) {
-    return ACS.getInstance().handleMessage(e)
-  }
-
-  private handleMessage(e: Event) {
-    const _event = e as MessageEvent<ACSForMessage>
-    const didAddToMap = (params: {type: 'ACS.didAddToMap'} & MessageForIFrame) => {
-      ACELog.i(ACS._TAG, `didAddToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
-    }
-    const reqAceApp = (
+    const _callbackForReqAceApp = (
       params: {
-        type: 'ACS.reqAceApp'
+        type: string
       } & MessageForIFrame,
     ) => {
-      const token = params.token
-      if (!this._iframeRefMap) {
-        ACELog.e(ACS._TAG, '_iframeRefMap not init.')
-        return
-      }
-      if (!this._iframeRefMap.has(token)) {
-        ACELog.e(ACS._TAG, `not found token: >>${token}<< in _iframeRefMap.`)
-        return
-      }
+      ACELog.i(ACS._TAG, `_callbackForReqAceApp::params: ${JSON.stringify(params, null, 2)}`)
+
       const parameterUtil = ACECommonStaticConfig.getParameterUtil()
       const _ts: PayloadForTS = parameterUtil
         ? {
@@ -733,22 +646,119 @@ export class ACS {
             },
           }
 
-      let iframeRef = this._iframeRefMap.get(token)
-      iframeRef?.current?.contentWindow?.postMessage(
-        {
-          type: 'ACS.resAceApp',
-          token,
-          location: window.location.origin.toString(),
-          key: ACS.getInstance()._configuration?.key ?? {
-            key: 'not has configuration',
-          },
-          device: 'react',
-          adid: 'adid_test',
-          adeld: 'adeld_test',
-          ts: _ts,
+      _messageChannel.port1.postMessage({
+        type: 'ACS.resAceApp',
+        location: window.location.origin.toString(),
+        key: ACS.getInstance()._configuration?.key ?? {
+          key: 'not has configuration',
         },
-        params.location,
-      )
+        device: 'react',
+        adid: 'adid_test',
+        adeld: 'adeld_test',
+        ts: _ts,
+      })
+    }
+
+    _messageChannel.port1.onmessage = (event: MessageEvent<ACSForMessage>) => {
+      ACELog.i(ACS._TAG, `_messageChannel.port1.onmessage::event.data: ${JSON.stringify(event.data, null, 2)}`)
+
+      switch (event.data.type) {
+        // case 'ACS.didAddToMap':
+        //   callbackForDidAddToMap(event.data)
+        //   break
+        case 'ACS.reqAceApp':
+          _callbackForReqAceApp(event.data)
+          break
+        // case 'ACS.resAceApp':
+        //   callbackForResAceApp(event.data)
+        //   break
+        default:
+          break
+      }
+    }
+  }
+
+  private addOrigin(destinationDomain: string) {
+    if (!this._originSet) {
+      this._originSet = new Set<string>()
+    }
+    if (!this._originSet.has(destinationDomain)) {
+      this._originSet.add(destinationDomain)
+    }
+  }
+
+  private hasOrigin(destinationDomain: string): boolean {
+    if (this._originSet) {
+      return this._originSet.has(destinationDomain)
+    }
+
+    return false
+  }
+
+  public static removeDependencices() {
+    ACS.getInstance().removeAllMessageChannels()
+    ACS.getInstance().removeAllOrigins()
+  }
+
+  private removeAllMessageChannels() {
+    if (!this._messageChannels) {
+      return
+    }
+    this._messageChannels.forEach(({port1, port2}) => {
+      port1.close()
+      port2.close()
+    })
+    this._messageChannels.clear()
+  }
+
+  private removeAllOrigins() {
+    if (!this._originSet) {
+      return
+    }
+    this._originSet.clear()
+  }
+
+  public static printDependencies() {
+    ACS.getInstance().printMessageChannels()
+    ACS.getInstance().printOrigins()
+  }
+
+  private printMessageChannels() {
+    if (!this._messageChannels) {
+      ACELog.i(ACS._TAG, 'MessageChannels is empty.')
+      return
+    }
+    ACELog.i(ACS._TAG, `MessageChannels size: ${this._messageChannels.size}`)
+    ACELog.i(ACS._TAG, 'MessageChannels keys: ', Array.from(this._messageChannels.keys()))
+  }
+
+  private printOrigins() {
+    if (!this._originSet) {
+      ACELog.i(ACS._TAG, 'origins is empty.')
+      return
+    }
+
+    ACELog.i(ACS._TAG, `origins size: ${this._originSet.size}`)
+    ACELog.i(ACS._TAG, 'origins keys: ', Array.from(this._originSet.keys()))
+  }
+  //#endregion
+
+  //#region postMessage
+  public static handleMessage(e: Event) {
+    return ACS.getInstance().handleMessage(e)
+  }
+
+  private handleMessage(e: Event) {
+    const _event = e as MessageEvent<ACSForMessage>
+    const didAddToMap = (params: {type: 'ACS.didAddToMap'} & MessageForIFrame) => {
+      ACELog.i(ACS._TAG, `didAddToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
+    }
+    const reqAceApp = (
+      params: {
+        type: 'ACS.reqAceApp'
+      } & MessageForIFrame,
+    ) => {
+      ACELog.i(ACS._TAG, `didAddToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
     const resAceApp = (
       params: {

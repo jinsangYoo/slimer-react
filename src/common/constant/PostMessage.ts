@@ -1,5 +1,4 @@
 export type MessageForIFrame = {
-  token: string
   location: string
 }
 
