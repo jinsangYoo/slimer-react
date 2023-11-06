@@ -1,4 +1,5 @@
 export type MessageForIFrame = {
+  token: string
   location: string
 }
 
@@ -24,7 +25,8 @@ export type PayloadForTS = {
 }
 
 export type ACSForMessage =
-  | ({type: 'ACS.didAddToMap'} & MessageForIFrame)
+  | ({type: 'ACS.didAddByOnLoad'} & MessageForIFrame)
+  | ({type: 'ACS.didAdd'} & MessageForIFrame)
   | ({
       type: 'ACS.versionOfMessage'
       payload: {

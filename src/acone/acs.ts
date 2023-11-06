@@ -596,10 +596,17 @@ export class ACS {
   //#endregion
 
   //#region iframeRef
-  public static addDependency(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
+  public static addDependency(
+    iframeRef: React.RefObject<HTMLIFrameElement>,
+    destinationDomain: string,
+    latency?: number,
+  ) {
     let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
     ACS.getInstance().addOrigin(_destinationDomain)
-    ACS.getInstance().addIframeRef(iframeRef, _destinationDomain)
+    let _latency = latency === undefined ? 100 : latency
+    setTimeout(() => {
+      ACS.getInstance().addIframeRef(iframeRef, _destinationDomain)
+    }, _latency)
   }
 
   private addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
@@ -607,16 +614,32 @@ export class ACS {
     if (!this._messageChannels) {
       this._messageChannels = new Map<string, MessageChannel>()
     }
-    this._messageChannels.set(getDateToString(), _messageChannel)
+    let _tokenKey = getDateToString()
+    this._messageChannels.set(_tokenKey, _messageChannel)
     iframeRef.current?.contentWindow?.postMessage(
       {
-        type: 'ACS.didAddToMap',
+        type: 'ACS.didAddByOnLoad',
+        token: _tokenKey,
         location: window.location.origin.toString(),
       },
       destinationDomain,
       [_messageChannel.port2],
     )
 
+    const _callbackForDidAddByOnLoad = (
+      params: {
+        type: string
+      } & MessageForIFrame,
+    ) => {
+      ACELog.i(ACS._TAG, `_callbackForDidAddByOnLoad::params: ${JSON.stringify(params, null, 2)}`)
+    }
+    const _callbackForDidAdd = (
+      params: {
+        type: string
+      } & MessageForIFrame,
+    ) => {
+      ACELog.i(ACS._TAG, `_callbackForDidAdd::params: ${JSON.stringify(params, null, 2)}`)
+    }
     const _callbackForReqAceApp = (
       params: {
         type: string
@@ -652,7 +675,8 @@ export class ACS {
             },
           }
 
-      _messageChannel.port1.postMessage({
+      if (!this._messageChannels?.has(params.token)) return
+      this._messageChannels?.get(params.token)?.port1.postMessage({
         type: 'ACS.resAceApp',
         location: window.location.origin.toString(),
         key: ACS.getInstance()._configuration?.key ?? {
@@ -669,9 +693,12 @@ export class ACS {
       ACELog.i(ACS._TAG, `_messageChannel.port1.onmessage::event.data: ${JSON.stringify(event.data, null, 2)}`)
 
       switch (event.data.type) {
-        // case 'ACS.didAddToMap':
-        //   callbackForDidAddToMap(event.data)
-        //   break
+        case 'ACS.didAddByOnLoad':
+          _callbackForDidAddByOnLoad(event.data)
+          break
+        case 'ACS.didAdd':
+          _callbackForDidAdd(event.data)
+          break
         case 'ACS.reqAceApp':
           _callbackForReqAceApp(event.data)
           break
@@ -707,14 +734,10 @@ export class ACS {
   }
 
   private removeAllMessageChannels() {
-    if (!this._messageChannels) {
-      return
-    }
-    this._messageChannels.forEach(({port1, port2}) => {
+    if (!this._messageChannels) return
+    this._messageChannels.forEach(({port1}) => {
       port1.close()
       port1.onmessage = null
-      port2.close()
-      port2.onmessage = null
     })
     this._messageChannels.clear()
     this._messageChannels = null
@@ -759,15 +782,18 @@ export class ACS {
 
   private handleMessage(e: Event) {
     const _event = e as MessageEvent<ACSForMessage>
-    const didAddToMap = (params: {type: 'ACS.didAddToMap'} & MessageForIFrame) => {
-      ACELog.i(ACS._TAG, `didAddToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
+    const didAddByOnLoad = (params: {type: 'ACS.didAddByOnLoad'} & MessageForIFrame) => {
+      ACELog.i(ACS._TAG, `didAddByOnLoad in SDK::params: ${JSON.stringify(params, null, 2)}`)
+    }
+    const didAdd = (params: {type: 'ACS.didAdd'} & MessageForIFrame) => {
+      ACELog.i(ACS._TAG, `didAdd in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
     const reqAceApp = (
       params: {
         type: 'ACS.reqAceApp'
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, `didAddToMap in SDK::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.i(ACS._TAG, `reqAceApp in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
     const resAceApp = (
       params: {
@@ -784,8 +810,11 @@ export class ACS {
 
     if (!this.hasOrigin(_event.origin)) return
     switch (_event.data.type) {
-      case 'ACS.didAddToMap':
-        didAddToMap(_event.data)
+      case 'ACS.didAddByOnLoad':
+        didAddByOnLoad(_event.data)
+        break
+      case 'ACS.didAdd':
+        didAdd(_event.data)
         break
       case 'ACS.reqAceApp':
         reqAceApp(_event.data)
