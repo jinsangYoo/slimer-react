@@ -633,13 +633,6 @@ export class ACS {
     ) => {
       ACELog.i(ACS._TAG, `_callbackForDidAddByOnLoad::params: ${JSON.stringify(params, null, 2)}`)
     }
-    const _callbackForDidAdd = (
-      params: {
-        type: string
-      } & MessageForIFrame,
-    ) => {
-      ACELog.i(ACS._TAG, `_callbackForDidAdd::params: ${JSON.stringify(params, null, 2)}`)
-    }
     const _callbackForReqAceApp = (
       params: {
         type: string
@@ -678,6 +671,7 @@ export class ACS {
       if (!this._messageChannels?.has(params.token)) return
       this._messageChannels?.get(params.token)?.port1.postMessage({
         type: 'ACS.resAceApp',
+        token: params.token,
         location: window.location.origin.toString(),
         key: ACS.getInstance()._configuration?.key ?? {
           key: 'not has configuration',
@@ -695,9 +689,6 @@ export class ACS {
       switch (event.data.type) {
         case 'ACS.didAddByOnLoad':
           _callbackForDidAddByOnLoad(event.data)
-          break
-        case 'ACS.didAdd':
-          _callbackForDidAdd(event.data)
           break
         case 'ACS.reqAceApp':
           _callbackForReqAceApp(event.data)
@@ -785,9 +776,6 @@ export class ACS {
     const didAddByOnLoad = (params: {type: 'ACS.didAddByOnLoad'} & MessageForIFrame) => {
       ACELog.i(ACS._TAG, `didAddByOnLoad in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
-    const didAdd = (params: {type: 'ACS.didAdd'} & MessageForIFrame) => {
-      ACELog.i(ACS._TAG, `didAdd in SDK::params: ${JSON.stringify(params, null, 2)}`)
-    }
     const reqAceApp = (
       params: {
         type: 'ACS.reqAceApp'
@@ -812,9 +800,6 @@ export class ACS {
     switch (_event.data.type) {
       case 'ACS.didAddByOnLoad':
         didAddByOnLoad(_event.data)
-        break
-      case 'ACS.didAdd':
-        didAdd(_event.data)
         break
       case 'ACS.reqAceApp':
         reqAceApp(_event.data)
