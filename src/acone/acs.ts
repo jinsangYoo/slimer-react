@@ -4,7 +4,15 @@ import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {ACEResponseToCaller} from '..'
 import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
-import type {ACSForMessage, MessageForIFrame, PayloadForTS, PayloadForAdTracking} from '../common/constant/PostMessage'
+import type {
+  ACSForMessage,
+  MessageForIFrame,
+  PayloadForTS,
+  PayloadForAdTracking,
+  RequestReady,
+  MessageForReqReady,
+  MessageForResReady,
+} from '../common/constant/PostMessage'
 import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
 import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
@@ -29,6 +37,7 @@ export class ACS {
   private static lock = false
   private _configuration?: AceConfiguration
   private _messageChannels: Map<string, MessageChannel> | null
+  private _requestReadys: Map<string, RequestReady> | null
   private _originSet: Set<string>
 
   public static getInstance(): ACS {
@@ -595,6 +604,16 @@ export class ACS {
   }
   //#endregion
 
+  //#region token
+  private static getToken() {
+    return ACS.getInstance().getToken()
+  }
+
+  private getToken() {
+    return getDateToString()
+  }
+  //#endregion
+
   //#region iframeRef
   public static addDependency(
     iframeRef: React.RefObject<HTMLIFrameElement>,
@@ -605,26 +624,32 @@ export class ACS {
     ACS.getInstance().addOrigin(_destinationDomain)
     let _latency = latency === undefined ? 100 : latency
     setTimeout(() => {
-      ACS.getInstance().addIframeRef(iframeRef, _destinationDomain)
+      const _token = ACS.getToken()
+      ACS.getInstance().addIframeRef(
+        iframeRef,
+        _destinationDomain,
+        {
+          type: 'ACS.didAddByOnLoad',
+          token: _token,
+          location: window.location.origin.toString(),
+        },
+        _token,
+      )
     }, _latency)
   }
 
-  private addIframeRef(iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
+  private addIframeRef(
+    iframeRef: React.RefObject<HTMLIFrameElement>,
+    destinationDomain: string,
+    messageObj: ACSForMessage,
+    token: string,
+  ) {
     const _messageChannel = new MessageChannel()
     if (!this._messageChannels) {
       this._messageChannels = new Map<string, MessageChannel>()
     }
-    let _tokenKey = getDateToString()
-    this._messageChannels.set(_tokenKey, _messageChannel)
-    iframeRef.current?.contentWindow?.postMessage(
-      {
-        type: 'ACS.didAddByOnLoad',
-        token: _tokenKey,
-        location: window.location.origin.toString(),
-      },
-      destinationDomain,
-      [_messageChannel.port2],
-    )
+    this._messageChannels.set(token, _messageChannel)
+    iframeRef.current?.contentWindow?.postMessage(messageObj, destinationDomain, [_messageChannel.port2])
 
     const _callbackForDidAddByOnLoad = (
       params: {
@@ -723,6 +748,7 @@ export class ACS {
   public static removeDependencices() {
     ACS.getInstance().removeAllMessageChannels()
     ACS.getInstance().removeAllOrigins()
+    ACS.getInstance().removeAllRequestReady()
   }
 
   private removeAllMessageChannels() {
@@ -745,6 +771,7 @@ export class ACS {
   public static printDependencies() {
     ACS.getInstance().printMessageChannels()
     ACS.getInstance().printOrigins()
+    ACS.getInstance().printRequestReadies()
   }
 
   private printMessageChannels() {
@@ -764,6 +791,50 @@ export class ACS {
 
     ACELog.i(ACS._TAG, `origins size: ${this._originSet.size}`)
     ACELog.i(ACS._TAG, 'origins keys: ', Array.from(this._originSet.keys()))
+  }
+  //#endregion
+
+  //#region RequestReady
+  public static addRequestReady(
+    identity: string,
+    iframeRef: React.RefObject<HTMLIFrameElement>,
+    destinationDomain: string,
+  ) {
+    ACS.getInstance().addRequestReady(identity, iframeRef, destinationDomain)
+  }
+
+  private addRequestReady(identity: string, iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
+    let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
+    this.addOrigin(_destinationDomain)
+    if (!this._requestReadys) {
+      this._requestReadys = new Map<string, RequestReady>()
+    }
+    this._requestReadys.set(identity, {iframeRef, destinationDomain: _destinationDomain})
+  }
+
+  private removeRequestReady(identity: string) {
+    if (!this._requestReadys) {
+      return
+    }
+    this._requestReadys.delete(identity)
+  }
+
+  private removeAllRequestReady() {
+    if (!this._requestReadys) {
+      return
+    }
+    this._requestReadys.clear()
+  }
+
+  private printRequestReadies() {
+    if (!this._requestReadys) {
+      ACELog.i(ACS._TAG, 'RequestReadies is empty.')
+      return
+    }
+    ACELog.i(ACS._TAG, `RequestReadies size: ${this._requestReadys.size}`)
+    this._requestReadys.forEach((value, key) => {
+      ACELog.d(ACS._TAG, `RequestReadies keys: ${key}, value:`, value)
+    })
   }
   //#endregion
 
@@ -796,6 +867,40 @@ export class ACS {
     ) => {
       ACELog.i(ACS._TAG, `resAceApp in SDK::params: ${JSON.stringify(params, null, 2)}`)
     }
+    const reqReady = (
+      params: {
+        type: 'ACS.reqReady'
+      } & MessageForIFrame &
+        MessageForReqReady,
+    ) => {
+      ACELog.i(ACS._TAG, `reqReady in SDK::params: ${JSON.stringify(params, null, 2)}`)
+      if (!this._requestReadys || !this._requestReadys.has(params.uniqueKey)) {
+        return
+      }
+      const {iframeRef, destinationDomain} = this._requestReadys.get(params.uniqueKey) as RequestReady
+      const _token = this.getToken()
+      this.addIframeRef(
+        iframeRef,
+        destinationDomain,
+        {
+          type: 'ACS.resReady',
+          token: _token,
+          location: window.location.origin.toString(),
+          result: true,
+          resultCode: '200',
+          uniqueKey: params.uniqueKey,
+        },
+        _token,
+      )
+    }
+    const resReady = (
+      params: {
+        type: 'ACS.resReady'
+      } & MessageForIFrame &
+        MessageForResReady,
+    ) => {
+      ACELog.i(ACS._TAG, `resReady in SDK::params: ${JSON.stringify(params, null, 2)}`)
+    }
 
     if (!this.hasOrigin(_event.origin)) return
     switch (_event.data.type) {
@@ -807,6 +912,12 @@ export class ACS {
         break
       case 'ACS.resAceApp':
         resAceApp(_event.data)
+        break
+      case 'ACS.reqReady':
+        reqReady(_event.data)
+        break
+      case 'ACS.resReady':
+        resReady(_event.data)
         break
       default:
         break

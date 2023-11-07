@@ -43,3 +43,20 @@ export type ACSForMessage =
       } & PayloadForTS &
         PayloadForAdTracking
     } & MessageForIFrame)
+  | ({type: 'ACS.reqReady'} & MessageForIFrame & MessageForReqReady)
+  | ({type: 'ACS.resReady'} & MessageForIFrame & MessageForResReady)
+
+export type MessageForReqReady = {
+  uniqueKey: string
+}
+
+export type MessageForResReady = {
+  result: boolean
+  resultCode: string
+  uniqueKey: string
+}
+
+export type RequestReady = {
+  iframeRef: React.RefObject<HTMLIFrameElement>
+  destinationDomain: string
+}
