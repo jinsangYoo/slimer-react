@@ -713,7 +713,8 @@ export class ACS {
 
   private hasOrigin(destinationDomain: string): boolean {
     if (this._originSet) {
-      return this._originSet.has(destinationDomain)
+      let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
+      return this._originSet.has(_destinationDomain)
     }
 
     return false
@@ -748,11 +749,11 @@ export class ACS {
 
   private printMessageChannels() {
     if (!this._messageChannels) {
-      ACELog.i(ACS._TAG, 'MessageChannels is empty.')
+      ACELog.d(ACS._TAG, 'MessageChannels is empty.')
       return
     }
-    ACELog.i(ACS._TAG, `MessageChannels size: ${this._messageChannels.size}`)
-    ACELog.i(ACS._TAG, 'MessageChannels keys: ', Array.from(this._messageChannels.keys()))
+    ACELog.d(ACS._TAG, `MessageChannels size: ${this._messageChannels.size}`)
+    ACELog.d(ACS._TAG, 'MessageChannels keys: ', Array.from(this._messageChannels.keys()))
   }
 
   private printOrigins() {
