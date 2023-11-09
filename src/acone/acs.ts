@@ -834,7 +834,7 @@ export class ACS {
     }
     ACELog.i(ACS._TAG, `RequestReadies size: ${this._requestReadys.size}`)
     this._requestReadys.forEach((value, key) => {
-      ACELog.d(ACS._TAG, `RequestReadies keys: ${key}, value:`, value)
+      ACELog.d(ACS._TAG, `RequestReadies keys: ${key}, value: ${value.destinationDomain}`)
     })
   }
   //#endregion
