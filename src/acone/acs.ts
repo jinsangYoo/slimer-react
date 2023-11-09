@@ -798,24 +798,30 @@ export class ACS {
     identity: string,
     iframeRef: React.RefObject<HTMLIFrameElement>,
     destinationDomain: string,
-  ) {
-    ACS.getInstance().addRequestReady(identity, iframeRef, destinationDomain)
+  ): boolean {
+    return ACS.getInstance().addRequestReady(identity, iframeRef, destinationDomain)
   }
 
   private addRequestReady(identity: string, iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
     let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
+    if (isEmpty(identity) || isEmpty(_destinationDomain)) {
+      ACELog.e(
+        ACS._TAG,
+        'Please check parameters.',
+        new Error(`Invalid identity: ${identity}, destinationDomain: ${_destinationDomain}`),
+      )
+      return false
+    }
+
     this.addOrigin(_destinationDomain)
     if (!this._requestReadys) {
       this._requestReadys = new Map<string, RequestReady>()
     }
+    ACELog.i(ACS._TAG, `Did Accept reqReady information: ${identity}`, {
+      destinationDomain: _destinationDomain,
+    })
     this._requestReadys.set(identity, {iframeRef, destinationDomain: _destinationDomain})
-  }
-
-  private removeRequestReady(identity: string) {
-    if (!this._requestReadys) {
-      return
-    }
-    this._requestReadys.delete(identity)
+    return true
   }
 
   private removeAllRequestReady() {
@@ -844,15 +850,30 @@ export class ACS {
 
   private handleMessage(e: Event) {
     const _event = e as MessageEvent<ACSForMessage>
+    let [port2] = _event.ports || []
+    const postMessage = (message: ACSForMessage) => {
+      if (!port2) {
+        ACELog.d(ACS._TAG, 'Invalid port2.')
+        ACELog.d(ACS._TAG, "Don't send postMessage: ", message)
+        return
+      }
+      ACELog.d(ACS._TAG, 'Send postMessage:', message)
+      port2.postMessage(message)
+    }
     const didAddByOnLoad = (params: {type: 'ACS.didAddByOnLoad'} & MessageForIFrame) => {
-      ACELog.i(ACS._TAG, `didAddByOnLoad in SDK::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.d(ACS._TAG, 'didAddByOnLoad::params:', params)
+      postMessage({
+        type: 'ACS.reqAceApp',
+        token: params.token,
+        location: global.location.toString(),
+      })
     }
     const reqAceApp = (
       params: {
         type: 'ACS.reqAceApp'
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, `reqAceApp in SDK::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.i(ACS._TAG, 'reqAceApp::params:', params)
     }
     const resAceApp = (
       params: {
@@ -864,7 +885,7 @@ export class ACS {
           PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, `resAceApp in SDK::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.i(ACS._TAG, 'reqAceApp::params:', params)
     }
     const reqReady = (
       params: {
@@ -899,7 +920,7 @@ export class ACS {
       } & MessageForIFrame &
         MessageForResReady,
     ) => {
-      ACELog.i(ACS._TAG, `resReady in SDK::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.i(ACS._TAG, 'reqAceApp::params:', params)
     }
 
     if (!this.hasOrigin(_event.origin)) return
