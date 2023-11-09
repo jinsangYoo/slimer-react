@@ -27,6 +27,7 @@ import {
 } from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
+import {getRandomIntInclusive} from '../common/util'
 
 export class ACS {
   private static _TAG = 'ACS'
@@ -610,7 +611,7 @@ export class ACS {
   }
 
   private getToken() {
-    return getDateToString()
+    return `${getDateToString()}|${getRandomIntInclusive(0, 1000)}`
   }
   //#endregion
 
