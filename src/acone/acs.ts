@@ -615,6 +615,44 @@ export class ACS {
   }
   //#endregion
 
+  //#region printDependency
+  public static printDependencies() {
+    ACS.getInstance().printMessageChannels()
+    ACS.getInstance().printOrigins()
+    ACS.getInstance().printRequestReadies()
+  }
+
+  private printMessageChannels() {
+    if (!this._messageChannels) {
+      ACELog.d(ACS._TAG, 'MessageChannels is empty.')
+      return
+    }
+    ACELog.d(ACS._TAG, `MessageChannels size: ${this._messageChannels.size}`)
+    ACELog.d(ACS._TAG, 'MessageChannels keys: ', Array.from(this._messageChannels.keys()))
+  }
+
+  private printOrigins() {
+    if (!this._originSet) {
+      ACELog.i(ACS._TAG, 'origins is empty.')
+      return
+    }
+
+    ACELog.i(ACS._TAG, `origins size: ${this._originSet.size}`)
+    ACELog.i(ACS._TAG, 'origins keys: ', Array.from(this._originSet.keys()))
+  }
+
+  private printRequestReadies() {
+    if (!this._requestReadys) {
+      ACELog.i(ACS._TAG, 'RequestReadies is empty.')
+      return
+    }
+    ACELog.i(ACS._TAG, `RequestReadies size: ${this._requestReadys.size}`)
+    this._requestReadys.forEach((value, key) => {
+      ACELog.d(ACS._TAG, `RequestReadies keys: ${key}, value: ${value.destinationDomain}`)
+    })
+  }
+  //#endregion
+
   //#region iframeRef
   public static addDependency(
     iframeRef: React.RefObject<HTMLIFrameElement>,
@@ -766,31 +804,6 @@ export class ACS {
     }
     this._originSet.clear()
   }
-
-  public static printDependencies() {
-    ACS.getInstance().printMessageChannels()
-    ACS.getInstance().printOrigins()
-    ACS.getInstance().printRequestReadies()
-  }
-
-  private printMessageChannels() {
-    if (!this._messageChannels) {
-      ACELog.d(ACS._TAG, 'MessageChannels is empty.')
-      return
-    }
-    ACELog.d(ACS._TAG, `MessageChannels size: ${this._messageChannels.size}`)
-    ACELog.d(ACS._TAG, 'MessageChannels keys: ', Array.from(this._messageChannels.keys()))
-  }
-
-  private printOrigins() {
-    if (!this._originSet) {
-      ACELog.i(ACS._TAG, 'origins is empty.')
-      return
-    }
-
-    ACELog.i(ACS._TAG, `origins size: ${this._originSet.size}`)
-    ACELog.i(ACS._TAG, 'origins keys: ', Array.from(this._originSet.keys()))
-  }
   //#endregion
 
   //#region RequestReady
@@ -829,17 +842,6 @@ export class ACS {
       return
     }
     this._requestReadys.clear()
-  }
-
-  private printRequestReadies() {
-    if (!this._requestReadys) {
-      ACELog.i(ACS._TAG, 'RequestReadies is empty.')
-      return
-    }
-    ACELog.i(ACS._TAG, `RequestReadies size: ${this._requestReadys.size}`)
-    this._requestReadys.forEach((value, key) => {
-      ACELog.d(ACS._TAG, `RequestReadies keys: ${key}, value: ${value.destinationDomain}`)
-    })
   }
   //#endregion
 
