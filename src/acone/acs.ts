@@ -720,9 +720,6 @@ export class ACS {
         case 'ACS.reqAceApp':
           _callbackForReqAceApp(event.data)
           break
-        // case 'ACS.resAceApp':
-        //   callbackForResAceApp(event.data)
-        //   break
         default:
           break
       }
