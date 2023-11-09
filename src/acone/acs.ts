@@ -688,22 +688,14 @@ export class ACS {
       this._messageChannels = new Map<string, MessageChannel>()
     }
     this._messageChannels.set(token, _messageChannel)
-    ACELog.d(ACS._TAG, `addIframeRef::messageObj: ${JSON.stringify(messageObj, null, 2)}`)
     iframeRef.current?.contentWindow?.postMessage(messageObj, destinationDomain, [_messageChannel.port2])
 
-    const _callbackForDidAddByOnLoad = (
-      params: {
-        type: string
-      } & MessageForIFrame,
-    ) => {
-      ACELog.d(ACS._TAG, `_callbackForDidAddByOnLoad::params: ${JSON.stringify(params, null, 2)}`)
-    }
     const _callbackForReqAceApp = (
       params: {
         type: string
       } & MessageForIFrame,
     ) => {
-      ACELog.d(ACS._TAG, `_callbackForReqAceApp::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.d(ACS._TAG, '_callbackForReqAceApp::params: ', params)
 
       const parameterUtil = ACECommonStaticConfig.getParameterUtil()
       const _ts: PayloadForTS = parameterUtil
@@ -747,18 +739,26 @@ export class ACS {
         ts: _ts,
       })
     }
+    const _callbackForResAceApp = (
+      params: {
+        type: string
+      } & MessageForIFrame,
+    ) => {
+      ACELog.d(ACS._TAG, '_callbackForResAceApp::params: ', params)
+    }
 
     _messageChannel.port1.onmessage = (event: MessageEvent<ACSForMessage>) => {
       ACELog.i(ACS._TAG, `_messageChannel.port1.onmessage::event.data: ${JSON.stringify(event.data, null, 2)}`)
 
       switch (event.data.type) {
-        case 'ACS.didAddByOnLoad':
-          _callbackForDidAddByOnLoad(event.data)
-          break
         case 'ACS.reqAceApp':
           _callbackForReqAceApp(event.data)
           break
+        case 'ACS.resAceApp':
+          _callbackForResAceApp(event.data)
+          break
         default:
+          ACELog.d(ACS._TAG, 'port1.onmessage::event.data: ', event.data)
           break
       }
     }
