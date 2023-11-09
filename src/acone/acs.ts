@@ -650,6 +650,7 @@ export class ACS {
       this._messageChannels = new Map<string, MessageChannel>()
     }
     this._messageChannels.set(token, _messageChannel)
+    ACELog.d(ACS._TAG, `addIframeRef::messageObj: ${JSON.stringify(messageObj, null, 2)}`)
     iframeRef.current?.contentWindow?.postMessage(messageObj, destinationDomain, [_messageChannel.port2])
 
     const _callbackForDidAddByOnLoad = (
@@ -657,14 +658,14 @@ export class ACS {
         type: string
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, `_callbackForDidAddByOnLoad::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.d(ACS._TAG, `_callbackForDidAddByOnLoad::params: ${JSON.stringify(params, null, 2)}`)
     }
     const _callbackForReqAceApp = (
       params: {
         type: string
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, `_callbackForReqAceApp::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.d(ACS._TAG, `_callbackForReqAceApp::params: ${JSON.stringify(params, null, 2)}`)
 
       const parameterUtil = ACECommonStaticConfig.getParameterUtil()
       const _ts: PayloadForTS = parameterUtil
@@ -874,12 +875,13 @@ export class ACS {
       } & MessageForIFrame &
         MessageForReqReady,
     ) => {
-      ACELog.i(ACS._TAG, `reqReady in SDK::params: ${JSON.stringify(params, null, 2)}`)
+      ACELog.d(ACS._TAG, `reqReady::params: ${JSON.stringify(params, null, 2)}`)
       if (!this._requestReadys || !this._requestReadys.has(params.uniqueKey)) {
         return
       }
       const {iframeRef, destinationDomain} = this._requestReadys.get(params.uniqueKey) as RequestReady
       const _token = this.getToken()
+      ACELog.d(ACS._TAG, `reqReady::destinationDomain: ${destinationDomain}, token: ${_token}`)
       this.addIframeRef(
         iframeRef,
         destinationDomain,
