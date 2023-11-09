@@ -8,6 +8,7 @@ import APIForLinkTel from './APIForLinkTel'
 import APIForLogin from './APIForLogin'
 import APIForJoinLeave from './APIForJoinLeave'
 import APIForPolicy from './APIForPolicy'
+import APIForOnLoad from './APIForOnLoad'
 import APIForPushReferrerDeeplink from './APIForPushReferrerDeeplink'
 import TaskAdapter from '../../common/task/TaskAdapter'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
@@ -82,6 +83,9 @@ export default class ACEReducerForOne {
         break
       case ACEofAPIForOne.Login:
         taskAdapter.addTask(new APIForLogin(params), callback)
+        break
+      case ACEofAPIForOne.OnLoad:
+        taskAdapter.addTask(new APIForOnLoad(params), callback)
         break
       case ACEofAPIForOne.PlWithPage:
         taskAdapter.addTask(new APIForPL(params), callback)
@@ -352,6 +356,22 @@ export default class ACEReducerForOne {
           userId: userId,
           userMaritalStatus: userMaritalStatus,
         },
+        error: false,
+        debugParams: {},
+      },
+      callback,
+    )
+  }
+
+  public static onLoad(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void
+  public static onLoad(): Promise<ACEResponseToCaller>
+  public static onLoad(
+    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+  ): Promise<ACEResponseToCaller> | void {
+    return ACEReducerForOne.reducer(
+      {
+        type: ACEofAPIForOne.OnLoad,
+        payload: {},
         error: false,
         debugParams: {},
       },

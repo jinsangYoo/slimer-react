@@ -53,6 +53,7 @@ export class ACS {
     this.emitter.on('popBufferQueue', () => {
       this.popBufferQueue()
     })
+    ACS.setWaitQueue({type: ACParams.TYPE.ONLOAD})
   }
 
   private storeConfigurationOfUser(value: AceConfiguration): void {
@@ -361,6 +362,9 @@ export class ACS {
                   value.userMaritalStatus,
                 )
                 break
+              case ACParams.TYPE.ONLOAD:
+                ACEReducerForOne.onLoad(callbackForCB)
+                break
               case ACParams.TYPE.PUSH:
                 ACEReducerForOne.push(callbackForCB, value.data, value.push)
                 break
@@ -487,6 +491,9 @@ export class ACS {
                     value.userMaritalStatus,
                   )
                   break
+                case ACParams.TYPE.ONLOAD:
+                  ACEReducerForOne.onLoad(callbackForPromise)
+                  break
                 case ACParams.TYPE.PUSH:
                   ACEReducerForOne.push(callbackForPromise, value.data, value.push)
                   break
@@ -559,7 +566,7 @@ export class ACS {
     ACS.initWaitQueue()
     ACELog.i(ACS._TAG, `ACS.waitQueue.length: ${ACS.waitQueue.length}`)
     if (ACS.waitQueue.length < ACEConstantInteger.QUEUE_MAX_WAITING_COUNT) {
-      ACELog.i(ACS._TAG, `ACS.waitQueue.push: ${value.type}, >>${value.name}<<`)
+      ACELog.i(ACS._TAG, `ACS.waitQueue.push: ${value.type}, >>${value.name ?? ''}<<`)
       ACS.waitQueue.push(value)
     }
   }

@@ -12,6 +12,7 @@ type ParamType =
   | 'leave'
   | 'link'
   | 'login'
+  | 'onload'
   | 'push'
   | 'referrer'
   | 'search'
@@ -30,6 +31,7 @@ export type IACParams = {
     LEAVE: ParamType
     LINK: ParamType
     LOGIN: ParamType
+    ONLOAD: ParamType
     PUSH: ParamType
     REFERRER: ParamType
     SEARCH: ParamType
@@ -73,6 +75,7 @@ export const ACParams: IACParams = {
     LEAVE: 'leave',
     LINK: 'link',
     LOGIN: 'login',
+    ONLOAD: 'onload',
     PUSH: 'push',
     REFERRER: 'referrer',
     SEARCH: 'search',
