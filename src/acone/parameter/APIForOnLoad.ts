@@ -1,3 +1,4 @@
+import {ACS} from '../acs'
 import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
@@ -21,9 +22,27 @@ export default class APIForOnLoad extends ACOTask {
     ACELog.d(APIForOnLoad._p1TAG, `isEqualSelfWindowAndParentWindow(): ${isEqualSelfWindowAndParentWindow()}`)
 
     if (isSupportNativeSDK()) {
+      ACELog.d(APIForOnLoad._p1TAG, 'SupportNativeSDK')
     } else {
+      ACELog.d(APIForOnLoad._p1TAG, 'not SupportNativeSDK()')
       if (!isEqualSelfWindowAndParentWindow()) {
-        // window.postMessage
+        ACELog.d(APIForOnLoad._p1TAG, 'maybe browser?!')
+        ACS.addParentOrigin('http://localhost:3000')
+        ACELog.d(APIForOnLoad._p1TAG, 'location:', {
+          type: 'ACS.reqReady',
+          token: -1,
+          location: self.location.toString(),
+          uniqueKey: '1234',
+        })
+        window.parent.postMessage(
+          {
+            type: 'ACS.reqReady',
+            token: -1,
+            location: self.location.toString(),
+            uniqueKey: '1234',
+          },
+          'http://localhost:3000',
+        )
       }
     }
   }

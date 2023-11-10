@@ -53,7 +53,6 @@ export class ACS {
     this.emitter.on('popBufferQueue', () => {
       this.popBufferQueue()
     })
-    ACS.setWaitQueue({type: ACParams.TYPE.ONLOAD})
   }
 
   private storeConfigurationOfUser(value: AceConfiguration): void {
@@ -695,6 +694,7 @@ export class ACS {
       this._messageChannels = new Map<string, MessageChannel>()
     }
     this._messageChannels.set(token, _messageChannel)
+    ACELog.d(ACS._TAG, `addIframeRef::destinationDomain: ${destinationDomain}, messageObj: `, messageObj)
     iframeRef.current?.contentWindow?.postMessage(messageObj, destinationDomain, [_messageChannel.port2])
 
     const _callbackForReqAceApp = (
@@ -769,6 +769,15 @@ export class ACS {
           break
       }
     }
+  }
+
+  public static addParentOrigin(domain: string) {
+    let _domain = onlyAlphabetOrNumberAtStringEndIndex(domain)
+    ACS.getInstance().addParentOrigin(_domain)
+  }
+
+  private addParentOrigin(domain: string) {
+    this.addOrigin(domain)
   }
 
   private addOrigin(destinationDomain: string) {
@@ -908,7 +917,7 @@ export class ACS {
       }
       const {iframeRef, destinationDomain} = this._requestReadys.get(params.uniqueKey) as RequestReady
       const _token = this.getToken()
-      ACELog.d(ACS._TAG, `reqReady::destinationDomain: ${destinationDomain}, token: ${_token}`)
+      ACELog.d(ACS._TAG, `handleMessage::reqReady::destinationDomain: ${destinationDomain}, token: ${_token}`)
       this.addIframeRef(
         iframeRef,
         destinationDomain,
@@ -933,6 +942,7 @@ export class ACS {
     }
 
     if (!this.hasOrigin(_event.origin)) return
+    ACELog.i(ACS._TAG, 'handleMessage::params:', _event.data)
     switch (_event.data.type) {
       case 'ACS.didAddByOnLoad':
         didAddByOnLoad(_event.data)
