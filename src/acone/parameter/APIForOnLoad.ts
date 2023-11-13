@@ -1,16 +1,20 @@
-import {ACS} from '../acs'
 import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
+import ACECONSTANT from '../../common/constant/ACEConstant'
 import {getBrowserName, isEqualSelfWindowAndParentWindow, isSupportNativeSDK} from '../../common/util'
 
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
+  protected key: string
+  protected origin: string
 
   public constructor(params: ITaskParams) {
     super(params)
     ACELog.d(APIForOnLoad._p1TAG, 'in constructor, params:', params)
+    this.key = params.payload.key ?? ACECONSTANT.EMPTY
+    this.origin = params.payload.origin ?? ACECONSTANT.EMPTY
   }
 
   public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
@@ -27,22 +31,14 @@ export default class APIForOnLoad extends ACOTask {
       ACELog.d(APIForOnLoad._p1TAG, 'not SupportNativeSDK()')
       if (!isEqualSelfWindowAndParentWindow()) {
         ACELog.d(APIForOnLoad._p1TAG, 'maybe browser?!')
-        ACS.addParentOrigin('http://localhost:3000')
-        ACELog.d(APIForOnLoad._p1TAG, 'location:', {
+        let paramToWindowParentPostMessage = {
           type: 'ACS.reqReady',
           token: -1,
           location: self.location.toString(),
-          uniqueKey: '1234',
-        })
-        window.parent.postMessage(
-          {
-            type: 'ACS.reqReady',
-            token: -1,
-            location: self.location.toString(),
-            uniqueKey: '1234',
-          },
-          'http://localhost:3000',
-        )
+          uniqueKey: this.key,
+        }
+        ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
+        window.parent.postMessage(paramToWindowParentPostMessage, this.origin)
       }
     }
   }

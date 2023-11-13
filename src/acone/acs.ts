@@ -362,7 +362,8 @@ export class ACS {
                 )
                 break
               case ACParams.TYPE.ONLOAD:
-                ACEReducerForOne.onLoad(callbackForCB)
+                ACS.addParentOrigin(value.origin)
+                ACEReducerForOne.onLoad(callbackForCB, value.key, value.origin)
                 break
               case ACParams.TYPE.PUSH:
                 ACEReducerForOne.push(callbackForCB, value.data, value.push)
@@ -491,7 +492,8 @@ export class ACS {
                   )
                   break
                 case ACParams.TYPE.ONLOAD:
-                  ACEReducerForOne.onLoad(callbackForPromise)
+                  ACS.addParentOrigin(value.origin)
+                  ACEReducerForOne.onLoad(callbackForPromise, value.key, value.origin)
                   break
                 case ACParams.TYPE.PUSH:
                   ACEReducerForOne.push(callbackForPromise, value.data, value.push)
@@ -771,13 +773,11 @@ export class ACS {
     }
   }
 
-  public static addParentOrigin(domain: string) {
-    let _domain = onlyAlphabetOrNumberAtStringEndIndex(domain)
-    ACS.getInstance().addParentOrigin(_domain)
-  }
-
-  private addParentOrigin(domain: string) {
-    this.addOrigin(domain)
+  public static addParentOrigin(domain: string | undefined) {
+    if (!isEmpty(domain)) {
+      let _domain = onlyAlphabetOrNumberAtStringEndIndex(domain as string)
+      ACS.getInstance().addOrigin(_domain)
+    }
   }
 
   private addOrigin(destinationDomain: string) {
@@ -903,7 +903,7 @@ export class ACS {
           PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, 'reqAceApp::params:', params)
+      ACELog.i(ACS._TAG, 'resAceApp::params:', params)
     }
     const reqReady = (
       params: {
@@ -911,13 +911,11 @@ export class ACS {
       } & MessageForIFrame &
         MessageForReqReady,
     ) => {
-      ACELog.d(ACS._TAG, `reqReady::params: ${JSON.stringify(params, null, 2)}`)
       if (!this._requestReadys || !this._requestReadys.has(params.uniqueKey)) {
         return
       }
       const {iframeRef, destinationDomain} = this._requestReadys.get(params.uniqueKey) as RequestReady
       const _token = this.getToken()
-      ACELog.d(ACS._TAG, `handleMessage::reqReady::destinationDomain: ${destinationDomain}, token: ${_token}`)
       this.addIframeRef(
         iframeRef,
         destinationDomain,
@@ -938,7 +936,7 @@ export class ACS {
       } & MessageForIFrame &
         MessageForResReady,
     ) => {
-      ACELog.i(ACS._TAG, 'reqAceApp::params:', params)
+      ACELog.i(ACS._TAG, 'finish::resReady::params:', params)
     }
 
     if (!this.hasOrigin(_event.origin)) return

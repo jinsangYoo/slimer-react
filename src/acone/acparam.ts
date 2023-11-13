@@ -44,10 +44,12 @@ export type ACParams = {
   name?: string
 
   data?: {[key: string]: string}
+  key?: string
   keyword?: string
   linkName?: string
   memberKey?: string
   orderNumber?: string
+  origin?: string
   payMethodName?: string
   productCategoryName?: string
   productId?: string

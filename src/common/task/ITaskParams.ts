@@ -10,6 +10,7 @@ export type IPayload = {
   linkName?: string
   memberKey?: string
   orderNumber?: string
+  origin?: string
   pageName?: string
   paymentMethod?: string
   productId?: string

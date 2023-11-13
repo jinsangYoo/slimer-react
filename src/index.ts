@@ -4,7 +4,7 @@ import {ACS} from './acone/acs'
 import type {ACEResponseToCaller, ControlTowerOfSDK} from './common/constant/ACEPublicStaticConfig'
 import {ACEGender, ACEMaritalStatus} from './common/constant/ACEPublicStaticConfig'
 import ACProduct from './acone/acproduct'
-import type {ACSForMessage, MessageForIFrame} from './common/constant/PostMessage'
+import type {ACSForMessage, MessageForIFrame, MessageForResReady} from './common/constant/PostMessage'
 
 export {
   AceConfiguration,
@@ -17,4 +17,5 @@ export {
   ACProduct,
   ACSForMessage,
   MessageForIFrame,
+  MessageForResReady,
 }
