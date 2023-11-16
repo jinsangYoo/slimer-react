@@ -3,7 +3,15 @@ import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACECONSTANT from '../../common/constant/ACEConstant'
-import {getBrowserName, isEqualSelfWindowAndParentWindow, isSupportNativeSDK} from '../../common/util'
+import {
+  getBrowserName,
+  isEqualSelfWindowAndParentWindow,
+  isSupportNativeSDK,
+  isIOS,
+  isAOS,
+  sendLoadedToIOS,
+  printInterfaceForAOS,
+} from '../../common/util'
 
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
@@ -27,10 +35,15 @@ export default class APIForOnLoad extends ACOTask {
 
     if (isSupportNativeSDK()) {
       ACELog.d(APIForOnLoad._p1TAG, 'SupportNativeSDK')
+      if (isIOS()) {
+        sendLoadedToIOS()
+      } else if (isAOS()) {
+        printInterfaceForAOS()
+      } else {
+        ACELog.d(APIForOnLoad._p1TAG, 'not detect platform.')
+      }
     } else {
-      ACELog.d(APIForOnLoad._p1TAG, 'not SupportNativeSDK()')
       if (!isEqualSelfWindowAndParentWindow()) {
-        ACELog.d(APIForOnLoad._p1TAG, 'maybe browser?!')
         let paramToWindowParentPostMessage = {
           type: 'ACS.reqReady',
           token: -1,
@@ -39,6 +52,8 @@ export default class APIForOnLoad extends ACOTask {
         }
         ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
         window.parent.postMessage(paramToWindowParentPostMessage, this.origin)
+      } else {
+        ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
       }
     }
   }

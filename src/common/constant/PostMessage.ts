@@ -24,6 +24,12 @@ export type PayloadForTS = {
   }
 }
 
+export type PayloadForNative = {
+  key: string
+  device: string
+  ts: string
+}
+
 export type ACSForMessage =
   | ({type: 'ACS.didAddByOnLoad'} & MessageForIFrame)
   | ({
@@ -32,6 +38,10 @@ export type ACSForMessage =
         version: string
       }
     } & MessageForIFrame)
+  | {
+      type: 'ACS.injectToReact'
+      payload: PayloadForNative
+    }
   | ({
       type: 'ACS.reqAceApp'
     } & MessageForIFrame)

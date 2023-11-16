@@ -12,6 +12,7 @@ import type {
   RequestReady,
   MessageForReqReady,
   MessageForResReady,
+  PayloadForNative,
 } from '../common/constant/PostMessage'
 import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
 import ACEConstantInteger from '../common/constant/ACEConstantInteger'
@@ -886,6 +887,9 @@ export class ACS {
         location: global.location.toString(),
       })
     }
+    const injectToReact = (params: {type: 'ACS.injectToReact'; payload: PayloadForNative}) => {
+      ACELog.d(ACS._TAG, 'injectToReact::params:', params)
+    }
     const reqAceApp = (
       params: {
         type: 'ACS.reqAceApp'
@@ -944,6 +948,9 @@ export class ACS {
     switch (_event.data.type) {
       case 'ACS.didAddByOnLoad':
         didAddByOnLoad(_event.data)
+        break
+      case 'ACS.injectToReact':
+        injectToReact(_event.data)
         break
       case 'ACS.reqAceApp':
         reqAceApp(_event.data)
