@@ -33,27 +33,28 @@ export default class APIForOnLoad extends ACOTask {
     ACELog.d(APIForOnLoad._p1TAG, `getBrowserName(): ${getBrowserName()}`)
     ACELog.d(APIForOnLoad._p1TAG, `isEqualSelfWindowAndParentWindow(): ${isEqualSelfWindowAndParentWindow()}`)
 
-    if (isSupportNativeSDK()) {
-      ACELog.d(APIForOnLoad._p1TAG, 'SupportNativeSDK')
-      if (isIOS()) {
-        sendLoadedToIOS()
-      } else if (isAOS()) {
-        printInterfaceForAOS()
-      } else {
-        ACELog.d(APIForOnLoad._p1TAG, 'not detect platform.')
+    if (!isEqualSelfWindowAndParentWindow()) {
+      let paramToWindowParentPostMessage = {
+        type: 'ACS.reqReady',
+        token: -1,
+        location: self.location.toString(),
+        uniqueKey: this.key,
       }
+      ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
+      window.parent.postMessage(paramToWindowParentPostMessage, this.origin)
     } else {
-      if (!isEqualSelfWindowAndParentWindow()) {
-        let paramToWindowParentPostMessage = {
-          type: 'ACS.reqReady',
-          token: -1,
-          location: self.location.toString(),
-          uniqueKey: this.key,
+      ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
+      if (isSupportNativeSDK()) {
+        ACELog.d(APIForOnLoad._p1TAG, 'SupportNativeSDK')
+        if (isIOS()) {
+          sendLoadedToIOS()
+        } else if (isAOS()) {
+          printInterfaceForAOS()
+        } else {
+          ACELog.d(APIForOnLoad._p1TAG, 'not detect platform.')
         }
-        ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
-        window.parent.postMessage(paramToWindowParentPostMessage, this.origin)
       } else {
-        ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
+        ACELog.d(APIForOnLoad._p1TAG, 'not link native SDK.')
       }
     }
   }
