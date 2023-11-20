@@ -43,10 +43,10 @@ export type ACSForMessage =
       payload: PayloadForNative
     }
   | ({
-      type: 'ACS.reqAceApp'
+      type: 'ACS.reqOnLoad'
     } & MessageForIFrame)
   | ({
-      type: 'ACS.resAceApp'
+      type: 'ACS.resOnLoad'
       payload: {
         key: string
         device: string

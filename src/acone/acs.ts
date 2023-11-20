@@ -700,12 +700,12 @@ export class ACS {
     ACELog.d(ACS._TAG, `addIframeRef::destinationDomain: ${destinationDomain}, messageObj: `, messageObj)
     iframeRef.current?.contentWindow?.postMessage(messageObj, destinationDomain, [_messageChannel.port2])
 
-    const _callbackForReqAceApp = (
+    const _callbackForReqOnLoad = (
       params: {
         type: string
       } & MessageForIFrame,
     ) => {
-      ACELog.d(ACS._TAG, '_callbackForReqAceApp::params: ', params)
+      ACELog.d(ACS._TAG, '_callbackForReqOnLoad::params: ', params)
 
       const parameterUtil = ACECommonStaticConfig.getParameterUtil()
       const _ts: PayloadForTS = parameterUtil
@@ -737,7 +737,7 @@ export class ACS {
 
       if (!this._messageChannels?.has(params.token)) return
       this._messageChannels?.get(params.token)?.port1.postMessage({
-        type: 'ACS.resAceApp',
+        type: 'ACS.resOnLoad',
         token: params.token,
         location: window.location.origin.toString(),
         key: ACS.getInstance()._configuration?.key ?? {
@@ -749,23 +749,23 @@ export class ACS {
         ts: _ts,
       })
     }
-    const _callbackForResAceApp = (
+    const _callbackForResOnLoad = (
       params: {
         type: string
       } & MessageForIFrame,
     ) => {
-      ACELog.d(ACS._TAG, '_callbackForResAceApp::params: ', params)
+      ACELog.d(ACS._TAG, '_callbackForResOnLoad::params: ', params)
     }
 
     _messageChannel.port1.onmessage = (event: MessageEvent<ACSForMessage>) => {
       ACELog.i(ACS._TAG, `_messageChannel.port1.onmessage::event.data: ${JSON.stringify(event.data, null, 2)}`)
 
       switch (event.data.type) {
-        case 'ACS.reqAceApp':
-          _callbackForReqAceApp(event.data)
+        case 'ACS.reqOnLoad':
+          _callbackForReqOnLoad(event.data)
           break
-        case 'ACS.resAceApp':
-          _callbackForResAceApp(event.data)
+        case 'ACS.resOnLoad':
+          _callbackForResOnLoad(event.data)
           break
         default:
           ACELog.d(ACS._TAG, 'port1.onmessage::event.data: ', event.data)
@@ -882,7 +882,7 @@ export class ACS {
     const didAddByOnLoad = (params: {type: 'ACS.didAddByOnLoad'} & MessageForIFrame) => {
       ACELog.d(ACS._TAG, 'didAddByOnLoad::params:', params)
       postMessage({
-        type: 'ACS.reqAceApp',
+        type: 'ACS.reqOnLoad',
         token: params.token,
         location: global.location.toString(),
       })
@@ -890,16 +890,16 @@ export class ACS {
     const injectToReact = (params: {type: 'ACS.injectToReact'; payload: PayloadForNative}) => {
       ACELog.d(ACS._TAG, 'injectToReact::params:', params)
     }
-    const reqAceApp = (
+    const reqOnLoad = (
       params: {
-        type: 'ACS.reqAceApp'
+        type: 'ACS.reqOnLoad'
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, 'reqAceApp::params:', params)
+      ACELog.i(ACS._TAG, 'reqOnLoad::params:', params)
     }
-    const resAceApp = (
+    const resOnLoad = (
       params: {
-        type: 'ACS.resAceApp'
+        type: 'ACS.resOnLoad'
         payload: {
           key: string
           device: string
@@ -907,7 +907,7 @@ export class ACS {
           PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACS._TAG, 'resAceApp::params:', params)
+      ACELog.i(ACS._TAG, 'resOnLoad::params:', params)
     }
     const reqReady = (
       params: {
@@ -952,11 +952,11 @@ export class ACS {
       case 'ACS.injectToReact':
         injectToReact(_event.data)
         break
-      case 'ACS.reqAceApp':
-        reqAceApp(_event.data)
+      case 'ACS.reqOnLoad':
+        reqOnLoad(_event.data)
         break
-      case 'ACS.resAceApp':
-        resAceApp(_event.data)
+      case 'ACS.resOnLoad':
+        resOnLoad(_event.data)
         break
       case 'ACS.reqReady':
         reqReady(_event.data)
