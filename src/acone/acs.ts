@@ -785,8 +785,9 @@ export class ACS {
       this._originSet = new Set<string>()
     }
     if (!isEmpty(destinationDomain)) {
-      if (!this._originSet.has(destinationDomain)) {
-        this._originSet.add(destinationDomain)
+      let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
+      if (!this._originSet.has(_destinationDomain)) {
+        this._originSet.add(_destinationDomain)
       }
     }
   }
