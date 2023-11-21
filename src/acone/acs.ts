@@ -54,6 +54,7 @@ export class ACS {
     this.emitter.on('popBufferQueue', () => {
       this.popBufferQueue()
     })
+    this.addOrigin(self.location.origin.toString())
   }
 
   private storeConfigurationOfUser(value: AceConfiguration): void {
@@ -668,18 +669,17 @@ export class ACS {
     destinationDomain: string,
     latency?: number,
   ) {
-    let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
-    ACS.getInstance().addOrigin(_destinationDomain)
+    ACS.getInstance().addOrigin(destinationDomain)
     let _latency = latency === undefined ? 100 : latency
     setTimeout(() => {
       const _token = ACS.getToken()
       ACS.getInstance().addIframeRef(
         iframeRef,
-        _destinationDomain,
+        destinationDomain,
         {
           type: 'ACS.didAddByOnLoad',
           token: _token,
-          location: window.location.origin.toString(),
+          location: self.location.origin.toString(),
         },
         _token,
       )
@@ -739,7 +739,7 @@ export class ACS {
       this._messageChannels?.get(params.token)?.port1.postMessage({
         type: 'ACS.resOnLoad',
         token: params.token,
-        location: window.location.origin.toString(),
+        location: self.location.origin.toString(),
         key: ACS.getInstance()._configuration?.key ?? {
           key: 'not has configuration',
         },
@@ -776,8 +776,7 @@ export class ACS {
 
   public static addParentOrigin(domain: string | undefined) {
     if (!isEmpty(domain)) {
-      let _domain = onlyAlphabetOrNumberAtStringEndIndex(domain as string)
-      ACS.getInstance().addOrigin(_domain)
+      ACS.getInstance().addOrigin(domain as string)
     }
   }
 
@@ -785,15 +784,19 @@ export class ACS {
     if (!this._originSet) {
       this._originSet = new Set<string>()
     }
-    if (!this._originSet.has(destinationDomain)) {
-      this._originSet.add(destinationDomain)
+    if (!isEmpty(destinationDomain)) {
+      if (!this._originSet.has(destinationDomain)) {
+        this._originSet.add(destinationDomain)
+      }
     }
   }
 
   private hasOrigin(destinationDomain: string): boolean {
     if (this._originSet) {
-      let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
-      return this._originSet.has(_destinationDomain)
+      return (
+        this._originSet.has(destinationDomain) ||
+        this._originSet.has(onlyAlphabetOrNumberAtStringEndIndex(destinationDomain))
+      )
     }
 
     return false
@@ -833,24 +836,23 @@ export class ACS {
   }
 
   private addRequestReady(identity: string, iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
-    let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
-    if (isEmpty(identity) || isEmpty(_destinationDomain)) {
+    if (isEmpty(identity) || isEmpty(destinationDomain)) {
       ACELog.e(
         ACS._TAG,
         'Please check parameters.',
-        new Error(`Invalid identity: ${identity}, destinationDomain: ${_destinationDomain}`),
+        new Error(`Invalid identity: ${identity}, destinationDomain: ${destinationDomain}`),
       )
       return false
     }
 
-    this.addOrigin(_destinationDomain)
+    this.addOrigin(destinationDomain)
     if (!this._requestReadys) {
       this._requestReadys = new Map<string, RequestReady>()
     }
     ACELog.i(ACS._TAG, `Did Accept reqReady information: ${identity}`, {
-      destinationDomain: _destinationDomain,
+      destinationDomain: destinationDomain,
     })
-    this._requestReadys.set(identity, {iframeRef, destinationDomain: _destinationDomain})
+    this._requestReadys.set(identity, {iframeRef, destinationDomain: destinationDomain})
     return true
   }
 
@@ -884,11 +886,12 @@ export class ACS {
       postMessage({
         type: 'ACS.reqOnLoad',
         token: params.token,
-        location: global.location.toString(),
+        location: global.location.origin.toString(),
       })
     }
     const injectToReact = (params: {type: 'ACS.injectToReact'; payload: PayloadForNative}) => {
       ACELog.d(ACS._TAG, 'injectToReact::params:', params)
+      ACELog.d(ACS._TAG, 'injectToReact::params.payload.ts:', JSON.parse(params.payload.ts))
     }
     const reqOnLoad = (
       params: {
@@ -926,7 +929,7 @@ export class ACS {
         {
           type: 'ACS.resReady',
           token: _token,
-          location: window.location.origin.toString(),
+          location: self.location.origin.toString(),
           result: true,
           resultCode: '200',
           uniqueKey: params.uniqueKey,
@@ -943,7 +946,7 @@ export class ACS {
       ACELog.i(ACS._TAG, 'finish::resReady::params:', params)
     }
 
-    if (!this.hasOrigin(_event.origin)) return
+    if (!this.hasOrigin(_event.origin) || _event.data.type === undefined) return
     ACELog.i(ACS._TAG, 'handleMessage::params:', _event.data)
     switch (_event.data.type) {
       case 'ACS.didAddByOnLoad':

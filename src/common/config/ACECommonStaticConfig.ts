@@ -7,7 +7,7 @@ import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 import {ACEResponseToCaller, ACEConstantCallback, ACEResultCode} from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
-import {isEmpty, isStartIndexAkAtGCodeString, printMode} from '../util'
+import {isEmpty, isStartIndexAkAtGCodeString, printMode, detectForNative} from '../util'
 
 export default class ACECommonStaticConfig {
   private static _TAG = 'comInit'
@@ -137,6 +137,7 @@ export default class ACECommonStaticConfig {
           ACELog.d(ACECommonStaticConfig._TAG, '0001, Can not request policy.', err)
           callback(err, undefined)
         })
+        .finally(() => detectForNative())
     } else {
       return new Promise((resolveToOut, rejectToOut) => {
         this._staticConfigImpl
@@ -174,6 +175,7 @@ export default class ACECommonStaticConfig {
             ACELog.d(ACECommonStaticConfig._TAG, '0002, Can not request policy.', err)
             rejectToOut(err)
           })
+          .finally(() => detectForNative())
       })
     }
   }

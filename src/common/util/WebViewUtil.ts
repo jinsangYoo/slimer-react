@@ -16,9 +16,34 @@ export function isAOS(): boolean {
   return false
 }
 
+function getInterfaceForAOS(ace_and_interface: any) {
+  return {
+    key: ace_and_interface.getKey(),
+    device: ace_and_interface.getDevice(),
+    ts: ace_and_interface.getTS(),
+  }
+}
+
 export function isSupportNativeSDK(): boolean {
   if (isIOS() || isAOS()) return true
   return false
+}
+
+export function detectForNative(): void {
+  let _win = window as any | undefined
+  if (isSupportNativeSDK()) {
+    if (_win && _win.webkit && _win.webkit.messageHandlers && _win.webkit.messageHandlers.ace_message_handler) {
+      _win.webkit.messageHandlers.ace_message_handler.postMessage('ACS.loaded')
+    } else if (_win && _win.ace_and_interface) {
+      self.postMessage(
+        {
+          type: 'ACS.injectToReact',
+          payload: {...getInterfaceForAOS(_win.ace_and_interface)},
+        },
+        self.location.origin.toString(),
+      )
+    }
+  }
 }
 
 export function sendLoadedToIOS(): boolean {

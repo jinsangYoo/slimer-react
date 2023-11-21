@@ -22,7 +22,6 @@ import {isEmpty} from '../../common/util/TextUtils'
 import ACOneConstant from '../constant/ACOneConstant'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
 import ACECONSTANT from '../../common/constant/ACEConstant'
-import {onlyAlphabetOrNumberAtStringEndIndex} from '../../common/util/TextUtils'
 
 export default class ACEReducerForOne {
   private static _TAG = 'reducerForOne'
@@ -379,15 +378,12 @@ export default class ACEReducerForOne {
     key?: string,
     origin?: string,
   ): Promise<ACEResponseToCaller> | void {
-    if (!isEmpty(origin)) {
-      origin = onlyAlphabetOrNumberAtStringEndIndex(origin as string)
-    }
     return ACEReducerForOne.reducer(
       {
         type: ACEofAPIForOne.OnLoad,
         payload: {
           key,
-          origin,
+          origin: origin as string,
         },
         error: false,
         debugParams: {},

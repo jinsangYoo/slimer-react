@@ -37,7 +37,7 @@ export default class APIForOnLoad extends ACOTask {
       let paramToWindowParentPostMessage = {
         type: 'ACS.reqReady',
         token: -1,
-        location: self.location.toString(),
+        location: self.location.origin.toString(),
         uniqueKey: this.key,
       }
       ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
