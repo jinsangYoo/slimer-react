@@ -47,11 +47,15 @@ export type ACSForMessage =
     } & MessageForIFrame)
   | ({
       type: 'ACS.resOnLoad'
-      payload: {
-        key: string
-        device: string
-      } & PayloadForTS &
-        PayloadForAdTracking
+      payload:
+        | (
+            | {
+                key: string
+                device: string
+              }
+            | PayloadForTS
+          )
+        | PayloadForAdTracking
     } & MessageForIFrame)
   | ({type: 'ACS.reqReady'} & MessageForIFrame & MessageForReqReady)
   | ({type: 'ACS.resReady'} & MessageForIFrame & MessageForResReady)

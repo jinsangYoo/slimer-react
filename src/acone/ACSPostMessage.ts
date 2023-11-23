@@ -121,7 +121,6 @@ export default class ACSPostMessage {
       ACELog.d(ACSPostMessage._TAG, 'reqOnLoadInOnMessage::params: ', params)
 
       if (!this._messageChannels?.has(params.token)) return
-      const _parameterUtil = ACECommonStaticConfig.getParameterUtil()
       this._messageChannels?.get(params.token)?.port1.postMessage({
         type: ACSPostMessageType.resOnLoad,
         token: params.token,
@@ -130,26 +129,7 @@ export default class ACSPostMessage {
         device: ACECONSTANT.DEVICE,
         adid: 'adid_test',
         adeld: 'adeld_test',
-        ts: _parameterUtil
-          ? {
-              st: _parameterUtil.getTS().st,
-              vt: _parameterUtil.getTS().vt,
-            }
-          : {
-              st: {
-                getts: '-1',
-                insenginets: '-1',
-                referts: '-1',
-                startts: '-1',
-              },
-              vt: {
-                vts: '-1',
-                visitCount: '-1',
-                buyTimeTS: '-1',
-                buyCount: '-1',
-                pcStamp: '-1',
-              },
-            },
+        ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
       })
     }
     const resOnLoadInOnMessage = (
@@ -320,11 +300,15 @@ export default class ACSPostMessage {
     const resOnLoadInHandleMessage = (
       params: {
         type: 'ACS.resOnLoad'
-        payload: {
-          key: string
-          device: string
-        } & PayloadForTS &
-          PayloadForAdTracking
+        payload:
+          | (
+              | {
+                  key: string
+                  device: string
+                }
+              | PayloadForTS
+            )
+          | PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
       ACELog.i(ACSPostMessage._TAG, 'resOnLoadInHandleMessage::params:', params)
