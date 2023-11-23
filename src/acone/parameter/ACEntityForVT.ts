@@ -31,7 +31,7 @@ export default class ACEntityForVT {
 
   public setDeepCopy(value: Map<string, string>) {
     if (this._map) {
-      this._map = new Map<string, string>()
+      if (this._map.size > 0) this._map.clear()
     }
     const _vts = value.get(ACOneConstantVt.KeyVTS) ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyVTS, _vts)
@@ -57,7 +57,7 @@ export default class ACEntityForVT {
 
   public setDeepCopyForJSON(value: JSON) {
     if (this._map) {
-      this._map = new Map<string, string>()
+      if (this._map.size > 0) this._map.clear()
     }
     const _vts = value[ACOneConstantVt.KeyVTS] ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyVTS, _vts)

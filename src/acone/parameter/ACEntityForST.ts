@@ -28,7 +28,7 @@ export default class ACEntityForST {
 
   public setDeepCopy(value: Map<string, string>) {
     if (this._map) {
-      this._map = new Map<string, string>()
+      if (this._map.size > 0) this._map.clear()
     }
     const _getTS = value.get(ACOneConstantSt.KeyGetTS) ?? ACOneConstantSt.DefaultTS
     this._map.set(ACOneConstantSt.KeyGetTS, _getTS)
