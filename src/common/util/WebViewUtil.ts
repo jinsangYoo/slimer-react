@@ -1,3 +1,5 @@
+import {isEqualSelfWindowAndParentWindow} from './IFrameUtil'
+
 export interface AceWebViewInterface {
   getKey(): string
   getDevice(): string
@@ -31,7 +33,7 @@ export function isSupportNativeSDK(): boolean {
 
 export function detectForNative(): void {
   let _win = window as any | undefined
-  if (isSupportNativeSDK()) {
+  if (isSupportNativeSDK() && isEqualSelfWindowAndParentWindow()) {
     if (_win && _win.webkit && _win.webkit.messageHandlers && _win.webkit.messageHandlers.ace_message_handler) {
       _win.webkit.messageHandlers.ace_message_handler.postMessage('ACS.loaded')
     } else if (_win && _win.ace_and_interface) {
