@@ -17,9 +17,9 @@ export type PayloadForTS = {
   }
   vt: {
     vts: string
-    visitCount: number
+    visitCount: string
     buyTimeTS: string
-    buyCount: number
+    buyCount: string
     pcStamp: string
   }
 }

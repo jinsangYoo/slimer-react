@@ -609,8 +609,8 @@ export class ACS {
     identity: string,
     iframeRef: React.RefObject<HTMLIFrameElement>,
     destinationDomain: string,
-  ) {
-    ACSPostMessage.addRequestReady(identity, iframeRef, destinationDomain)
+  ): boolean {
+    return ACSPostMessage.addRequestReady(identity, iframeRef, destinationDomain)
   }
 
   public static removeDependencices() {

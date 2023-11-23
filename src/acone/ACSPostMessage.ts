@@ -16,7 +16,7 @@ import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACECONSTANT from '../common/constant/ACEConstant'
 
 export default class ACSPostMessage {
-  private static _TAG = 'ACSPostMessage'
+  private static _TAG = 'ACS.PM'
   private static instance: ACSPostMessage
   private _messageChannels: Map<string, MessageChannel> | null
   private _requestReadys: Map<string, RequestReady> | null
@@ -120,45 +120,36 @@ export default class ACSPostMessage {
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'reqOnLoadInOnMessage::params: ', params)
 
-      const _key = ACECommonStaticConfig.getKey()
-      const _parameterUtil = ACECommonStaticConfig.getParameterUtil()
-      const _ts: PayloadForTS = _parameterUtil
-        ? {
-            st: _parameterUtil.getTS().st,
-            vt: {
-              vts: _parameterUtil.getTS().vt.vts,
-              visitCount: parseInt(_parameterUtil.getTS().vt.visitCount, 10),
-              buyTimeTS: _parameterUtil.getTS().vt.buyTimeTS,
-              buyCount: parseInt(_parameterUtil.getTS().vt.buyCount, 10),
-              pcStamp: _parameterUtil.getTS().vt.pcStamp,
-            },
-          }
-        : {
-            st: {
-              getts: '-1',
-              insenginets: '-1',
-              referts: '-1',
-              startts: '-1',
-            },
-            vt: {
-              vts: '-1',
-              visitCount: -1,
-              buyTimeTS: '-1',
-              buyCount: -1,
-              pcStamp: '-1',
-            },
-          }
-
       if (!this._messageChannels?.has(params.token)) return
+      const _parameterUtil = ACECommonStaticConfig.getParameterUtil()
       this._messageChannels?.get(params.token)?.port1.postMessage({
         type: ACSPostMessageType.resOnLoad,
         token: params.token,
         location: self.location.origin.toString(),
-        key: _key,
+        key: ACECommonStaticConfig.getKey(),
         device: ACECONSTANT.DEVICE,
         adid: 'adid_test',
         adeld: 'adeld_test',
-        ts: _ts,
+        ts: _parameterUtil
+          ? {
+              st: _parameterUtil.getTS().st,
+              vt: _parameterUtil.getTS().vt,
+            }
+          : {
+              st: {
+                getts: '-1',
+                insenginets: '-1',
+                referts: '-1',
+                startts: '-1',
+              },
+              vt: {
+                vts: '-1',
+                visitCount: '-1',
+                buyTimeTS: '-1',
+                buyCount: '-1',
+                pcStamp: '-1',
+              },
+            },
       })
     }
     const resOnLoadInOnMessage = (
@@ -265,10 +256,16 @@ export default class ACSPostMessage {
       return false
     }
 
-    this.addOrigin(destinationDomain)
     if (!this._requestReadys) {
       this._requestReadys = new Map<string, RequestReady>()
     }
+    if (this._requestReadys.has(identity)) {
+      ACELog.e(ACSPostMessage._TAG, `Already did to add identity: ${identity}`, {
+        destinationDomain: destinationDomain,
+      })
+      return false
+    }
+    this.addOrigin(destinationDomain)
     ACELog.i(ACSPostMessage._TAG, `Did Accept reqReady information: ${identity}`, {
       destinationDomain: destinationDomain,
     })
