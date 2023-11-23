@@ -1,6 +1,7 @@
 const ACECONSTANT = {
   BOOKMARK: 'bookmark',
   DEFAULT_ADID: '00000000-0000-0000-0000-000000000000',
+  DEVICE: 'react',
   DIRECT: 'Direct',
   DOMAIN_DUMMY: 'www.acecounter.com',
   DOMAIN_LNC: 'api-logncrash.cloud.toast.com/v2/log',

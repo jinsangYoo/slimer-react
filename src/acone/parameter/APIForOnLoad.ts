@@ -3,7 +3,8 @@ import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACECONSTANT from '../../common/constant/ACEConstant'
-import {getBrowserName, isEqualSelfWindowAndParentWindow, isSupportNativeSDK} from '../../common/util'
+import {getBrowserName, isEqualSelfWindowAndParentWindow} from '../../common/util'
+import ACSPostMessageType from '../../common/constant/ACSPostMessageType'
 
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
@@ -26,7 +27,7 @@ export default class APIForOnLoad extends ACOTask {
 
     if (!isEqualSelfWindowAndParentWindow()) {
       let paramToWindowParentPostMessage = {
-        type: 'ACS.reqReady',
+        type: ACSPostMessageType.reqReady,
         token: -1,
         location: self.location.origin.toString(),
         uniqueKey: this.key,

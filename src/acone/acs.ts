@@ -4,31 +4,15 @@ import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {ACEResponseToCaller} from '..'
 import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
-import type {
-  ACSForMessage,
-  MessageForIFrame,
-  PayloadForTS,
-  PayloadForAdTracking,
-  RequestReady,
-  MessageForReqReady,
-  MessageForResReady,
-  PayloadForNative,
-} from '../common/constant/PostMessage'
 import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
 import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
 import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
-import {
-  decode,
-  getQueryForKey,
-  isEmpty,
-  onlyAlphabetOrNumberAtStringEndIndex,
-  getDateToString,
-} from '../common/util/TextUtils'
+import {decode, getQueryForKey, isEmpty} from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
-import {getRandomIntInclusive} from '../common/util'
+import ACSPostMessage from './ACSPostMessage'
 
 export class ACS {
   private static _TAG = 'ACS'
@@ -38,9 +22,6 @@ export class ACS {
   private emitter: EventsForWorkerEmitter
   private static lock = false
   private _configuration?: AceConfiguration
-  private _messageChannels: Map<string, MessageChannel> | null
-  private _requestReadys: Map<string, RequestReady> | null
-  private _originSet: Set<string>
 
   public static getInstance(): ACS {
     return this.instance || (this.instance = new this())
@@ -54,7 +35,7 @@ export class ACS {
     this.emitter.on('popBufferQueue', () => {
       this.popBufferQueue()
     })
-    this.addOrigin(self.location.origin.toString())
+    ACSPostMessage.addOrigin(self.location.origin.toString())
   }
 
   private storeConfigurationOfUser(value: AceConfiguration): void {
@@ -364,7 +345,7 @@ export class ACS {
                 )
                 break
               case ACParams.TYPE.ONLOAD:
-                ACS.addParentOrigin(value.origin)
+                ACSPostMessage.addParentOrigin(value.origin)
                 ACEReducerForOne.onLoad(callbackForCB, value.key, value.origin)
                 break
               case ACParams.TYPE.PUSH:
@@ -494,7 +475,7 @@ export class ACS {
                   )
                   break
                 case ACParams.TYPE.ONLOAD:
-                  ACS.addParentOrigin(value.origin)
+                  ACSPostMessage.addParentOrigin(value.origin)
                   ACEReducerForOne.onLoad(callbackForPromise, value.key, value.origin)
                   break
                 case ACParams.TYPE.PUSH:
@@ -615,362 +596,37 @@ export class ACS {
   }
   //#endregion
 
-  //#region token
-  private static getToken() {
-    return ACS.getInstance().getToken()
-  }
-
-  private getToken() {
-    return `${getDateToString()}|${getRandomIntInclusive(0, 1000)}`
-  }
-  //#endregion
-
-  //#region printDependency
-  public static printDependencies() {
-    ACS.getInstance().printMessageChannels()
-    ACS.getInstance().printOrigins()
-    ACS.getInstance().printRequestReadies()
-  }
-
-  private printMessageChannels() {
-    if (!this._messageChannels) {
-      ACELog.d(ACS._TAG, 'MessageChannels is empty.')
-      return
-    }
-    ACELog.d(ACS._TAG, `MessageChannels size: ${this._messageChannels.size}`)
-    ACELog.d(ACS._TAG, 'MessageChannels keys: ', Array.from(this._messageChannels.keys()))
-  }
-
-  private printOrigins() {
-    if (!this._originSet) {
-      ACELog.i(ACS._TAG, 'origins is empty.')
-      return
-    }
-
-    ACELog.i(ACS._TAG, `origins size: ${this._originSet.size}`)
-    ACELog.i(ACS._TAG, 'origins keys: ', Array.from(this._originSet.keys()))
-  }
-
-  private printRequestReadies() {
-    if (!this._requestReadys) {
-      ACELog.i(ACS._TAG, 'RequestReadies is empty.')
-      return
-    }
-    ACELog.i(ACS._TAG, `RequestReadies size: ${this._requestReadys.size}`)
-    this._requestReadys.forEach((value, key) => {
-      ACELog.d(ACS._TAG, `RequestReadies keys: ${key}, value: ${value.destinationDomain}`)
-    })
-  }
-  //#endregion
-
-  //#region iframeRef
+  //#region ACSPostMessage wrappers
   public static addDependency(
     iframeRef: React.RefObject<HTMLIFrameElement>,
     destinationDomain: string,
     latency?: number,
   ) {
-    ACS.getInstance().addOrigin(destinationDomain)
-    let _latency = latency === undefined ? 100 : latency
-    setTimeout(() => {
-      const _token = ACS.getToken()
-      ACS.getInstance().addIframeRef(
-        iframeRef,
-        destinationDomain,
-        {
-          type: 'ACS.didAddByOnLoad',
-          token: _token,
-          location: self.location.origin.toString(),
-        },
-        _token,
-      )
-    }, _latency)
+    ACSPostMessage.addDependency(iframeRef, destinationDomain, latency)
   }
 
-  private addIframeRef(
-    iframeRef: React.RefObject<HTMLIFrameElement>,
-    destinationDomain: string,
-    messageObj: ACSForMessage,
-    token: string,
-  ) {
-    const _messageChannel = new MessageChannel()
-    if (!this._messageChannels) {
-      this._messageChannels = new Map<string, MessageChannel>()
-    }
-    this._messageChannels.set(token, _messageChannel)
-    ACELog.d(ACS._TAG, `addIframeRef::destinationDomain: ${destinationDomain}, messageObj: `, messageObj)
-    iframeRef.current?.contentWindow?.postMessage(messageObj, destinationDomain, [_messageChannel.port2])
-
-    const _callbackForReqOnLoad = (
-      params: {
-        type: string
-      } & MessageForIFrame,
-    ) => {
-      ACELog.d(ACS._TAG, '_callbackForReqOnLoad::params: ', params)
-
-      const parameterUtil = ACECommonStaticConfig.getParameterUtil()
-      const _ts: PayloadForTS = parameterUtil
-        ? {
-            st: parameterUtil.getTS().st,
-            vt: {
-              vts: parameterUtil.getTS().vt.vts,
-              visitCount: parseInt(parameterUtil.getTS().vt.visitCount, 10),
-              buyTimeTS: parameterUtil.getTS().vt.buyTimeTS,
-              buyCount: parseInt(parameterUtil.getTS().vt.buyCount, 10),
-              pcStamp: parameterUtil.getTS().vt.pcStamp,
-            },
-          }
-        : {
-            st: {
-              getts: '-1',
-              insenginets: '-1',
-              referts: '-1',
-              startts: '-1',
-            },
-            vt: {
-              vts: '-1',
-              visitCount: -1,
-              buyTimeTS: '-1',
-              buyCount: -1,
-              pcStamp: '-1',
-            },
-          }
-
-      if (!this._messageChannels?.has(params.token)) return
-      this._messageChannels?.get(params.token)?.port1.postMessage({
-        type: 'ACS.resOnLoad',
-        token: params.token,
-        location: self.location.origin.toString(),
-        key: ACS.getInstance()._configuration?.key ?? {
-          key: 'not has configuration',
-        },
-        device: 'react',
-        adid: 'adid_test',
-        adeld: 'adeld_test',
-        ts: _ts,
-      })
-    }
-    const _callbackForResOnLoad = (
-      params: {
-        type: string
-      } & MessageForIFrame,
-    ) => {
-      ACELog.d(ACS._TAG, '_callbackForResOnLoad::params: ', params)
-    }
-
-    _messageChannel.port1.onmessage = (event: MessageEvent<ACSForMessage>) => {
-      ACELog.i(ACS._TAG, `_messageChannel.port1.onmessage::event.data: ${JSON.stringify(event.data, null, 2)}`)
-
-      switch (event.data.type) {
-        case 'ACS.reqOnLoad':
-          _callbackForReqOnLoad(event.data)
-          break
-        case 'ACS.resOnLoad':
-          _callbackForResOnLoad(event.data)
-          break
-        default:
-          ACELog.d(ACS._TAG, 'port1.onmessage::event.data: ', event.data)
-          break
-      }
-    }
-  }
-
-  public static addParentOrigin(domain: string | undefined) {
-    if (!isEmpty(domain)) {
-      ACS.getInstance().addOrigin(domain as string)
-    }
-  }
-
-  private addOrigin(destinationDomain: string) {
-    if (!this._originSet) {
-      this._originSet = new Set<string>()
-    }
-    if (!isEmpty(destinationDomain)) {
-      let _destinationDomain = onlyAlphabetOrNumberAtStringEndIndex(destinationDomain)
-      if (!this._originSet.has(_destinationDomain)) {
-        this._originSet.add(_destinationDomain)
-      }
-    }
-  }
-
-  private hasOrigin(destinationDomain: string): boolean {
-    if (this._originSet) {
-      return (
-        this._originSet.has(destinationDomain) ||
-        this._originSet.has(onlyAlphabetOrNumberAtStringEndIndex(destinationDomain))
-      )
-    }
-
-    return false
-  }
-
-  public static removeDependencices() {
-    ACS.getInstance().removeAllMessageChannels()
-    ACS.getInstance().removeAllOrigins()
-    ACS.getInstance().removeAllRequestReady()
-  }
-
-  private removeAllMessageChannels() {
-    if (!this._messageChannels) return
-    this._messageChannels.forEach(({port1}) => {
-      port1.close()
-      port1.onmessage = null
-    })
-    this._messageChannels.clear()
-    this._messageChannels = null
-  }
-
-  private removeAllOrigins() {
-    if (!this._originSet) {
-      return
-    }
-    this._originSet.clear()
-  }
-  //#endregion
-
-  //#region RequestReady
   public static addRequestReady(
     identity: string,
     iframeRef: React.RefObject<HTMLIFrameElement>,
     destinationDomain: string,
-  ): boolean {
-    return ACS.getInstance().addRequestReady(identity, iframeRef, destinationDomain)
+  ) {
+    ACSPostMessage.addRequestReady(identity, iframeRef, destinationDomain)
   }
 
-  private addRequestReady(identity: string, iframeRef: React.RefObject<HTMLIFrameElement>, destinationDomain: string) {
-    if (isEmpty(identity) || isEmpty(destinationDomain)) {
-      ACELog.e(
-        ACS._TAG,
-        'Please check parameters.',
-        new Error(`Invalid identity: ${identity}, destinationDomain: ${destinationDomain}`),
-      )
-      return false
-    }
-
-    this.addOrigin(destinationDomain)
-    if (!this._requestReadys) {
-      this._requestReadys = new Map<string, RequestReady>()
-    }
-    ACELog.i(ACS._TAG, `Did Accept reqReady information: ${identity}`, {
-      destinationDomain: destinationDomain,
-    })
-    this._requestReadys.set(identity, {iframeRef, destinationDomain: destinationDomain})
-    return true
+  public static removeDependencices() {
+    ACSPostMessage.removeDependencices()
   }
 
-  private removeAllRequestReady() {
-    if (!this._requestReadys) {
-      return
-    }
-    this._requestReadys.clear()
+  public static printDependencies() {
+    ACSPostMessage.printDependencies()
   }
-  //#endregion
 
-  //#region postMessage
+  public static addParentOrigin(domain: string | undefined) {
+    ACSPostMessage.addParentOrigin(domain)
+  }
+
   public static handleMessage(e: Event) {
-    return ACS.getInstance().handleMessage(e)
-  }
-
-  private handleMessage(e: Event) {
-    const _event = e as MessageEvent<ACSForMessage>
-    let [port2] = _event.ports || []
-    const postMessage = (message: ACSForMessage) => {
-      if (!port2) {
-        ACELog.d(ACS._TAG, 'Invalid port2.')
-        ACELog.d(ACS._TAG, "Don't send postMessage: ", message)
-        return
-      }
-      ACELog.d(ACS._TAG, 'Send postMessage:', message)
-      port2.postMessage(message)
-    }
-    const didAddByOnLoad = (params: {type: 'ACS.didAddByOnLoad'} & MessageForIFrame) => {
-      ACELog.d(ACS._TAG, 'didAddByOnLoad::params:', params)
-      postMessage({
-        type: 'ACS.reqOnLoad',
-        token: params.token,
-        location: global.location.origin.toString(),
-      })
-    }
-    const injectToReact = (params: {type: 'ACS.injectToReact'; payload: PayloadForNative}) => {
-      ACELog.d(ACS._TAG, 'injectToReact::params:', params)
-      ACELog.d(ACS._TAG, 'injectToReact::params.payload.ts:', JSON.parse(params.payload.ts))
-    }
-    const reqOnLoad = (
-      params: {
-        type: 'ACS.reqOnLoad'
-      } & MessageForIFrame,
-    ) => {
-      ACELog.i(ACS._TAG, 'reqOnLoad::params:', params)
-    }
-    const resOnLoad = (
-      params: {
-        type: 'ACS.resOnLoad'
-        payload: {
-          key: string
-          device: string
-        } & PayloadForTS &
-          PayloadForAdTracking
-      } & MessageForIFrame,
-    ) => {
-      ACELog.i(ACS._TAG, 'resOnLoad::params:', params)
-    }
-    const reqReady = (
-      params: {
-        type: 'ACS.reqReady'
-      } & MessageForIFrame &
-        MessageForReqReady,
-    ) => {
-      if (!this._requestReadys || !this._requestReadys.has(params.uniqueKey)) {
-        return
-      }
-      const {iframeRef, destinationDomain} = this._requestReadys.get(params.uniqueKey) as RequestReady
-      const _token = this.getToken()
-      this.addIframeRef(
-        iframeRef,
-        destinationDomain,
-        {
-          type: 'ACS.resReady',
-          token: _token,
-          location: self.location.origin.toString(),
-          result: true,
-          resultCode: '200',
-          uniqueKey: params.uniqueKey,
-        },
-        _token,
-      )
-    }
-    const resReady = (
-      params: {
-        type: 'ACS.resReady'
-      } & MessageForIFrame &
-        MessageForResReady,
-    ) => {
-      ACELog.i(ACS._TAG, 'finish::resReady::params:', params)
-    }
-
-    if (!this.hasOrigin(_event.origin) || _event.data.type === undefined) return
-    ACELog.i(ACS._TAG, 'handleMessage::params:', _event.data)
-    switch (_event.data.type) {
-      case 'ACS.didAddByOnLoad':
-        didAddByOnLoad(_event.data)
-        break
-      case 'ACS.injectToReact':
-        injectToReact(_event.data)
-        break
-      case 'ACS.reqOnLoad':
-        reqOnLoad(_event.data)
-        break
-      case 'ACS.resOnLoad':
-        resOnLoad(_event.data)
-        break
-      case 'ACS.reqReady':
-        reqReady(_event.data)
-        break
-      case 'ACS.resReady':
-        resReady(_event.data)
-        break
-      default:
-        break
-    }
+    return ACSPostMessage.handleMessage(e)
   }
   //#endregion
 }
