@@ -49,7 +49,7 @@ export type ACParams = {
   linkName?: string
   memberKey?: string
   orderNumber?: string
-  origin?: string
+  origin?: string[]
   payMethodName?: string
   productCategoryName?: string
   productId?: string

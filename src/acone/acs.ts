@@ -345,7 +345,21 @@ export class ACS {
                 )
                 break
               case ACParams.TYPE.ONLOAD:
-                ACSPostMessage.addParentOrigin(value.origin)
+                if (value.origin === null || value.origin === undefined) {
+                  const result: ACEResponseToCaller = {
+                    taskHash: `${value.type}::0411`,
+                    code: ACEResultCode.InvalidACParamValues,
+                    result: ACEConstantCallback.Failed,
+                    message: 'Invalid value in ACParam.origin value.',
+                    apiName: value.type,
+                  }
+
+                  ACS.toggleLock()
+                  ACS.getInstance().popBufferQueueEmit()
+                  callback(undefined, result)
+                  return
+                }
+                ACSPostMessage.addOriginArray(value.origin)
                 ACEReducerForOne.onLoad(callbackForCB, value.key, value.origin)
                 break
               case ACParams.TYPE.PUSH:
@@ -475,7 +489,21 @@ export class ACS {
                   )
                   break
                 case ACParams.TYPE.ONLOAD:
-                  ACSPostMessage.addParentOrigin(value.origin)
+                  if (value.origin === null || value.origin === undefined) {
+                    const result: ACEResponseToCaller = {
+                      taskHash: `${value.type}::0411`,
+                      code: ACEResultCode.InvalidACParamValues,
+                      result: ACEConstantCallback.Failed,
+                      message: 'Invalid value in ACParam.origin value.',
+                      apiName: value.type,
+                    }
+
+                    ACS.toggleLock()
+                    ACS.getInstance().popBufferQueueEmit()
+                    rejectToOut(result)
+                    return
+                  }
+                  ACSPostMessage.addOriginArray(value.origin)
                   ACEReducerForOne.onLoad(callbackForPromise, value.key, value.origin)
                   break
                 case ACParams.TYPE.PUSH:
@@ -621,8 +649,8 @@ export class ACS {
     ACSPostMessage.printDependencies()
   }
 
-  public static addParentOrigin(domain: string | undefined) {
-    ACSPostMessage.addParentOrigin(domain)
+  public static addOrigin(domain: string | undefined) {
+    ACSPostMessage.addOrigin(domain)
   }
 
   public static handleMessage(e: Event) {

@@ -366,24 +366,24 @@ export default class ACEReducerForOne {
   public static onLoad(
     callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
     key?: string,
-    origin?: string,
+    origin?: string[],
   ): void
   public static onLoad(
     callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
     key?: string,
-    origin?: string,
+    origin?: string[],
   ): Promise<ACEResponseToCaller>
   public static onLoad(
     callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
     key?: string,
-    origin?: string,
+    origin?: string[],
   ): Promise<ACEResponseToCaller> | void {
     return ACEReducerForOne.reducer(
       {
         type: ACEofAPIForOne.OnLoad,
         payload: {
           key,
-          origin: origin as string,
+          origin: origin as string[],
         },
         error: false,
         debugParams: {},

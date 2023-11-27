@@ -160,14 +160,16 @@ export default class ACSPostMessage {
     }
   }
 
-  public static addParentOrigin(domain: string | undefined) {
-    if (!isEmpty(domain)) {
-      ACSPostMessage.getInstance().addOrigin(domain as string)
-    }
+  public static addOriginArray(origins: string[] | undefined) {
+    origins?.map((origin: string) => {
+      ACSPostMessage.addOrigin(origin)
+    })
   }
 
-  public static addOrigin(destinationDomain: string) {
-    ACSPostMessage.getInstance().addOrigin(destinationDomain)
+  public static addOrigin(origin: string | undefined) {
+    if (!isEmpty(origin)) {
+      ACSPostMessage.getInstance().addOrigin(origin as string)
+    }
   }
 
   private addOrigin(destinationDomain: string) {

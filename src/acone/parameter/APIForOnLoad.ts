@@ -9,13 +9,13 @@ import ACSPostMessageType from '../../common/constant/ACSPostMessageType'
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
   protected key: string
-  protected origin: string
+  protected parentOrigin: string[]
 
   public constructor(params: ITaskParams) {
     super(params)
     ACELog.d(APIForOnLoad._p1TAG, 'in constructor, params:', params)
     this.key = params.payload.key ?? ACECONSTANT.EMPTY
-    this.origin = params.payload.origin ?? ACECONSTANT.EMPTY
+    this.parentOrigin = params.payload.origin ?? []
   }
 
   public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
@@ -33,7 +33,10 @@ export default class APIForOnLoad extends ACOTask {
         uniqueKey: this.key,
       }
       ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
-      window.parent.postMessage(paramToWindowParentPostMessage, this.origin)
+      ACELog.d(APIForOnLoad._p1TAG, `this.parentOrigin:${this.parentOrigin}`)
+      this.parentOrigin.map(origin => {
+        window.parent.postMessage(paramToWindowParentPostMessage, origin)
+      })
     } else {
       ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
     }
