@@ -110,6 +110,15 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     }
   }
 
+  updateByPostMessage(key: string, ts?: STVT): void {
+    const _parametersForOne = ACEParametersForOne.getInstance()
+    _parametersForOne.setMID(key)
+
+    if (!ts) {
+      return
+    }
+  }
+
   public initParameters(
     key: string,
     enablePrivacyPolicy: boolean,

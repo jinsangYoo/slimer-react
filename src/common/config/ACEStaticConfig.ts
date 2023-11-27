@@ -5,7 +5,6 @@ import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import {ACEResponseToCaller} from '../constant/ACEPublicStaticConfig'
 
 export default interface ACEStaticConfig {
-  // ACEQueueManagerFactory _queueManagerFactory;
   _commonAPI: IACECommonAPI
 
   configure(
@@ -21,6 +20,7 @@ export default interface ACEStaticConfig {
   isDebug(): boolean
   getEnablePrivacyPolicy(): boolean
   getKey(): string
+  setKey(value: string): void
   getPlatform(): ACEPlatform
 
   getParameterUtil(): IACEParameterUtil | undefined

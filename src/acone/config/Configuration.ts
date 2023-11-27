@@ -35,11 +35,10 @@ export default class Configuration {
   public static getKey(): string {
     return Configuration.getInstance()._key
   }
+  public static setKey(value: string): void {
+    Configuration.getInstance()._key = value
+  }
   public static getPlatform(): ACEPlatform {
     return Configuration.getInstance()._platform
-  }
-
-  public static getConfiguration(): Configuration {
-    return Configuration.getInstance()
   }
 }

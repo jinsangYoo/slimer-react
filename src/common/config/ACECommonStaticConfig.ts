@@ -5,7 +5,13 @@ import ACECONSTANT from '../constant/ACEConstant'
 import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
-import {ACEResponseToCaller, ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../constant/ACEPublicStaticConfig'
+import {
+  ACEResponseToCaller,
+  ACEConstantCallback,
+  ACEResultCode,
+  DetailOfSDK,
+  STVT,
+} from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
 import {isEmpty, isStartIndexAkAtGCodeString, printMode, detectForNative} from '../util'
 
@@ -228,6 +234,11 @@ export default class ACECommonStaticConfig {
         message: `SDK is maybe that don't initialize.`,
       }
     )
+  }
+
+  public static updateByPostMessage(key: string, ts?: STVT): void {
+    this._staticConfigImpl?.setKey(key)
+    this._staticConfigImpl?.getParameterUtil()?.updateByPostMessage(key, ts)
   }
 
   //#region AdvertisingIdentifier

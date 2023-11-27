@@ -40,6 +40,9 @@ export default class ACEOneStaticConfig implements ACEStaticConfig {
   getKey(): string {
     return Configuration.getKey()
   }
+  setKey(value: string): void {
+    Configuration.setKey(value)
+  }
   getPlatform(): ACEPlatform {
     return Configuration.getPlatform()
   }

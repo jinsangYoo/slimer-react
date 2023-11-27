@@ -304,15 +304,11 @@ export default class ACSPostMessage {
     const resOnLoadInHandleMessage = (
       params: {
         type: 'ACS.resOnLoad'
-        payload:
-          | (
-              | {
-                  key: string
-                  device: string
-                }
-              | PayloadForTS
-            )
-          | PayloadForAdTracking
+        payload: {
+          key: string
+          device: string
+          ts?: PayloadForTS
+        } & PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
       ACELog.i(ACSPostMessage._TAG, 'resOnLoadInHandleMessage::params:', params)
@@ -350,16 +346,24 @@ export default class ACSPostMessage {
     const resReadyInHandleMessage = (
       params: {
         type: 'ACS.resReady'
-        payload:
-          | ({
-              key: string
-              device: string
-              ts?: PayloadForTS
-            } & MessageForResReady)
-          | PayloadForAdTracking
+        payload: {
+          key: string
+          device: string
+          ts?: PayloadForTS
+        } & MessageForResReady &
+          PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
       ACELog.i(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
+      ACECommonStaticConfig.updateByPostMessage(
+        params.payload.key,
+        params.payload.ts
+          ? {
+              st: {...params.payload.ts.st},
+              vt: {...params.payload.ts.vt},
+            }
+          : undefined,
+      )
     }
 
     if (!this.hasOrigin(_event.origin) || _event.data.type === undefined) return

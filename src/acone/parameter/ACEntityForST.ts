@@ -1,6 +1,8 @@
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import {objectForST} from '../../common/constant/ACEPublicStaticConfig'
+import {isEmpty} from '../../common/util'
 import ACOneConstantSt from '../constant/ACOneConstantSt'
+import ACOneConstantInteger from '../constant/ACOneConstantInteger'
 // import ACELog from '../../common/logger/ACELog'
 
 export default class ACEntityForST {
@@ -188,4 +190,20 @@ export default class ACEntityForST {
       startts: this.getStartTSGoldMaster(),
     }
   }
+
+  public setObjectForTS(value: objectForST): void {
+    // {
+    //   getts: this.getGetTSGoldMaster(),
+    //   insenginets: this.getInsenginetTSGoldMaster(),
+    //   referts: this.getRTSGoldMaster(),
+    //   startts: this.getStartTSGoldMaster(),
+    // }
+  }
+
+  private validateTS(value: string): boolean {
+    if (isEmpty(value) || value.length > ACOneConstantInteger.MaxLengthTSWithRandom) return false
+    return value.length === ACOneConstantInteger.MaxLengthTSWithRandom
+  }
+
+  private parse(type: string): void {}
 }

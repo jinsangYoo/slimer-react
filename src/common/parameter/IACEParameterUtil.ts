@@ -19,4 +19,5 @@ export default interface IACEParameterUtil {
   isDuplicateInstallReferrer(value: string): Promise<boolean>
 
   getTS(): STVT
+  updateByPostMessage(key: string, ts?: STVT): void
 }
