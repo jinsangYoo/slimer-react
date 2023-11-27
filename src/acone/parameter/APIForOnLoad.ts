@@ -33,7 +33,7 @@ export default class APIForOnLoad extends ACOTask {
         uniqueKey: this.key,
       }
       ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
-      ACELog.d(APIForOnLoad._p1TAG, `this.parentOrigin:${this.parentOrigin}`)
+      ACELog.d(APIForOnLoad._p1TAG, `this.parentOrigin:${this.parentOrigin.join(',')}`)
       this.parentOrigin.map(origin => {
         window.parent.postMessage(paramToWindowParentPostMessage, origin)
       })

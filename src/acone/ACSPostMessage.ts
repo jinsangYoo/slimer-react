@@ -125,11 +125,13 @@ export default class ACSPostMessage {
         type: ACSPostMessageType.resOnLoad,
         token: params.token,
         location: self.location.origin.toString(),
-        key: ACECommonStaticConfig.getKey(),
-        device: ACECONSTANT.DEVICE,
-        adid: 'adid_test',
-        adeld: 'adeld_test',
-        ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
+        payload: {
+          key: ACECommonStaticConfig.getKey(),
+          device: ACECONSTANT.DEVICE,
+          adid: 'adid_test',
+          adeld: 'adeld_test',
+          ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
+        },
       })
     }
     const resOnLoadInOnMessage = (
@@ -333,9 +335,14 @@ export default class ACSPostMessage {
           type: ACSPostMessageType.resReady,
           token: _token,
           location: self.location.origin.toString(),
-          result: true,
-          resultCode: '200',
-          uniqueKey: params.uniqueKey,
+          payload: {
+            key: ACECommonStaticConfig.getKey(),
+            device: ACECONSTANT.DEVICE,
+            uniqueKey: params.uniqueKey,
+            adid: 'adid_test',
+            adeld: 'adeld_test',
+            ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
+          },
         },
         _token,
       )
@@ -343,8 +350,14 @@ export default class ACSPostMessage {
     const resReadyInHandleMessage = (
       params: {
         type: 'ACS.resReady'
-      } & MessageForIFrame &
-        MessageForResReady,
+        payload:
+          | ({
+              key: string
+              device: string
+              ts?: PayloadForTS
+            } & MessageForResReady)
+          | PayloadForAdTracking
+      } & MessageForIFrame,
     ) => {
       ACELog.i(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
     }
