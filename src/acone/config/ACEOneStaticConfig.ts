@@ -1,4 +1,5 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
+import type {ACEPlatform} from '../../acone/aceconfiguration'
 import ACEStaticConfig from '../../common/config/ACEStaticConfig'
 import ACEParameterUtilForOne from '../parameter/ACEParameterUtilForOne'
 import IACECommonAPI from '../../common/parameter/IACECommonAPI'
@@ -38,6 +39,9 @@ export default class ACEOneStaticConfig implements ACEStaticConfig {
   }
   getKey(): string {
     return Configuration.getKey()
+  }
+  getPlatform(): ACEPlatform {
+    return Configuration.getPlatform()
   }
   getCommonAPI(): IACECommonAPI | undefined {
     if (this._commonAPI) {

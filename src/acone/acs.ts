@@ -21,7 +21,6 @@ export class ACS {
   private static bufferQueue: ACParams[]
   private emitter: EventsForWorkerEmitter
   private static lock = false
-  private _configuration?: AceConfiguration
 
   public static getInstance(): ACS {
     return this.instance || (this.instance = new this())
@@ -36,10 +35,6 @@ export class ACS {
       this.popBufferQueue()
     })
     ACSPostMessage.addOrigin(self.location.origin.toString())
-  }
-
-  private storeConfigurationOfUser(value: AceConfiguration): void {
-    this._configuration = value
   }
 
   //#region configure of SDK
@@ -64,7 +59,6 @@ export class ACS {
     value: AceConfiguration,
     callback?: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
   ): Promise<ACEResponseToCaller> | void {
-    this.storeConfigurationOfUser({...value})
     if (callback) {
       const callbackAtInit = (error?: object, innerResult?: ACEResponseToCaller) => {
         if (error) {
@@ -201,19 +195,7 @@ export class ACS {
   }
 
   public static getSdkDetails(): DetailOfSDK {
-    const _parameterUtil = ACECommonStaticConfig.getParameterUtil()
-    if (_parameterUtil) {
-      return _parameterUtil.getSdkDetails(
-        ACS.getInstance()._configuration ?? {
-          key: 'not has configuration',
-        },
-      )
-    }
-
-    return {
-      result: ACEConstantCallback.Failed,
-      message: `SDK is maybe that don't initialize.`,
-    }
+    return ACECommonStaticConfig.getSdkDetails()
   }
   //#endregion
 

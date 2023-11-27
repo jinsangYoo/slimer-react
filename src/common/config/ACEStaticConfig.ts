@@ -1,4 +1,5 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
+import type {ACEPlatform} from '../../acone/aceconfiguration'
 import IACECommonAPI from '../parameter/IACECommonAPI'
 import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import {ACEResponseToCaller} from '../constant/ACEPublicStaticConfig'
@@ -20,6 +21,7 @@ export default interface ACEStaticConfig {
   isDebug(): boolean
   getEnablePrivacyPolicy(): boolean
   getKey(): string
+  getPlatform(): ACEPlatform
 
   getParameterUtil(): IACEParameterUtil | undefined
   getCommonAPI(): IACECommonAPI | undefined

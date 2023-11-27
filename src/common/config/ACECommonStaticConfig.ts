@@ -1,18 +1,17 @@
-import {AceConfiguration, ACEPlatform} from '../../acone/aceconfiguration'
+import {AceConfiguration} from '../../acone/aceconfiguration'
 import ACEStaticConfig from './ACEStaticConfig'
 import ACEOneStaticConfig from '../../acone/config/ACEOneStaticConfig'
 import ACECONSTANT from '../constant/ACEConstant'
 import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
-import {ACEResponseToCaller, ACEConstantCallback, ACEResultCode} from '../constant/ACEPublicStaticConfig'
+import {ACEResponseToCaller, ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
 import {isEmpty, isStartIndexAkAtGCodeString, printMode, detectForNative} from '../util'
 
 export default class ACECommonStaticConfig {
   private static _TAG = 'comInit'
   private static _staticConfigImpl: ACEStaticConfig
-  private static _platform: ACEPlatform
 
   public static configure(
     configuration: AceConfiguration,
@@ -96,10 +95,7 @@ export default class ACECommonStaticConfig {
       }
     }
 
-    if (configuration.platform) {
-      this._platform = configuration.platform
-    }
-    if (ACECommonStaticConfig._platform === AceConfiguration.PLATFORM.DEFAULT) {
+    if (configuration.platform === AceConfiguration.PLATFORM.DEFAULT) {
       this._staticConfigImpl = new ACEOneStaticConfig()
     }
 
@@ -218,6 +214,20 @@ export default class ACECommonStaticConfig {
     }
 
     return undefined
+  }
+
+  public static getSdkDetails(): DetailOfSDK {
+    return (
+      this._staticConfigImpl?.getParameterUtil()?.getSdkDetails({
+        key: this._staticConfigImpl.getKey(),
+        platform: this._staticConfigImpl.getPlatform(),
+        debug: this._staticConfigImpl.isDebug(),
+        enablePrivacyPolicy: this._staticConfigImpl.getEnablePrivacyPolicy(),
+      }) ?? {
+        result: ACEConstantCallback.Failed,
+        message: `SDK is maybe that don't initialize.`,
+      }
+    )
   }
 
   //#region AdvertisingIdentifier
