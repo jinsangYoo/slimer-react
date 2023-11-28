@@ -38,10 +38,10 @@ export type ACSForMessage =
         version: string
       }
     } & MessageForIFrame)
-  | {
+  | ({
       type: 'ACS.injectToReact'
-      payload: PayloadForNative
-    }
+      payload: PayloadForNative & PayloadForAdTracking
+    } & MessageForIFrame)
   | ({
       type: 'ACS.reqOnLoad'
     } & MessageForIFrame)

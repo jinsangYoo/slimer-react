@@ -101,6 +101,24 @@ export default class ACSPostMessage {
     }, _latency)
   }
 
+  private callbackUpdateByPostMessage = (error?: Error | null, result?: ResultAfterSaveInStorage) => {
+    if (error) {
+      ACELog.e(ACSPostMessage._TAG, 'Fail to update for ts.', error)
+    }
+    if (result) {
+      ACELog.d(ACSPostMessage._TAG, 'Success to update for ts.')
+      ACELog.d(ACSPostMessage._TAG, `result.getKey: ${result.getKey}`, JSON.parse(result.getValue))
+      ACECommonStaticConfig.didUpdateByPostMessage()
+      ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
+        if (error) {
+          ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
+        } else if (innerResult) {
+          ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
+        }
+      }, '네이티브SDK연동')
+    }
+  }
+
   private addIframeRef(
     iframeRef: React.RefObject<HTMLIFrameElement>,
     destinationDomain: string,
@@ -138,10 +156,20 @@ export default class ACSPostMessage {
     }
     const resOnLoadInOnMessage = (
       params: {
-        type: string
+        type: 'ACS.resOnLoad'
+        payload: {
+          key: string
+          device: string
+          ts?: PayloadForTS
+        } & PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
-      ACELog.d(ACSPostMessage._TAG, 'resOnLoadInOnMessage::params: ', params)
+      ACELog.d(ACSPostMessage._TAG, 'finish::resOnLoadInOnMessage::params: ', params)
+      ACECommonStaticConfig.updateByPostMessage(
+        params.payload.key,
+        this.callbackUpdateByPostMessage,
+        params.payload.ts ? {...params.payload.ts} : undefined,
+      )
     }
 
     _messageChannel.port1.onmessage = (event: MessageEvent<ACSForMessage>) => {
@@ -292,9 +320,15 @@ export default class ACSPostMessage {
         location: global.location.origin.toString(),
       })
     }
-    const injectToReactInHandleMessage = (params: {type: 'ACS.injectToReact'; payload: PayloadForNative}) => {
+    const injectToReactInHandleMessage = (
+      params: {type: 'ACS.injectToReact'; payload: PayloadForNative & PayloadForAdTracking} & MessageForIFrame,
+    ) => {
       ACELog.d(ACSPostMessage._TAG, 'injectToReactInHandleMessage::params:', params)
       ACELog.d(ACSPostMessage._TAG, 'injectToReactInHandleMessage::params.payload.ts:', JSON.parse(params.payload.ts))
+
+      ACECommonStaticConfig.updateByPostMessage(params.payload.key, this.callbackUpdateByPostMessage, {
+        ...JSON.parse(params.payload.ts),
+      })
     }
     const reqOnLoadInHandleMessage = (
       params: {
@@ -359,22 +393,7 @@ export default class ACSPostMessage {
       ACELog.i(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
-        (error?: Error | null, result?: ResultAfterSaveInStorage) => {
-          if (error) {
-            ACELog.e(ACSPostMessage._TAG, 'Fail to update for ts.', error)
-          }
-          if (result) {
-            ACELog.d(ACSPostMessage._TAG, 'Success to update for ts.', result)
-            ACECommonStaticConfig.didUpdateByPostMessage()
-            ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
-              if (error) {
-                ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
-              } else if (innerResult) {
-                ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
-              }
-            }, '네이티브SDK연동')
-          }
-        },
+        this.callbackUpdateByPostMessage,
         params.payload.ts ? {...params.payload.ts} : undefined,
       )
     }
