@@ -6,7 +6,7 @@ import ADID from '../../common/constant/ADID'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import ACOneConstant from '../constant/ACOneConstant'
 import IACBuyMode from '../constant/IACBuyMode'
-import {ACEGender, ACEMaritalStatus} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEGender, ACEMaritalStatus, objectForST, objectForVT} from '../../common/constant/ACEPublicStaticConfig'
 import ACOneConstantSt from '../constant/ACOneConstantSt'
 import ACOneConstantVt from '../constant/ACOneConstantVt'
 import SESSION from '../../common/constant/Session'
@@ -591,6 +591,10 @@ export default class ACEParametersForOne extends ACEParameters {
     }
   }
 
+  public setSTVTtoST(value: objectForST): void {
+    this.getST().setObjectForTS(value)
+  }
+
   public loadST(callback: ((error?: Error | null, result?: object) => void) | undefined): void
   public loadST(): Promise<object>
   public loadST(callback?: ((error?: Error | null, result?: object) => void) | undefined): Promise<object> | void {
@@ -848,6 +852,10 @@ export default class ACEParametersForOne extends ACEParameters {
     // ACELog.d(ACEParametersForOne._TAG, `setVT::after this.vt`, this.vt)
   }
 
+  public setSTVTtoVT(value: objectForVT): void {
+    this.getVT().setObjectForTS(value)
+  }
+
   public setJSONtoVT(value: JSON): void {
     // ACELog.d(ACEParametersForOne._TAG, `setJSONtoVT::value: ${JSON.stringify(value, null, 2)}`)
     // ACELog.d(ACEParametersForOne._TAG, `setJSONtoVT::before this.vt`, this.vt)
@@ -951,12 +959,12 @@ export default class ACEParametersForOne extends ACEParameters {
 
   public saveVT_toInStorage(
     vt: ACEntityForVT,
-    callback: ((error?: Error | null, result?: ResultAfterSaveInStorage) => void) | undefined,
+    callback?: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
   ): void
   public saveVT_toInStorage(vt: ACEntityForVT): Promise<ResultAfterSaveInStorage>
   public saveVT_toInStorage(
     vt: ACEntityForVT,
-    callback?: ((error?: Error | null, result?: ResultAfterSaveInStorage) => void) | undefined,
+    callback?: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
   ): Promise<ResultAfterSaveInStorage> | void {
     const _json = JSON.stringify(vt)
     if (!globalThis.Promise) {

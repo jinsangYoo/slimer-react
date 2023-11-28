@@ -1,5 +1,6 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
 import {DetailOfSDK, STVT} from '../constant/ACEPublicStaticConfig'
+import {ResultAfterSaveInStorage} from '../../acone/parameter/ResultAfterSaveInStorage'
 
 export default interface IACEParameterUtil {
   loadUniqueKeyForSDK(): void
@@ -19,5 +20,11 @@ export default interface IACEParameterUtil {
   isDuplicateInstallReferrer(value: string): Promise<boolean>
 
   getTS(): STVT
-  updateByPostMessage(key: string, ts?: STVT): void
+  setTS(ts: STVT): void
+  updateByPostMessage(
+    key: string,
+    callback: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
+    ts?: STVT,
+  ): void
+  didUpdateByPostMessage(): void
 }

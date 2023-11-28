@@ -14,6 +14,8 @@ import type {
 import ACSPostMessageType from '../common/constant/ACSPostMessageType'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACECONSTANT from '../common/constant/ACEConstant'
+import {ResultAfterSaveInStorage} from './parameter/ResultAfterSaveInStorage'
+import ACEReducerForOne from './parameter/ACEReducerForOne'
 
 export default class ACSPostMessage {
   private static _TAG = 'ACS.PM'
@@ -357,12 +359,23 @@ export default class ACSPostMessage {
       ACELog.i(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
-        params.payload.ts
-          ? {
-              st: {...params.payload.ts.st},
-              vt: {...params.payload.ts.vt},
-            }
-          : undefined,
+        (error?: Error | null, result?: ResultAfterSaveInStorage) => {
+          if (error) {
+            ACELog.e(ACSPostMessage._TAG, 'Fail to update for ts.', error)
+          }
+          if (result) {
+            ACELog.d(ACSPostMessage._TAG, 'Success to update for ts.', result)
+            ACECommonStaticConfig.didUpdateByPostMessage()
+            ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
+              if (error) {
+                ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
+              } else if (innerResult) {
+                ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
+              }
+            }, '네이티브SDK연동')
+          }
+        },
+        params.payload.ts ? {...params.payload.ts} : undefined,
       )
     }
 

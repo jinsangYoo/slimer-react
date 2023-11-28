@@ -4,6 +4,7 @@ import {getRandom6CharForSTVT} from '../../common/util/NumberUtil'
 import ACELog from '../../common/logger/ACELog'
 import {objectForVT} from '../../common/constant/ACEPublicStaticConfig'
 import ACOneConstantInteger from '../constant/ACOneConstantInteger'
+import {validateTS, parse, validateCount, parseCountToString} from '../../common/util/TimeStampUtil'
 
 export default class ACEntityForVT {
   private static _TAG = 'vt'
@@ -238,12 +239,29 @@ export default class ACEntityForVT {
     return {
       vts: this.getVTSGoldMaster(),
       visitCount: this.getVisitCount(),
-
       buyTimeTS: this.getBuyTimeTSGoldMaster(),
-
       buyCount: this.getBuyCount(),
-
       pcStamp: this.getPcStampGoldMaster(),
     }
+  }
+
+  public setObjectForTS(value: objectForVT): void {
+    this.parseForTS(ACOneConstantVt.KeyVTS, ACOneConstantVt.KeyRandom6ForVTS, value.vts)
+    this.parseForTS(ACOneConstantVt.KeyBuyTimeTS, ACOneConstantVt.KeyRandom6ForBuyTimeTS, value.buyTimeTS)
+    this.parseForTS(ACOneConstantVt.KeyPcStamp, ACOneConstantVt.KeyRandom6ForPcStamp, value.pcStamp)
+
+    this.parseForCount(ACOneConstantVt.KeyVisitCount, value.visitCount)
+    this.parseForCount(ACOneConstantVt.KeyBuyCount, value.buyCount)
+  }
+
+  private parseForTS(tsKey: string, randomKey: string, timestamp: string): void {
+    const _result = validateTS(timestamp) ? parse(timestamp) : undefined
+    this._map.set(tsKey, _result ? _result.ts : ACOneConstantVt.DefaultTS)
+    this._map.set(randomKey, _result ? _result.random : ACECONSTANT.EMPTY)
+  }
+
+  private parseForCount(tsKey: string, value: string): void {
+    const _result = validateCount(value) ? parseCountToString(value) : undefined
+    this._map.set(tsKey, _result ?? ACECONSTANT.ZERO)
   }
 }

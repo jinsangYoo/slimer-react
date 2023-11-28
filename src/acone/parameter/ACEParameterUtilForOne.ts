@@ -28,6 +28,7 @@ import {AceConfiguration} from '../aceconfiguration'
 import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
 import {LIB_VERSION} from '../../version'
 import Incoming from '../../common/constant/Incoming'
+import ACOneConstantSt from '../constant/ACOneConstantSt'
 
 export default class ACEParameterUtilForOne implements IACEParameterUtil {
   private static _TAG = 'paramUtilForOne'
@@ -110,13 +111,33 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     }
   }
 
-  updateByPostMessage(key: string, ts?: STVT): void {
+  setTS(ts: STVT) {
+    const _parametersForOne = ACEParametersForOne.getInstance()
+    _parametersForOne.setSTVTtoST(ts.st)
+    _parametersForOne.setSTVTtoVT(ts.vt)
+  }
+
+  updateByPostMessage(
+    key: string,
+    callback: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
+    ts?: STVT,
+  ): void {
     const _parametersForOne = ACEParametersForOne.getInstance()
     _parametersForOne.setMID(key)
 
-    if (!ts) {
-      return
+    if (ts) {
+      this.setTS(ts)
+      this.saveVT_toInStorage(this.getVT(), callback)
     }
+  }
+
+  didUpdateByPostMessage(): void {
+    const st = this.getST()
+    if (st.getGetTS() !== ACOneConstantSt.DefaultTS && st.getGetTS() === st.getStartTS()) {
+      this.setKeepSession()
+    }
+    this.setInnerIncomingRI()
+    this.setSTS(st.getStartTSGoldMaster())
   }
 
   public initParameters(

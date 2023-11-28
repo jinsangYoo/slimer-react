@@ -1,8 +1,7 @@
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import {objectForST} from '../../common/constant/ACEPublicStaticConfig'
-import {isEmpty} from '../../common/util'
 import ACOneConstantSt from '../constant/ACOneConstantSt'
-import ACOneConstantInteger from '../constant/ACOneConstantInteger'
+import {validateTS, parse} from '../../common/util/TimeStampUtil'
 // import ACELog from '../../common/logger/ACELog'
 
 export default class ACEntityForST {
@@ -182,28 +181,22 @@ export default class ACEntityForST {
   public getObjectForTS(): objectForST {
     return {
       getts: this.getGetTSGoldMaster(),
-
       insenginets: this.getInsenginetTSGoldMaster(),
-
       referts: this.getRTSGoldMaster(),
-
       startts: this.getStartTSGoldMaster(),
     }
   }
 
   public setObjectForTS(value: objectForST): void {
-    // {
-    //   getts: this.getGetTSGoldMaster(),
-    //   insenginets: this.getInsenginetTSGoldMaster(),
-    //   referts: this.getRTSGoldMaster(),
-    //   startts: this.getStartTSGoldMaster(),
-    // }
+    this.parseForTS(ACOneConstantSt.KeyGetTS, ACOneConstantSt.KeyRandom6ForGetTS, value.getts)
+    this.parseForTS(ACOneConstantSt.KeyInsenginetTS, ACOneConstantSt.KeyRandom6ForInsenginetTS, value.insenginets)
+    this.parseForTS(ACOneConstantSt.KeyRTS, ACOneConstantSt.KeyRandom6ForRTS, value.referts)
+    this.parseForTS(ACOneConstantSt.KeyStartTS, ACOneConstantSt.KeyRandom6ForStartTS, value.startts)
   }
 
-  private validateTS(value: string): boolean {
-    if (isEmpty(value) || value.length > ACOneConstantInteger.MaxLengthTSWithRandom) return false
-    return value.length === ACOneConstantInteger.MaxLengthTSWithRandom
+  private parseForTS(tsKey: string, randomKey: string, timestamp: string): void {
+    const _result = validateTS(timestamp) ? parse(timestamp) : undefined
+    this._map.set(tsKey, _result ? _result.ts : ACOneConstantSt.DefaultTS)
+    this._map.set(randomKey, _result ? _result.random : ACECONSTANT.EMPTY)
   }
-
-  private parse(type: string): void {}
 }
