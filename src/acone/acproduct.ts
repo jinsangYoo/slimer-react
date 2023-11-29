@@ -1,7 +1,7 @@
 import {isEmpty, encode} from '../common/util/TextUtils'
 import ACEofAPIForOne from './constant/ACEofAPIForOne'
 
-export default class ACProduct {
+export class ACProduct {
   constructor(
     private name: string,
     private category: string,

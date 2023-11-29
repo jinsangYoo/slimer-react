@@ -1,4 +1,4 @@
-import ACProduct from '../../acone/acproduct'
+import {ACProduct} from '../../acone/acproduct'
 
 export function acproductToURLForOne(products: ACProduct[], logSoruce: number): string {
   if (products.length < 1) return ''

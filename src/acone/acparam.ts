@@ -1,4 +1,4 @@
-import ACProduct from './acproduct'
+import {ACProduct} from './acproduct'
 import {ACEGender, ACEMaritalStatus} from '../common/constant/ACEPublicStaticConfig'
 
 type ParamType =
