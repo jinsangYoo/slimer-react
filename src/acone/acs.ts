@@ -96,26 +96,6 @@ export class ACS {
     value: ACParams,
     callback?: (error?: object, result?: ACEResponseToCaller) => void,
   ): Promise<ACEResponseToCaller> | void {
-    if (!ControlTowerSingleton.isEnableByPolicy()) {
-      ACS.setWaitQueue(value)
-      const result: ACEResponseToCaller = {
-        taskHash: `${value.type}::0404`,
-        code: ACEResultCode.NotFoundPolicyInformation,
-        result: ACEConstantCallback.Failed,
-        message: 'Not found policy information.',
-        apiName: value.type,
-      }
-
-      if (callback) {
-        callback(undefined, result)
-        return
-      } else {
-        return new Promise((resolveToOut, rejectToOut) => {
-          rejectToOut(result)
-        })
-      }
-    }
-
     ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerSingleton.getIsCompletePolicy()}`)
     if (!ControlTowerSingleton.getIsCompletePolicy()) {
       ACS.setWaitQueue(value)
