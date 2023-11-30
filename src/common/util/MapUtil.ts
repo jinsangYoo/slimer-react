@@ -1,8 +1,3 @@
-import {ACEConstantCallback, ACEResponseToCaller, ACEResultCode} from '../constant/ACEPublicStaticConfig'
-import {isEmpty} from './TextUtils'
-import Task from '../task/Task'
-import ITask from '../task/ITask'
-
 export function printConsoleMap(map: Map<string, string | object>): void {
   for (var i = 0, keys = Object.keys(map), ii = keys.length; i < ii; i++) {
     console.log(keys[i] + '|' + map[keys[i]].list)
@@ -21,68 +16,4 @@ export function mapValueStringToObject(map: Map<string, string>) {
     obj[key] = value
     return obj
   }, {})
-}
-
-export function makeSuccessCallbackParams(task: Task & ITask): ACEResponseToCaller
-export function makeSuccessCallbackParams(task: Task & ITask, message: string): ACEResponseToCaller
-export function makeSuccessCallbackParams(task: Task & ITask, message?: string): ACEResponseToCaller {
-  var innerMsg: string = ACEConstantCallback.DefaultMessage
-  if (!isEmpty(message) && message) {
-    innerMsg = message
-  }
-
-  const _response = task.getNetworkResult()
-  if (_response) {
-    return {
-      taskHash: task.getTaskHash(),
-      code: ACEResultCode.Success,
-      result: ACEConstantCallback[ACEConstantCallback.Success],
-      message: innerMsg,
-      apiName: task.getDescription(),
-      reseponse: task.getNetworkResultToResponseToCaller(),
-    }
-  } else {
-    return {
-      taskHash: task.getTaskHash(),
-      code: ACEResultCode.Success,
-      result: ACEConstantCallback[ACEConstantCallback.Success],
-      message: innerMsg,
-      apiName: task.getDescription(),
-      reseponse: {
-        message: '_response is undefined.',
-      },
-    }
-  }
-}
-
-export function makeFailCallbackParams(task: Task & ITask): ACEResponseToCaller
-export function makeFailCallbackParams(task: Task & ITask, message: string): ACEResponseToCaller
-export function makeFailCallbackParams(task: Task & ITask, message?: string): ACEResponseToCaller {
-  var innerMsg: string = ACEConstantCallback.DefaultMessage
-  if (message && !isEmpty(message)) {
-    innerMsg = message
-  }
-
-  const _err = task.getNetworkError()
-  if (_err) {
-    return {
-      taskHash: task.getTaskHash(),
-      code: ACEResultCode.FailAfterRequest,
-      result: ACEConstantCallback[ACEConstantCallback.Failed],
-      message: innerMsg,
-      apiName: task.getDescription(),
-      reseponse: task.getNetworkErrorToResponseToCaller(),
-    }
-  } else {
-    return {
-      taskHash: task.getTaskHash(),
-      code: ACEResultCode.FailAfterRequest,
-      result: ACEConstantCallback[ACEConstantCallback.Failed],
-      message: innerMsg,
-      apiName: task.getDescription(),
-      reseponse: {
-        message: 'err is undefined.',
-      },
-    }
-  }
 }
