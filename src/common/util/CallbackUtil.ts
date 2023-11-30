@@ -2,12 +2,12 @@ import type {ACEResponseToCaller} from '../constant/ACEPublicStaticConfig'
 import Task from '../task/Task'
 import ITask from '../task/ITask'
 import {isEmpty} from './TextUtils'
-import {ACEResultCode, ACEConstantCallback} from '../constant/ACEPublicStaticConfig'
+import {ACEResultCode, ACEConstantResultForCallback} from '../constant/ACEPublicStaticConfig'
 
 export function makeSuccessCallbackParams(task: Task & ITask): ACEResponseToCaller
 export function makeSuccessCallbackParams(task: Task & ITask, message: string): ACEResponseToCaller
 export function makeSuccessCallbackParams(task: Task & ITask, message?: string): ACEResponseToCaller {
-  var innerMsg: string = ACEConstantCallback.DefaultMessage
+  var innerMsg: string = ACEConstantResultForCallback.DefaultMessage
   if (!isEmpty(message) && message) {
     innerMsg = message
   }
@@ -17,7 +17,7 @@ export function makeSuccessCallbackParams(task: Task & ITask, message?: string):
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.Success,
-      result: ACEConstantCallback[ACEConstantCallback.Success],
+      result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
       message: innerMsg,
       apiName: task.getDescription(),
       reseponse: task.getNetworkResultToResponseToCaller(),
@@ -26,7 +26,7 @@ export function makeSuccessCallbackParams(task: Task & ITask, message?: string):
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.Success,
-      result: ACEConstantCallback[ACEConstantCallback.Success],
+      result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
       message: innerMsg,
       apiName: task.getDescription(),
       reseponse: {
@@ -39,7 +39,7 @@ export function makeSuccessCallbackParams(task: Task & ITask, message?: string):
 export function makeFailCallbackParams(task: Task & ITask): ACEResponseToCaller
 export function makeFailCallbackParams(task: Task & ITask, message: string): ACEResponseToCaller
 export function makeFailCallbackParams(task: Task & ITask, message?: string): ACEResponseToCaller {
-  var innerMsg: string = ACEConstantCallback.DefaultMessage
+  var innerMsg: string = ACEConstantResultForCallback.DefaultMessage
   if (message && !isEmpty(message)) {
     innerMsg = message
   }
@@ -49,7 +49,7 @@ export function makeFailCallbackParams(task: Task & ITask, message?: string): AC
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.FailAfterRequest,
-      result: ACEConstantCallback[ACEConstantCallback.Failed],
+      result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
       message: innerMsg,
       apiName: task.getDescription(),
       reseponse: task.getNetworkErrorToResponseToCaller(),
@@ -58,7 +58,7 @@ export function makeFailCallbackParams(task: Task & ITask, message?: string): AC
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.FailAfterRequest,
-      result: ACEConstantCallback[ACEConstantCallback.Failed],
+      result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
       message: innerMsg,
       apiName: task.getDescription(),
       reseponse: {
