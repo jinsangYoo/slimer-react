@@ -2,10 +2,9 @@ import {ACParams} from './acparam'
 import {AceConfiguration} from './aceconfiguration'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
-import {ACEResponseToCaller} from '..'
 import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
-import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
-import ACEConstantInteger from '../common/constant/ACEConstantInteger'
+import type {ACSCallback, ACEResponseToCaller, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
+import {ACEConstantResultForCallback, ACEResultCode} from '../common/constant/ACEPublicStaticConfig'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
 import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
@@ -38,15 +37,9 @@ export class ACS {
   }
 
   //#region configure of SDK
-  public static configure(
-    value: AceConfiguration,
-    callback: (error?: Error, result?: ACEResponseToCaller) => void,
-  ): void
+  public static configure(value: AceConfiguration, callback: ACSCallback): void
   public static configure(value: AceConfiguration): Promise<ACEResponseToCaller>
-  public static configure(
-    value: AceConfiguration,
-    callback?: (error?: Error, result?: ACEResponseToCaller) => void,
-  ): Promise<ACEResponseToCaller> | void {
+  public static configure(value: AceConfiguration, callback?: ACSCallback): Promise<ACEResponseToCaller> | void {
     return ACS.getInstance().configure(value, callback)
   }
 
@@ -90,12 +83,9 @@ export class ACS {
   //#endregion
 
   //#region send of public
-  public static send(value: ACParams, callback: (error?: object, result?: ACEResponseToCaller) => void): void
+  public static send(value: ACParams, callback: ACSCallback): void
   public static send(value: ACParams): Promise<ACEResponseToCaller>
-  public static send(
-    value: ACParams,
-    callback?: (error?: object, result?: ACEResponseToCaller) => void,
-  ): Promise<ACEResponseToCaller> | void {
+  public static send(value: ACParams, callback?: ACSCallback): Promise<ACEResponseToCaller> | void {
     ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerSingleton.getIsCompletePolicy()}`)
     if (!ControlTowerSingleton.getIsCompletePolicy()) {
       ACS.setWaitQueue(value)

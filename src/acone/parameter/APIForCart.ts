@@ -2,12 +2,12 @@ import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util/MapUtil'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
 import TP from '../constant/TP'
-import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACEntityForVT from './ACEntityForVT'
 import {ACProduct} from '../acproduct'
 import {acproductToURLForOne} from '../../common/util/ACProductUtil'
@@ -28,7 +28,7 @@ export default class APIForCart extends ACOTask {
     this.products = Array.from(params.payload.products ?? [])
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork(callback)
     ACELog.d(APIForCart._TAG, 'doWork')
 
@@ -80,7 +80,7 @@ export default class APIForCart extends ACOTask {
       })
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForCart._TAG, 'didWork')
 
@@ -108,7 +108,7 @@ export default class APIForCart extends ACOTask {
     ACELog.d(APIForCart._TAG, 'failed')
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(APIForCart._TAG, 'doneWork')
     const _parameterUtilForOne = ACEParameterUtilForOne.getInstance()

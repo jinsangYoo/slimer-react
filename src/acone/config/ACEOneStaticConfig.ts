@@ -5,7 +5,7 @@ import ACEParameterUtilForOne from '../parameter/ACEParameterUtilForOne'
 import IACECommonAPI from '../../common/parameter/IACECommonAPI'
 import ACEInternalAPIForOne from '../parameter/ACEInternalAPIForOne'
 import IACEParameterUtil from '../../common/parameter/IACEParameterUtil'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import Configuration from './Configuration'
 
 export default class ACEOneStaticConfig implements ACEStaticConfig {
@@ -15,14 +15,11 @@ export default class ACEOneStaticConfig implements ACEStaticConfig {
     this._commonAPI = new ACEInternalAPIForOne()
   }
 
-  public configure(
-    configuration: AceConfiguration,
-    callback: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
-  ): void
+  public configure(configuration: AceConfiguration, callback: ACSCallback | undefined): void
   public configure(configuration: AceConfiguration): Promise<ACEResponseToCaller>
   public configure(
     configuration: AceConfiguration,
-    callback?: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
   ): Promise<ACEResponseToCaller> | void {
     Configuration.getInstance().configure(configuration)
     return ACEParameterUtilForOne.getInstance().initParameters(

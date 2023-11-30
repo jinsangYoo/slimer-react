@@ -1,8 +1,8 @@
 import {ITaskParams} from './ITaskParams'
 import {AxiosResponse} from 'axios'
 import ACENetworkResult from '../http/ACENetworkResult'
-import {
-  ACEResponseToCaller,
+import type {
+  ACSCallback,
   NetworkResultToResponseToCaller,
   NetworkErrorToResponseToCaller,
 } from '../constant/ACEPublicStaticConfig'
@@ -18,11 +18,11 @@ export default class Task {
     this._date = Date.now()
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {}
+  public doWork(callback: ACSCallback | undefined) {}
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {}
+  public didWork(callback: ACSCallback | undefined): void {}
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {}
+  public doneWork(callback: ACSCallback | undefined) {}
 
   protected completed(response: AxiosResponse) {
     this._response = new ACENetworkResult(response)

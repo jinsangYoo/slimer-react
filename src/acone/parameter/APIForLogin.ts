@@ -1,7 +1,8 @@
 import APIForPL from './APIForPL'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {AxiosResponse} from 'axios'
-import {ACEGender, ACEMaritalStatus, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEGender, ACEMaritalStatus} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
@@ -22,7 +23,7 @@ export default class APIForLogin extends APIForPL {
     this.userMaritalStatus = params.payload.userMaritalStatus ?? ACEMaritalStatus.Unknown
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork((error?: object, innerResult?: ACEResponseToCaller) => {
       ACELog.d(APIForLogin._TAG, 'in doWork::in cb')
       if (error && callback) {
@@ -38,7 +39,7 @@ export default class APIForLogin extends APIForPL {
     })
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForLogin._TAG, 'didWork')
   }
@@ -53,7 +54,7 @@ export default class APIForLogin extends APIForPL {
     ACELog.d(APIForLogin._TAG, 'failed')
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(APIForLogin._TAG, 'doneWork')
     const _parameterUtilForOne = ACEParameterUtilForOne.getInstance()

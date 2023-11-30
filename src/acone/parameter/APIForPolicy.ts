@@ -4,10 +4,10 @@ import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
 import ACEPolicyParameterUtil from '../../common/policy/ACEPolicyParameterUtil'
 import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util/MapUtil'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util'
 import ACELog from '../../common/logger/ACELog'
-import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 
 export default class APIForPolicy extends ACOTask {
@@ -20,7 +20,7 @@ export default class APIForPolicy extends ACOTask {
     this.key = params.payload.key ?? ACECONSTANT.EMPTY
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork(callback)
     if (callback) {
       const res: ACEResponseToCaller = {
@@ -34,7 +34,7 @@ export default class APIForPolicy extends ACOTask {
     }
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
 
     ACENetwork.requestToPolicy(
@@ -52,7 +52,7 @@ export default class APIForPolicy extends ACOTask {
     )
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     if (callback) {
       if (this._error) {

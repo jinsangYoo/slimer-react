@@ -1,6 +1,6 @@
 import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import {getBrowserName, isEqualSelfWindowAndParentWindow} from '../../common/util'
@@ -18,7 +18,7 @@ export default class APIForOnLoad extends ACOTask {
     this.parentOrigin = params.payload.origin ?? []
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork(callback)
     ACELog.d(APIForOnLoad._p1TAG, 'doWork')
 
@@ -42,13 +42,13 @@ export default class APIForOnLoad extends ACOTask {
     }
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForOnLoad._p1TAG, 'didWork')
     this.doneWork(callback)
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(APIForOnLoad._p1TAG, 'doneWork')
   }

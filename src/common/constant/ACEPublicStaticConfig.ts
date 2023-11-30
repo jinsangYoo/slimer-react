@@ -69,6 +69,8 @@ export type NetworkErrorToResponseToCaller = {
   config?: object
 }
 
+export type ACSCallback = (error?: object, innerResult?: ACEResponseToCaller) => void
+
 export type ACEResponseToCaller = {
   taskHash: string
   code: number

@@ -2,13 +2,13 @@ import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util/MapUtil'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util'
 import ACELog from '../../common/logger/ACELog'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
 import TP from '../constant/TP'
 import ACECONSTANT from '../../common/constant/ACEConstant'
-import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACEntityForVT from './ACEntityForVT'
 import ACEntityForST from './ACEntityForVT'
 
@@ -24,7 +24,7 @@ export default class APIForPL extends ACOTask {
     this.pageName = params.payload.pageName ?? ACECONSTANT.EMPTY
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork(callback)
     ACELog.d(APIForPL._p1TAG, 'doWork')
 
@@ -67,7 +67,7 @@ export default class APIForPL extends ACOTask {
       })
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForPL._p1TAG, 'didWork')
 
@@ -95,7 +95,7 @@ export default class APIForPL extends ACOTask {
     ACELog.d(APIForPL._p1TAG, 'failed')
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(APIForPL._p1TAG, 'doneWork')
     const _parameterUtilForOne = ACEParameterUtilForOne.getInstance()
