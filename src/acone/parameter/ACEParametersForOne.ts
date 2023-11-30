@@ -10,7 +10,7 @@ import {ACEGender, ACEMaritalStatus, objectForST, objectForVT} from '../../commo
 import ACOneConstantSt from '../constant/ACOneConstantSt'
 import ACOneConstantVt from '../constant/ACOneConstantVt'
 import SESSION from '../../common/constant/Session'
-import {ACEInnerCBResultKey} from '../../common/constant/ACEInnerCBResultKey'
+import {ACEInnerCBResultKey} from '../../common/constant/ACEInnerCBResult'
 import ACELog from '../../common/logger/ACELog'
 import ACOneConstantInteger from '../constant/ACOneConstantInteger'
 import TP from '../constant/TP'
