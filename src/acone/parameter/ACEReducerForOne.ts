@@ -47,7 +47,7 @@ export default class ACEReducerForOne {
         const result: ACEResponseToCaller = {
           taskHash: `${params.type}::0006`,
           code: ACEResultCode.NotFoundPolicyInformation,
-          result: ACEConstantCallback[ACEConstantCallback.Failed],
+          result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
           message: 'Not found policy information.',
           apiName: ACEofAPIForOne[params.type],
         }

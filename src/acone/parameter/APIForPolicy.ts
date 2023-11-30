@@ -26,7 +26,7 @@ export default class APIForPolicy extends ACOTask {
       const res: ACEResponseToCaller = {
         taskHash: `${this._logSource}::0011`,
         code: ACEResultCode.Success,
-        result: ACEConstantCallback[ACEConstantCallback.Success],
+        result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
         message: 'Done doWork to policy.',
         apiName: this.getDescription(),
       }

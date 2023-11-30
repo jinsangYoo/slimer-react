@@ -102,7 +102,7 @@ export class ACS {
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0405`,
         code: ACEResultCode.NotReceivePolicy,
-        result: ACEConstantCallback.Failed,
+        result: ACEConstantResultForCallback.Failed,
         message: 'Not receive policy for SDK. It will send after init.',
         apiName: value.type,
       }
@@ -123,7 +123,7 @@ export class ACS {
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0406`,
         code: ACEResultCode.DisabledByPolicy,
-        result: ACEConstantCallback.Failed,
+        result: ACEConstantResultForCallback.Failed,
         message: 'Disabled by policy of SDK. It will send after init.',
         apiName: value.type,
       }
@@ -143,7 +143,7 @@ export class ACS {
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0409`,
         code: ACEResultCode.TooBusyWillSendAfterDone,
-        result: ACEConstantCallback.Failed,
+        result: ACEConstantResultForCallback.Failed,
         message: 'Too busy. It will send after done.',
         apiName: value.type,
       }
@@ -311,7 +311,7 @@ export class ACS {
                   const result: ACEResponseToCaller = {
                     taskHash: `${value.type}::0411`,
                     code: ACEResultCode.InvalidACParamValues,
-                    result: ACEConstantCallback.Failed,
+                    result: ACEConstantResultForCallback.Failed,
                     message: 'Invalid value in ACParam.origin value.',
                     apiName: value.type,
                   }
@@ -333,7 +333,7 @@ export class ACS {
                   const result: ACEResponseToCaller = {
                     taskHash: `${value.type}::0410`,
                     code: ACEResultCode.InvalidACParamValues,
-                    result: ACEConstantCallback.Failed,
+                    result: ACEConstantResultForCallback.Failed,
                     message: 'Invalid value in ACParam object.',
                     apiName: value.type,
                   }
@@ -356,7 +356,7 @@ export class ACS {
             const result: ACEResponseToCaller = {
               taskHash: `${value.type}::0407`,
               code: ACEResultCode.NotConnectToTheInternet,
-              result: ACEConstantCallback.Failed,
+              result: ACEConstantResultForCallback.Failed,
               message: 'Not connect to the internet.',
               apiName: value.type,
             }
@@ -371,7 +371,7 @@ export class ACS {
           const result: ACEResponseToCaller = {
             taskHash: `${value.type}::0408`,
             code: ACEResultCode.UnknownConnectStateToTheInternet,
-            result: ACEConstantCallback.Failed,
+            result: ACEConstantResultForCallback.Failed,
             message: 'Unknown connect state to the internet.',
             apiName: value.type,
           }
@@ -455,7 +455,7 @@ export class ACS {
                     const result: ACEResponseToCaller = {
                       taskHash: `${value.type}::0411`,
                       code: ACEResultCode.InvalidACParamValues,
-                      result: ACEConstantCallback.Failed,
+                      result: ACEConstantResultForCallback.Failed,
                       message: 'Invalid value in ACParam.origin value.',
                       apiName: value.type,
                     }
@@ -480,7 +480,7 @@ export class ACS {
                     const result: ACEResponseToCaller = {
                       taskHash: `${value.type}::0410`,
                       code: ACEResultCode.InvalidACParamValues,
-                      result: ACEConstantCallback.Failed,
+                      result: ACEConstantResultForCallback.Failed,
                       message: 'Invalid value in ACParam object.',
                       apiName: value.type,
                     }
@@ -503,7 +503,7 @@ export class ACS {
               const result: ACEResponseToCaller = {
                 taskHash: `${value.type}::0407`,
                 code: ACEResultCode.NotConnectToTheInternet,
-                result: ACEConstantCallback.Failed,
+                result: ACEConstantResultForCallback.Failed,
                 message: 'Not connect to the internet.',
                 apiName: value.type,
               }
@@ -518,7 +518,7 @@ export class ACS {
             const result: ACEResponseToCaller = {
               taskHash: `${value.type}::0408`,
               code: ACEResultCode.UnknownConnectStateToTheInternet,
-              result: ACEConstantCallback.Failed,
+              result: ACEConstantResultForCallback.Failed,
               message: 'Unknown connect state to the internet.',
               apiName: value.type,
             }

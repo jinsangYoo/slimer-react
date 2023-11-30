@@ -9,7 +9,7 @@ import ACEntityForST from './ACEntityForST'
 import ACEntityForVT from './ACEntityForVT'
 import {
   ACEResponseToCaller,
-  ACEConstantCallback,
+  ACEConstantResultForCallback,
   ACEResultCode,
   ACEGender,
   ACEMaritalStatus,
@@ -72,7 +72,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
         vt: this.getVT().getObjectForTS(),
         versions: ACEParameterUtil.getSdkVersionWithPatch(),
       },
-      result: ACEConstantCallback.Success,
+      result: ACEConstantResultForCallback.Success,
     }
   }
 
@@ -185,7 +185,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
           const response: ACEResponseToCaller = {
             taskHash: '0003',
             code: ACEResultCode.Success,
-            result: ACEConstantCallback.Success,
+            result: ACEConstantResultForCallback.Success,
             message: 'SDK init step one done',
             apiName: 'init',
           }
@@ -201,7 +201,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
           const response: ACEResponseToCaller = {
             taskHash: '0004',
             code: ACEResultCode.FailAfterRequest,
-            result: ACEConstantCallback.Failed,
+            result: ACEConstantResultForCallback.Failed,
             message: 'SDK init step one fail',
             apiName: 'init',
           }

@@ -1,6 +1,6 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
 
-export const ACEConstantCallback = {
+export const ACEConstantResultForCallback = {
   DefaultMessage: 'done',
   Failed: 'fail',
   Success: 'success',

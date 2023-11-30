@@ -7,7 +7,7 @@ import IACEParameterUtil from '../parameter/IACEParameterUtil'
 import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
 import {
   ACEResponseToCaller,
-  ACEConstantCallback,
+  ACEConstantResultForCallback,
   ACEResultCode,
   DetailOfSDK,
   STVT,
@@ -45,7 +45,7 @@ export default class ACECommonStaticConfig {
       const response: ACEResponseToCaller = {
         taskHash: '0000',
         code: ACEResultCode.AlreadyInitialized,
-        result: ACEConstantCallback[ACEConstantCallback.Failed],
+        result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
         message: 'Already init SDK.',
         apiName: 'init',
       }
@@ -88,7 +88,7 @@ export default class ACECommonStaticConfig {
       const response: ACEResponseToCaller = {
         taskHash: '0000',
         code: ACEResultCode.NeedToCheckAceConfiguration,
-        result: ACEConstantCallback[ACEConstantCallback.Failed],
+        result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
         message: 'Please check the configuration.',
         apiName: 'init',
       }
@@ -129,7 +129,7 @@ export default class ACECommonStaticConfig {
             const response: ACEResponseToCaller = {
               taskHash: '0001',
               code: ACEResultCode.CanNotRequestToPolicy,
-              result: ACEConstantCallback[ACEConstantCallback.Failed],
+              result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
               message: 'Can not request policy.',
               apiName: 'init',
             }
@@ -167,7 +167,7 @@ export default class ACECommonStaticConfig {
               const response: ACEResponseToCaller = {
                 taskHash: '0002',
                 code: ACEResultCode.CanNotRequestToPolicy,
-                result: ACEConstantCallback[ACEConstantCallback.Failed],
+                result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
                 message: 'Can not request policy.',
                 apiName: 'init',
               }
@@ -231,7 +231,7 @@ export default class ACECommonStaticConfig {
         debug: this._staticConfigImpl.isDebug(),
         enablePrivacyPolicy: this._staticConfigImpl.getEnablePrivacyPolicy(),
       }) ?? {
-        result: ACEConstantCallback.Failed,
+        result: ACEConstantResultForCallback.Failed,
         message: `SDK is maybe that don't initialize.`,
       }
     )

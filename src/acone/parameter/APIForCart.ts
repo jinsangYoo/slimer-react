@@ -58,7 +58,7 @@ export default class APIForCart extends ACOTask {
           const res: ACEResponseToCaller = {
             taskHash: `${this._logSource}::0011`,
             code: ACEResultCode.Success,
-            result: ACEConstantCallback[ACEConstantCallback.Success],
+            result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
             message: 'Done update st and vt.',
             apiName: this.getDescription(),
           }
@@ -71,7 +71,7 @@ export default class APIForCart extends ACOTask {
           const res: ACEResponseToCaller = {
             taskHash: `${this._logSource}::0012`,
             code: ACEResultCode.FailLoadVT,
-            result: ACEConstantCallback[ACEConstantCallback.Failed],
+            result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
             message: 'Fail load vt.',
             apiName: this.getDescription(),
           }
