@@ -16,6 +16,8 @@ import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import {ResultAfterSaveInStorage} from './parameter/ResultAfterSaveInStorage'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
+import {QueueManager} from '../common/queue'
+import {ACParams} from './acparam'
 
 export default class ACSPostMessage {
   private static _TAG = 'ACS.PM'
@@ -112,6 +114,7 @@ export default class ACSPostMessage {
       ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
         if (error) {
           ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
+          QueueManager.push(ACParams.init(ACParams.TYPE.EVENT, '네이티브SDK연동'))
         } else if (innerResult) {
           ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
         }
