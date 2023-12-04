@@ -86,7 +86,7 @@ export class ACS {
   public static send(value: ACParams, callback?: ACSCallback): Promise<ACEResponseToCaller> | void {
     ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerManager.getIsCompletePolicy()}`)
     if (!ControlTowerManager.getIsCompletePolicy()) {
-      QueueManager.setWaitQueue(value)
+      QueueManager.push(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0405`,
         code: ACEResultCode.NotReceivePolicy,
@@ -107,7 +107,7 @@ export class ACS {
 
     ACELog.d(ACS._TAG, `send::isEnableByPolicy: ${ControlTowerManager.isEnableByPolicy()}`)
     if (!ControlTowerManager.isEnableByPolicy()) {
-      QueueManager.setWaitQueue(value)
+      QueueManager.push(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0406`,
         code: ACEResultCode.DisabledByPolicy,
@@ -127,7 +127,7 @@ export class ACS {
     }
 
     if (QueueManager.isLock()) {
-      QueueManager.setBufferQueue(value)
+      QueueManager.push(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0409`,
         code: ACEResultCode.TooBusyWillSendAfterDone,
