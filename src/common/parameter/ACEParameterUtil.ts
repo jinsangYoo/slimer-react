@@ -21,7 +21,7 @@ export default class ACEParameterUtil {
       if (typeof window !== 'undefined') {
         return window.location.hostname
       } else {
-        return String(document.location)
+        return document.location.hostname
       }
     }
   }
