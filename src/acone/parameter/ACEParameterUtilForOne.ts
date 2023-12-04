@@ -133,7 +133,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
 
   didUpdateByPostMessage(): void {
     const st = this.getST()
-    if (st.getGetTS() !== ACOneConstantSt.DefaultTS && st.getGetTS() === st.getStartTS()) {
+    if (st.getGetTS() !== ACOneConstantSt.DefaultTS) {
       this.setKeepSession()
     }
     this.setInnerIncomingRI()
@@ -599,7 +599,6 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   public setURL(value: string): void {
     value = onlyLetteringAtStartIndex(value)
     const _parametersForOne = ACEParametersForOne.getInstance()
-    ACELog.d(ACEParameterUtilForOne._TAG, `>>${ACEParameterUtil.getPackageNameOrBundleID()}/${value}<<`)
     _parametersForOne.setURL(`${ACEParameterUtil.getPackageNameOrBundleID()}/${value}`)
   }
 
