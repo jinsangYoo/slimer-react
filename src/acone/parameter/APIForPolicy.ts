@@ -3,7 +3,7 @@ import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
 import ACEPolicyParameterUtil from '../../common/policy/ACEPolicyParameterUtil'
-import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
+import ControlTowerManager from '../../common/controltower/ControlTowerManager'
 import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util'
 import ACELog from '../../common/logger/ACELog'
 import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
@@ -68,11 +68,11 @@ export default class APIForPolicy extends ACOTask {
     ACELog.d(APIForPolicy._TAG, 'completed, before savePolicy')
     ACEPolicyParameterUtil.getInstance().savePolicy(this._response)
     ACELog.d(APIForPolicy._TAG, 'completed, after savePolicy')
-    ControlTowerSingleton.getInstance().succeedRequestPolicy()
+    ControlTowerManager.getInstance().succeedRequestPolicy()
   }
 
   public failed(err: any) {
     super.failed(err)
-    ControlTowerSingleton.getInstance().failedRequestPolicy()
+    ControlTowerManager.getInstance().failedRequestPolicy()
   }
 }

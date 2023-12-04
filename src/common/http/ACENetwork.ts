@@ -5,7 +5,7 @@ import {NetworkMode, NetworkRequestType} from '../constant/SDKMode'
 import {mapValueStringToObject} from '../util/MapUtil'
 import ACELog from '../logger/ACELog'
 
-import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
+import ControlTowerManager from '../controltower/ControlTowerManager'
 import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
 import ACEPolicyParameters from '../policy/ACEPolicyParameters'
@@ -19,7 +19,7 @@ export class ACENetwork {
   private static _TAG = 'Net'
 
   private static networkRequestTypeToParams(requestType: NetworkRequestType, parmas?: requestParams): ACENetworkParams {
-    const currentNetworkMode = ControlTowerSingleton.getInstance().getNetworkMode()
+    const currentNetworkMode = ControlTowerManager.getInstance().getNetworkMode()
     ACELog.d(
       ACENetwork._TAG,
       `networkRequestTypeToParams requestType: ${NetworkRequestType[requestType]}, currentNetworkMode:${NetworkMode[currentNetworkMode]}`,

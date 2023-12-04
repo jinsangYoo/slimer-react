@@ -25,7 +25,7 @@ import IACBuyMode from '../constant/IACBuyMode'
 import JN from '../constant/JN'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import {AceConfiguration} from '../aceconfiguration'
-import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
+import ControlTowerManager from '../../common/controltower/ControlTowerManager'
 import {LIB_VERSION} from '../../version'
 import Incoming from '../../common/constant/Incoming'
 import ACOneConstantSt from '../constant/ACOneConstantSt'
@@ -53,17 +53,17 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
   getSdkDetails(value: AceConfiguration): DetailOfSDK {
     const _parametersForOne = ACEParametersForOne.getInstance()
-    const _controlTowerSingleton = ControlTowerSingleton.getInstance()
+    const _controlTowerManager = ControlTowerManager.getInstance()
     return {
       statuses: {
         configuration: {
           ...value,
         },
         controlTower: {
-          isCompletePolicy: _controlTowerSingleton.getIsCompletePolicy(),
-          isForceStop: _controlTowerSingleton.isEnableForceStop(),
+          isCompletePolicy: _controlTowerManager.getIsCompletePolicy(),
+          isForceStop: _controlTowerManager.isEnableForceStop(),
           isInstallReferrerWaitDone: false,
-          isSDKEnabled: _controlTowerSingleton.isEnableByPolicy(),
+          isSDKEnabled: _controlTowerManager.isEnableByPolicy(),
         },
       },
       internal: {

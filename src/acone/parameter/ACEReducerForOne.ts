@@ -15,7 +15,7 @@ import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import {ACEConstantResultForCallback, ACEResultCode} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
-import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
+import ControlTowerManager from '../../common/controltower/ControlTowerManager'
 import {ACProduct} from '../acproduct'
 import {ACParams} from '../acparam'
 import {ACEGender, ACEMaritalStatus} from '../../common/constant/ACEPublicStaticConfig'
@@ -38,7 +38,7 @@ export default class ACEReducerForOne {
   private static reducer(params: ITaskParams): Promise<ACEResponseToCaller>
   private static reducer(params: ITaskParams, callback?: ACSCallback | undefined): Promise<ACEResponseToCaller> | void {
     if (params.type !== ACEofAPIForOne.Policy) {
-      if (!ControlTowerSingleton.isEnableByPolicy()) {
+      if (!ControlTowerManager.isEnableByPolicy()) {
         const result: ACEResponseToCaller = {
           taskHash: `${params.type}::0006`,
           code: ACEResultCode.NotFoundPolicyInformation,

@@ -2,7 +2,7 @@ import {ACParams} from './acparam'
 import {AceConfiguration} from './aceconfiguration'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
-import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
+import ControlTowerManager from '../common/controltower/ControlTowerManager'
 import type {ACSCallback, ACEResponseToCaller, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
 import {ACEConstantResultForCallback, ACEResultCode} from '../common/constant/ACEPublicStaticConfig'
 import ACELog from '../common/logger/ACELog'
@@ -41,7 +41,7 @@ export class ACS {
   }
 
   private callbackForQueue = (param: ACParams | undefined) => {
-    if (param && ControlTowerSingleton.isEnableByPolicy()) {
+    if (param && ControlTowerManager.isEnableByPolicy()) {
       ACELog.d(ACS._TAG, `Start task what pop waitQueue. ${param.type}`)
       ACS._send(param, this.callbackForTaskInQueue)
     }
@@ -84,8 +84,8 @@ export class ACS {
   public static send(value: ACParams, callback: ACSCallback): void
   public static send(value: ACParams): Promise<ACEResponseToCaller>
   public static send(value: ACParams, callback?: ACSCallback): Promise<ACEResponseToCaller> | void {
-    ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerSingleton.getIsCompletePolicy()}`)
-    if (!ControlTowerSingleton.getIsCompletePolicy()) {
+    ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerManager.getIsCompletePolicy()}`)
+    if (!ControlTowerManager.getIsCompletePolicy()) {
       QueueManager.setWaitQueue(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0405`,
@@ -105,8 +105,8 @@ export class ACS {
       }
     }
 
-    ACELog.d(ACS._TAG, `send::isEnableByPolicy: ${ControlTowerSingleton.isEnableByPolicy()}`)
-    if (!ControlTowerSingleton.isEnableByPolicy()) {
+    ACELog.d(ACS._TAG, `send::isEnableByPolicy: ${ControlTowerManager.isEnableByPolicy()}`)
+    if (!ControlTowerManager.isEnableByPolicy()) {
       QueueManager.setWaitQueue(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0406`,
@@ -151,7 +151,7 @@ export class ACS {
 
   //#region detail of SDK
   public static isEnableSDK(): boolean {
-    return ControlTowerSingleton.getIsSDKEnabled()
+    return ControlTowerManager.getIsSDKEnabled()
   }
 
   public static getSdkVersion(): string {

@@ -3,7 +3,7 @@ import {HttpURLConnection} from '../constant/Network'
 import POLICY from '../constant/Policy'
 import ACEPolicyParameters from './ACEPolicyParameters'
 import {isEmpty} from '../util/TextUtils'
-import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
+import ControlTowerManager from '../controltower/ControlTowerManager'
 import ACEConstantInteger from '../constant/ACEConstantInteger'
 import ACELog from '../logger/ACELog'
 
@@ -38,9 +38,9 @@ export default class ACEPolicyParameterUtil {
     if (_sdk_enable) {
       // ACELog.d(ACEPolicyParameterUtil._TAG, `1. in if key: ${POLICY.RESPONSE_SDK_ENABLE}, value: ${_sdk_enable}`)
       _policyParameters.setCpAllow(_sdk_enable)
-      if (!ControlTowerSingleton.getInstance().isEnableByPolicy()) {
+      if (!ControlTowerManager.getInstance().isEnableByPolicy()) {
         ACELog.d(ACEPolicyParameterUtil._TAG, 'disabled by policy.')
-        ControlTowerSingleton.getInstance().setSDKDisable()
+        ControlTowerManager.getInstance().setSDKDisable()
       }
     }
 
@@ -80,7 +80,7 @@ export default class ACEPolicyParameterUtil {
       const _value = responseHeaders[POLICY.RESPONSE_SOURCE_IP.toLowerCase()]
       if (!isEmpty(_value) && _value === POLICY.FLAG_SDK_FORCE_STOP) {
         ACELog.d(ACEPolicyParameterUtil._TAG, 'force stop enabled.')
-        ControlTowerSingleton.getInstance().enableForceStop()
+        ControlTowerManager.getInstance().enableForceStop()
       }
     }
 

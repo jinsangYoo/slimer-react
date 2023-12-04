@@ -4,7 +4,7 @@ import ACEOneStaticConfig from '../../acone/config/ACEOneStaticConfig'
 import ACECONSTANT from '../constant/ACEConstant'
 import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import IACEParameterUtil from '../parameter/IACEParameterUtil'
-import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
+import ControlTowerManager from '../controltower/ControlTowerManager'
 import {
   ACEResponseToCaller,
   ACEConstantResultForCallback,
@@ -31,7 +31,7 @@ export default class ACECommonStaticConfig {
   ): Promise<ACEResponseToCaller> | void {
     ACELog.i(
       ACECommonStaticConfig._TAG,
-      `SDK mode: ${ControlTowerSingleton.getCurrentSDKkModeName()}, network mode: ${ControlTowerSingleton.getCurrentNetworkModeName()}`,
+      `SDK mode: ${ControlTowerManager.getCurrentSDKkModeName()}, network mode: ${ControlTowerManager.getCurrentNetworkModeName()}`,
     )
 
     ACELog.i(
@@ -39,7 +39,7 @@ export default class ACECommonStaticConfig {
       `NHN DATA SDK version: ${ACEParameterUtil.getSdkVersionWithPatchToJsonStringify()}`,
     )
 
-    if (ControlTowerSingleton.isEnableByPolicy()) {
+    if (ControlTowerManager.isEnableByPolicy()) {
       ACELog.d(ACECommonStaticConfig._TAG, 'Already init SDK.')
 
       const response: ACEResponseToCaller = {
@@ -60,23 +60,23 @@ export default class ACECommonStaticConfig {
     } else {
       if (this._staticConfigImpl) {
         ACELog.i(ACECommonStaticConfig._TAG, 'Reinit SDK.')
-        ControlTowerSingleton.reset()
+        ControlTowerManager.reset()
       } else {
         ACELog.i(ACECommonStaticConfig._TAG, 'Start init SDK.')
       }
 
       // ************************************************ development mode [S]
-      ControlTowerSingleton.setDevSDKMode()
-      ControlTowerSingleton.getInstance().setHomeDevNetworkMode()
-      // ControlTowerSingleton.setDefaultNetworkMode() // 공개 정책 서버를 쓰도록
+      ControlTowerManager.setDevSDKMode()
+      ControlTowerManager.getInstance().setHomeDevNetworkMode()
+      // ControlTowerManager.setDefaultNetworkMode() // 공개 정책 서버를 쓰도록
       // ************************************************ development mode [E]
     }
 
-    if (ControlTowerSingleton.isDevSDKMode()) {
+    if (ControlTowerManager.isDevSDKMode()) {
       ACELog.d(ACECommonStaticConfig._TAG, 'Enable development mode in SDK.')
       ACELog.d(
         ACECommonStaticConfig._TAG,
-        `Current network mode: ${ControlTowerSingleton.getInstance().printNetworkMode()}`,
+        `Current network mode: ${ControlTowerManager.getInstance().printNetworkMode()}`,
       )
       ACELog.d(ACECommonStaticConfig._TAG, printMode())
     }
