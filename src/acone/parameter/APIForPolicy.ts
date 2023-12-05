@@ -4,7 +4,7 @@ import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
 import ACEPolicyParameterUtil from '../../common/policy/ACEPolicyParameterUtil'
 import ControlTowerManager from '../../common/controltower/ControlTowerManager'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util'
+import {makeSuccessCallbackWithNetworkResult, makeFailCallbackWithNetworkResult} from '../../common/util'
 import ACELog from '../../common/logger/ACELog'
 import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
@@ -56,9 +56,9 @@ export default class APIForPolicy extends ACOTask {
     super.doneWork(callback)
     if (callback) {
       if (this._error) {
-        callback(this.getNetworkError(), makeFailCallbackParams(this))
+        callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
       } else {
-        callback(undefined, makeSuccessCallbackParams(this))
+        callback(undefined, makeSuccessCallbackWithNetworkResult(this))
       }
     }
   }

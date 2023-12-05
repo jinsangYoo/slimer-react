@@ -2,7 +2,7 @@ import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util'
+import {makeSuccessCallbackWithNetworkResult, makeFailCallbackWithNetworkResult} from '../../common/util'
 import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
@@ -127,9 +127,9 @@ export default class APIForCart extends ACOTask {
 
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })
@@ -137,9 +137,9 @@ export default class APIForCart extends ACOTask {
         ACELog.d(APIForCart._TAG, `resetSessionAndParameterAfterSendWithParams::err: ${err}`)
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })

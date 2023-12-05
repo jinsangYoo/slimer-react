@@ -2,7 +2,7 @@ import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util'
+import {makeSuccessCallbackWithNetworkResult, makeFailCallbackWithNetworkResult} from '../../common/util'
 import ACELog from '../../common/logger/ACELog'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
 import TP from '../constant/TP'
@@ -34,13 +34,13 @@ export default class APIForPL extends ACOTask {
     _parameterUtilForOne
       .loadVT()
       .then(response => {
-        ACELog.d(APIForPL._p1TAG, 'Done load vt.', response)
-        ACELog.d(APIForPL._p1TAG, 'vt after loadVT()', _parameterUtilForOne.getVT())
+        // ACELog.d(APIForPL._p1TAG, 'Done load vt.', response)
+        // ACELog.d(APIForPL._p1TAG, 'vt after loadVT()', _parameterUtilForOne.getVT())
         return _parameterUtilForOne.updateSTnVT(this.assignWillUpdateVt())
       })
       .then(response => {
-        ACELog.d(APIForPL._p1TAG, 'Done update st and vt.', response)
-        ACELog.d(APIForPL._p1TAG, 'vt after updateSTnVT()', _parameterUtilForOne.getVT())
+        // ACELog.d(APIForPL._p1TAG, 'Done update st and vt.', response)
+        // ACELog.d(APIForPL._p1TAG, 'vt after updateSTnVT()', _parameterUtilForOne.getVT())
         if (callback) {
           const res: ACEResponseToCaller = {
             taskHash: `${this._logSource}::0011`,
@@ -107,9 +107,9 @@ export default class APIForPL extends ACOTask {
         ACELog.d(APIForPL._p1TAG, `resetSessionAndParameterAfterSendWithParams::result: ${result}`)
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })
@@ -117,9 +117,9 @@ export default class APIForPL extends ACOTask {
         ACELog.d(APIForPL._p1TAG, `resetSessionAndParameterAfterSendWithParams::err: ${err}`)
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })
