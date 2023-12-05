@@ -96,7 +96,7 @@ export class ACS {
       }
 
       if (callback) {
-        callback(undefined, result)
+        callback(new Error('Not receive policy for SDK. It will send after init.'), result)
         return
       } else {
         return new Promise((resolveToOut, rejectToOut) => {
@@ -117,7 +117,7 @@ export class ACS {
       }
 
       if (callback) {
-        callback(undefined, result)
+        callback(new Error('Disabled by policy of SDK. It will send after init.'), result)
         return
       } else {
         return new Promise((resolveToOut, rejectToOut) => {
@@ -137,7 +137,7 @@ export class ACS {
       }
 
       if (callback) {
-        callback(undefined, result)
+        callback(new Error('Too busy. It will send after done.'), result)
         return
       } else {
         return new Promise((resolveToOut, rejectToOut) => {
