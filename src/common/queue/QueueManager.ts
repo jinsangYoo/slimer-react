@@ -51,13 +51,13 @@ export class QueueManager {
       queueWrapper.queue.push(task)
       ACELog.d(
         QueueManager._TAG,
-        `Did add at queue name: ${queueWrapper.name} length
+        `Did add task: ${task.type} at queue: ${queueWrapper.name}, length
     : ${queueWrapper.queue.length}`,
       )
     } else {
       ACELog.d(
         QueueManager._TAG,
-        `Did overflow, not add at queue name: ${queueWrapper.name} length
+        `Did overflow, not add task: ${task.type} at queue name: ${queueWrapper.name} length
     : ${queueWrapper.queue.length}`,
       )
     }
