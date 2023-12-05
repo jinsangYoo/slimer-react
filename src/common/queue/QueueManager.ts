@@ -62,6 +62,17 @@ export class QueueManager {
       )
     }
   }
+
+  public static pushAtFirst(task: ACParams): void {
+    const queueWrapper = this.getQueue()
+    ACELog.d(QueueManager._TAG, `will push on ${queueWrapper.name} at First`)
+    queueWrapper.queue.unshift(task)
+    ACELog.d(
+      QueueManager._TAG,
+      `Did add task: ${task.type} at queue: ${queueWrapper.name}, length
+    : ${queueWrapper.queue.length}`,
+    )
+  }
   //#endregion
 
   //#region manager API
