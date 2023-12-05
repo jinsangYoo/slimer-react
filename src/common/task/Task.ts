@@ -9,7 +9,6 @@ import type {
 import ACELog from '../logger/ACELog'
 
 export default class Task {
-  // private static _c_TAG = 'Task'
   protected _date: number
   protected _response: ACENetworkResult
   protected _error: JSON

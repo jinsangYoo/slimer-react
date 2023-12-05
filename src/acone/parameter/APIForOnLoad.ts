@@ -7,6 +7,7 @@ import {getBrowserName, isEqualSelfWindowAndParentWindow} from '../../common/uti
 import ACSPostMessageType from '../../common/constant/ACSPostMessageType'
 import type {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
+import {makeSuccessCallback, makeFailCallback} from '../../common/util'
 
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
@@ -52,6 +53,10 @@ export default class APIForOnLoad extends ACOTask {
       }
     } else {
       ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
+      this.failed({
+        result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
+        message: 'Maybe root for position.',
+      })
       if (callback) {
         const res: ACEResponseToCaller = {
           taskHash: `${this._logSource}::0014`,
@@ -60,7 +65,7 @@ export default class APIForOnLoad extends ACOTask {
           message: 'Maybe root for position.',
           apiName: this.getDescription(),
         }
-        callback(new Error('0014, Maybe root for position.'), res)
+        callback(undefined, res)
       }
     }
   }
@@ -68,11 +73,17 @@ export default class APIForOnLoad extends ACOTask {
   public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForOnLoad._p1TAG, 'didWork')
-    this.doneWork(callback)
+    if (callback) {
+      if (this._error) {
+        callback(this.getNetworkError(), makeFailCallback(this))
+      } else {
+        callback(undefined, makeSuccessCallback(this))
+      }
+    }
   }
 
-  public doneWork(callback: ACSCallback | undefined) {
-    super.doneWork(callback)
-    ACELog.d(APIForOnLoad._p1TAG, 'doneWork')
+  public failed(err: any) {
+    super.failed(err)
+    ACELog.d(APIForOnLoad._p1TAG, 'failed')
   }
 }
