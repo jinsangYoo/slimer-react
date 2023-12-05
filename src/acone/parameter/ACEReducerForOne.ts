@@ -381,13 +381,13 @@ export default class ACEReducerForOne {
     )
   }
 
-  public static policy(callback: ACSCallback | undefined): void
-  public static policy(): Promise<ACEResponseToCaller>
-  public static policy(callback?: ACSCallback | undefined): Promise<ACEResponseToCaller> | void {
+  public static policy(key: string, callback: ACSCallback | undefined): void
+  public static policy(key: string): Promise<ACEResponseToCaller>
+  public static policy(key: string, callback?: ACSCallback | undefined): Promise<ACEResponseToCaller> | void {
     return ACEReducerForOne.reducer(
       {
         type: ACEofAPIForOne.Policy,
-        payload: {},
+        payload: {key},
         error: false,
         debugParams: {},
       },

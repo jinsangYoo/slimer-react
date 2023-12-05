@@ -22,11 +22,12 @@ export class ACENetwork {
     const currentNetworkMode = ControlTowerManager.getInstance().getNetworkMode()
     ACELog.d(
       ACENetwork._TAG,
-      `networkRequestTypeToParams requestType: ${NetworkRequestType[requestType]}, currentNetworkMode:${NetworkMode[currentNetworkMode]}`,
+      `networkRequestTypeToParams requestType: ${NetworkRequestType[requestType]}, currentNetworkMode:${NetworkMode[currentNetworkMode]}, parmas:`,
+      parmas ?? {},
     )
     return {
       baseUrl: this.networkRequestTypeToBaseURLs(currentNetworkMode, requestType),
-      requestHeaders: this.networkRequestTypeToHeaders(currentNetworkMode, requestType),
+      requestHeaders: this.networkRequestTypeToHeaders(currentNetworkMode, requestType, parmas),
       url: this.networkRequestTypeToURLs(currentNetworkMode, requestType),
       params: this.networkRequestTypeToURLParams(requestType),
     }
@@ -107,7 +108,7 @@ export class ACENetwork {
       case NetworkRequestType.LOG:
         return this.logToRequestHeaders(networkMode)
       case NetworkRequestType.POLICY:
-        return this.policyToRequestHeaders(networkMode)
+        return this.policyToRequestHeaders(networkMode, parmas)
     }
   }
   //#endregion
@@ -160,7 +161,7 @@ export class ACENetwork {
     completed?: (response: AxiosResponse) => void,
     failed?: (err: object) => void,
   ): void {
-    ACENetwork.request(ACENetwork.networkRequestTypeToParams(NetworkRequestType.POLICY), completed, failed)
+    ACENetwork.request(ACENetwork.networkRequestTypeToParams(NetworkRequestType.POLICY, parmas), completed, failed)
   }
 
   public static requestToLog(completed?: (response: AxiosResponse) => void, failed?: (err: object) => void): void {
