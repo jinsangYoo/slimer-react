@@ -5,6 +5,8 @@ import ACELog from '../../common/logger/ACELog'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import {getBrowserName, isEqualSelfWindowAndParentWindow} from '../../common/util'
 import ACSPostMessageType from '../../common/constant/ACSPostMessageType'
+import type {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
@@ -33,12 +35,33 @@ export default class APIForOnLoad extends ACOTask {
         uniqueKey: this.key,
       }
       ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
-      ACELog.d(APIForOnLoad._p1TAG, `this.parentOrigin:${this.parentOrigin.join(',')}`)
       this.parentOrigin.map(origin => {
         window.parent.postMessage(paramToWindowParentPostMessage, origin)
       })
+      if (callback) {
+        const res: ACEResponseToCaller = {
+          taskHash: `${this._logSource}::0013`,
+          code: ACEResultCode.Success,
+          result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
+          message: `Postmessage to window.parent(${ACSPostMessageType.reqReady}, parentOrigin:${this.parentOrigin.join(
+            ', ',
+          )}).`,
+          apiName: this.getDescription(),
+        }
+        callback(undefined, res)
+      }
     } else {
       ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
+      if (callback) {
+        const res: ACEResponseToCaller = {
+          taskHash: `${this._logSource}::0014`,
+          code: ACEResultCode.MaybeRootForPosition,
+          result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
+          message: 'Maybe root for position.',
+          apiName: this.getDescription(),
+        }
+        callback(new Error('0014, Maybe root for position.'), res)
+      }
     }
   }
 
