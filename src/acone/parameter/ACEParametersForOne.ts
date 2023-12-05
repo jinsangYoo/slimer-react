@@ -878,7 +878,7 @@ export default class ACEParametersForOne extends ACEParameters {
   public loadVT(callback?: ((error?: Error | null, result?: object) => void) | undefined): Promise<object> | void {
     if (!globalThis.Promise) {
       getItem(ACOneConstantVt.KeyInStorage, (err, result) => {
-        ACELog.d(ACEParametersForOne._TAG, 'in loadVT::in cb::result', JSON.parse(result ?? '{"result":"undefined"}'))
+        // ACELog.d(ACEParametersForOne._TAG, 'in loadVT::in cb::result', JSON.parse(result ?? '{"result":"undefined"}'))
         if (callback) {
           if (err) {
             callback(err, {

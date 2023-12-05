@@ -180,7 +180,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
 
           this.getVT()
           this.loadUniqueKeyForSDK()
-          ACELog.d(ACEParameterUtilForOne._TAG, 'Promise.all vt:', this.getVT())
+          // ACELog.d(ACEParameterUtilForOne._TAG, 'Promise.all vt:', this.getVT())
 
           const response: ACEResponseToCaller = {
             taskHash: '0003',
