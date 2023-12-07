@@ -105,14 +105,15 @@ export default class ACSPostMessage {
 
   private callbackUpdateByPostMessage = (eventName?: string) => {
     ACECommonStaticConfig.didUpdateByPostMessage()
-    ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
-      if (error) {
-        ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
-        QueueManager.push(ACParams.init(ACParams.TYPE.EVENT, eventName ?? '네이티브SDK연동'))
-      } else if (innerResult) {
-        ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
-      }
-    }, eventName ?? '네이티브SDK연동')
+    !isEmpty(eventName) &&
+      ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
+        if (error) {
+          ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
+          QueueManager.push(ACParams.init(ACParams.TYPE.EVENT, eventName))
+        } else if (innerResult) {
+          ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
+        }
+      }, eventName)
   }
 
   private addIframeRef(
