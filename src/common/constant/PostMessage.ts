@@ -44,6 +44,7 @@ export type ACSForMessage =
     } & MessageForIFrame)
   | ({
       type: 'ACS.reqOnLoad'
+      payload: PayloadForOnLoad
     } & MessageForIFrame)
   | ({
       type: 'ACS.resOnLoad'
@@ -51,25 +52,32 @@ export type ACSForMessage =
         key: string
         device: string
         ts?: PayloadForTS
-      } & PayloadForAdTracking
+      } & PayloadForOnLoad &
+        PayloadForAdTracking
     } & MessageForIFrame)
-  | ({type: 'ACS.reqReady'} & MessageForIFrame & MessageForReqReady)
+  | ({type: 'ACS.reqReady'; payload: PayloadForReqReady} & MessageForIFrame)
   | ({
       type: 'ACS.resReady'
       payload: {
         key: string
         device: string
         ts?: PayloadForTS
-      } & MessageForResReady &
+      } & PayloadForResReady &
         PayloadForAdTracking
     } & MessageForIFrame)
 
-export type MessageForReqReady = {
-  uniqueKey: string
+export type PayloadForOnLoad = {
+  eventName?: string
 }
 
-export type MessageForResReady = {
+export type PayloadForReqReady = {
   uniqueKey: string
+  eventName?: string
+}
+
+export type PayloadForResReady = {
+  uniqueKey: string
+  eventName?: string
 }
 
 export type RequestReady = {
