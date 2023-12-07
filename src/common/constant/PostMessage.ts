@@ -27,7 +27,7 @@ export type PayloadForTS = {
 export type PayloadForNative = {
   key: string
   device: string
-  ts: string
+  ts?: string
 }
 
 export type ACSForMessage =

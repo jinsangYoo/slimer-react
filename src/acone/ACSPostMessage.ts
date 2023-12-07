@@ -18,6 +18,7 @@ import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {QueueManager} from '../common/queue'
 import {ACParams} from './acparam'
+import {STVT} from '../common/constant/ACEPublicStaticConfig'
 
 export default class ACSPostMessage {
   private static _TAG = 'ACS.PM'
@@ -323,14 +324,40 @@ export default class ACSPostMessage {
       })
     }
     const injectToReactInHandleMessage = (
-      params: {type: 'ACS.injectToReact'; payload: PayloadForNative & PayloadForAdTracking} & MessageForIFrame,
+      params: {
+        type: 'ACS.injectToReact'
+        payload: PayloadForNative & PayloadForOnLoad & PayloadForAdTracking
+      } & MessageForIFrame,
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'injectToReactInHandleMessage::params:', params)
-      ACELog.d(ACSPostMessage._TAG, 'injectToReactInHandleMessage::params.payload.ts:', JSON.parse(params.payload.ts))
 
-      ACECommonStaticConfig.updateByPostMessage(params.payload.key, this.callbackUpdateByPostMessage, {
-        ...JSON.parse(params.payload.ts),
-      })
+      let _didTS: STVT | undefined
+      if (params.payload.ts && !isEmpty(params.payload.ts)) {
+        ACELog.d(ACSPostMessage._TAG, 'injectToReactInHandleMessage::params.payload.ts:', JSON.parse(params.payload.ts))
+        let _willParseTS = JSON.parse(params.payload.ts)
+        _didTS = {
+          st: {
+            getts: _willParseTS.st.getts,
+            insenginets: _willParseTS.st.insenginets,
+            referts: _willParseTS.st.referts,
+            startts: _willParseTS.st.startts,
+          },
+          vt: {
+            vts: _willParseTS.vt.vts,
+            visitCount: _willParseTS.vt.visitCount.toString(),
+            buyTimeTS: _willParseTS.vt.buyTimeTS,
+            buyCount: _willParseTS.vt.buyCount.toString(),
+            pcStamp: _willParseTS.vt.pcStamp,
+          },
+        }
+      }
+
+      ACECommonStaticConfig.updateByPostMessage(
+        params.payload.key,
+        this.callbackUpdateByPostMessage,
+        params.payload.eventName,
+        _didTS,
+      )
     }
     const reqOnLoadInHandleMessage = (
       params: {
