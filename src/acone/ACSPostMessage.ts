@@ -7,14 +7,14 @@ import type {
   PayloadForTS,
   PayloadForAdTracking,
   RequestReady,
-  MessageForReqReady,
-  MessageForResReady,
+  PayloadForReqReady,
+  PayloadForResReady,
+  PayloadForOnLoad,
   PayloadForNative,
 } from '../common/constant/PostMessage'
 import ACSPostMessageType from '../common/constant/ACSPostMessageType'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACECONSTANT from '../common/constant/ACEConstant'
-import {ResultAfterSaveInStorage} from './parameter/ResultAfterSaveInStorage'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {QueueManager} from '../common/queue'
 import {ACParams} from './acparam'
@@ -103,23 +103,16 @@ export default class ACSPostMessage {
     }, _latency)
   }
 
-  private callbackUpdateByPostMessage = (error?: Error | null, result?: ResultAfterSaveInStorage) => {
-    if (error) {
-      ACELog.e(ACSPostMessage._TAG, 'Fail to update for ts.', error)
-    }
-    if (result) {
-      ACELog.d(ACSPostMessage._TAG, 'Success to update for ts.')
-      ACELog.d(ACSPostMessage._TAG, `result.getKey: ${result.getKey}`, JSON.parse(result.getValue))
-      ACECommonStaticConfig.didUpdateByPostMessage()
-      ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
-        if (error) {
-          ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
-          QueueManager.push(ACParams.init(ACParams.TYPE.EVENT, '네이티브SDK연동'))
-        } else if (innerResult) {
-          ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
-        }
-      }, '네이티브SDK연동')
-    }
+  private callbackUpdateByPostMessage = (eventName?: string) => {
+    ACECommonStaticConfig.didUpdateByPostMessage()
+    ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
+      if (error) {
+        ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
+        QueueManager.push(ACParams.init(ACParams.TYPE.EVENT, eventName ?? '네이티브SDK연동'))
+      } else if (innerResult) {
+        ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
+      }
+    }, eventName ?? '네이티브SDK연동')
   }
 
   private addIframeRef(
@@ -139,6 +132,7 @@ export default class ACSPostMessage {
     const reqOnLoadInOnMessage = (
       params: {
         type: string
+        payload: PayloadForOnLoad
       } & MessageForIFrame,
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'reqOnLoadInOnMessage::params: ', params)
@@ -151,6 +145,7 @@ export default class ACSPostMessage {
         payload: {
           key: ACECommonStaticConfig.getKey(),
           device: ACECONSTANT.DEVICE,
+          eventName: params.payload.eventName,
           adid: 'adid_test',
           adeld: 'adeld_test',
           ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
@@ -164,13 +159,15 @@ export default class ACSPostMessage {
           key: string
           device: string
           ts?: PayloadForTS
-        } & PayloadForAdTracking
+        } & PayloadForOnLoad &
+          PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'finish::resOnLoadInOnMessage::params: ', params)
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
         this.callbackUpdateByPostMessage,
+        params.payload.eventName,
         params.payload.ts ? {...params.payload.ts} : undefined,
       )
     }
@@ -321,6 +318,7 @@ export default class ACSPostMessage {
         type: ACSPostMessageType.reqOnLoad,
         token: params.token,
         location: global.location.origin.toString(),
+        payload: {},
       })
     }
     const injectToReactInHandleMessage = (
@@ -355,13 +353,13 @@ export default class ACSPostMessage {
     const reqReadyInHandleMessage = (
       params: {
         type: 'ACS.reqReady'
-      } & MessageForIFrame &
-        MessageForReqReady,
+        payload: PayloadForReqReady
+      } & MessageForIFrame,
     ) => {
-      if (!this._requestReadys || !this._requestReadys.has(params.uniqueKey)) {
+      if (!this._requestReadys || !this._requestReadys.has(params.payload.uniqueKey)) {
         return
       }
-      const {iframeRef, destinationDomain} = this._requestReadys.get(params.uniqueKey) as RequestReady
+      const {iframeRef, destinationDomain} = this._requestReadys.get(params.payload.uniqueKey) as RequestReady
       const _token = this.getToken()
       this.addIframeRef(
         iframeRef,
@@ -373,7 +371,8 @@ export default class ACSPostMessage {
           payload: {
             key: ACECommonStaticConfig.getKey(),
             device: ACECONSTANT.DEVICE,
-            uniqueKey: params.uniqueKey,
+            uniqueKey: params.payload.uniqueKey,
+            eventName: params.payload.eventName,
             adid: 'adid_test',
             adeld: 'adeld_test',
             ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
@@ -389,7 +388,7 @@ export default class ACSPostMessage {
           key: string
           device: string
           ts?: PayloadForTS
-        } & MessageForResReady &
+        } & PayloadForResReady &
           PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
@@ -397,6 +396,7 @@ export default class ACSPostMessage {
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
         this.callbackUpdateByPostMessage,
+        params.payload.eventName,
         params.payload.ts ? {...params.payload.ts} : undefined,
       )
     }

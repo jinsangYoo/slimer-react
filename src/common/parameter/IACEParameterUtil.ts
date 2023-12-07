@@ -1,6 +1,5 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
 import {DetailOfSDK, STVT} from '../constant/ACEPublicStaticConfig'
-import {ResultAfterSaveInStorage} from '../../acone/parameter/ResultAfterSaveInStorage'
 
 export default interface IACEParameterUtil {
   loadUniqueKeyForSDK(): void
@@ -21,10 +20,6 @@ export default interface IACEParameterUtil {
 
   getTS(): STVT
   setTS(ts: STVT): void
-  updateByPostMessage(
-    key: string,
-    callback: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
-    ts?: STVT,
-  ): void
+  updateByPostMessage(key: string, callback: (eventName?: string) => void, eventName?: string, ts?: STVT): void
   didUpdateByPostMessage(): void
 }

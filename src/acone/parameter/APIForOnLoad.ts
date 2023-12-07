@@ -12,12 +12,14 @@ import {makeSuccessCallback, makeFailCallback} from '../../common/util'
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
   protected key: string
+  protected pageName?: string
   protected parentOrigin: string[]
 
   public constructor(params: ITaskParams) {
     super(params)
     ACELog.d(APIForOnLoad._p1TAG, 'in constructor, params:', params)
     this.key = params.payload.key ?? ACECONSTANT.EMPTY
+    this.pageName = params.payload.pageName
     this.parentOrigin = params.payload.origin ?? []
   }
 
@@ -33,7 +35,10 @@ export default class APIForOnLoad extends ACOTask {
         type: ACSPostMessageType.reqReady,
         token: -1,
         location: self.location.origin.toString(),
-        uniqueKey: this.key,
+        payload: {
+          uniqueKey: this.key,
+          eventName: this.pageName,
+        },
       }
       ACELog.d(APIForOnLoad._p1TAG, 'paramToWindowParentPostMessage:', paramToWindowParentPostMessage)
       this.parentOrigin.map(origin => {

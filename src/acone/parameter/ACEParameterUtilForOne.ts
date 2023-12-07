@@ -117,17 +117,21 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     _parametersForOne.setSTVTtoVT(ts.vt)
   }
 
-  updateByPostMessage(
-    key: string,
-    callback: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
-    ts?: STVT,
-  ): void {
+  updateByPostMessage(key: string, callback: (eventName?: string) => void, eventName?: string, ts?: STVT): void {
     const _parametersForOne = ACEParametersForOne.getInstance()
     _parametersForOne.setMID(key)
 
     if (ts) {
       this.setTS(ts)
-      this.saveVT_toInStorage(this.getVT(), callback)
+      this.saveVT_toInStorage(this.getVT(), (error?: Error | null, result?: ResultAfterSaveInStorage) => {
+        if (error) {
+          ACELog.e(ACEParameterUtilForOne._TAG, 'Fail to update for ts.', error)
+        } else if (result) {
+          ACELog.d(ACEParameterUtilForOne._TAG, 'Done to update for ts.')
+          ACELog.d(ACEParameterUtilForOne._TAG, `result.getKey: ${result.getKey}`, JSON.parse(result.getValue))
+          callback(eventName)
+        }
+      })
     }
   }
 

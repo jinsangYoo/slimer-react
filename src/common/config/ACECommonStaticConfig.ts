@@ -14,7 +14,6 @@ import {
 } from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
 import {isEmpty, isStartIndexAkAtGCodeString, printMode, detectForNative} from '../util'
-import {ResultAfterSaveInStorage} from '../../acone/parameter/ResultAfterSaveInStorage'
 
 export default class ACECommonStaticConfig {
   private static _TAG = 'comInit'
@@ -239,11 +238,12 @@ export default class ACECommonStaticConfig {
 
   public static updateByPostMessage(
     key: string,
-    callback: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
+    callback: (eventName?: string) => void,
+    eventName?: string,
     ts?: STVT,
   ): void {
     this._staticConfigImpl?.setKey(key)
-    this._staticConfigImpl?.getParameterUtil()?.updateByPostMessage(key, callback, ts)
+    this._staticConfigImpl?.getParameterUtil()?.updateByPostMessage(key, callback, eventName, ts)
   }
 
   public static didUpdateByPostMessage(): void {

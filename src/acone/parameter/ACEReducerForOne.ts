@@ -340,15 +340,17 @@ export default class ACEReducerForOne {
     )
   }
 
-  public static onLoad(callback: ACSCallback | undefined, key?: string, origin?: string[]): void
+  public static onLoad(callback: ACSCallback | undefined, key?: string, pageName?: string, origin?: string[]): void
   public static onLoad(
     callback?: ACSCallback | undefined,
     key?: string,
+    pageName?: string,
     origin?: string[],
   ): Promise<ACEResponseToCaller>
   public static onLoad(
     callback?: ACSCallback | undefined,
     key?: string,
+    pageName?: string,
     origin?: string[],
   ): Promise<ACEResponseToCaller> | void {
     return ACEReducerForOne.reducer(
@@ -356,6 +358,7 @@ export default class ACEReducerForOne {
         type: ACEofAPIForOne.OnLoad,
         payload: {
           key,
+          pageName,
           origin: origin as string[],
         },
         error: false,

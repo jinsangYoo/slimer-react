@@ -260,7 +260,7 @@ export class ACS {
                   return
                 }
                 ACSPostMessage.addOriginArray(value.origin)
-                ACEReducerForOne.onLoad(callbackForCB, value.key, value.origin)
+                ACEReducerForOne.onLoad(callbackForCB, value.key, value.name, value.origin)
                 break
               case ACParams.TYPE.PUSH:
                 ACEReducerForOne.push(callbackForCB, value.data, value.push)
@@ -404,7 +404,7 @@ export class ACS {
                     return
                   }
                   ACSPostMessage.addOriginArray(value.origin)
-                  ACEReducerForOne.onLoad(callbackForPromise, value.key, value.origin)
+                  ACEReducerForOne.onLoad(callbackForPromise, value.key, value.name, value.origin)
                   break
                 case ACParams.TYPE.PUSH:
                   ACEReducerForOne.push(callbackForPromise, value.data, value.push)
