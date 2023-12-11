@@ -52,6 +52,11 @@ export type objectForVT = {
   pcStamp: string
 }
 
+export type AdvertisingIdentifierInSDK = {
+  isAdvertisingTrackingEnabled: string
+  advertisingIdentifier: string
+}
+
 export type ControlTowerOfSDK = {
   isCompletePolicy: boolean
   isForceStop: boolean

@@ -13,6 +13,7 @@ import {
   ACEResultCode,
   ACEGender,
   ACEMaritalStatus,
+  AdvertisingIdentifierInSDK,
   DetailOfSDK,
   STVT,
 } from '../../common/constant/ACEPublicStaticConfig'
@@ -76,7 +77,15 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     }
   }
 
-  setAdvertisingIdentifier(advertisingIdentifier: string): void {
+  getAdvertisingIdentifier(): AdvertisingIdentifierInSDK {
+    return {
+      isAdvertisingTrackingEnabled: ACEParametersForOne.getInstance().getADELD(),
+      advertisingIdentifier: ACEParametersForOne.getInstance().getADID(),
+    }
+  }
+
+  setAdvertisingIdentifier(isAdvertisingTrackingEnabled: boolean, advertisingIdentifier: string): void {
+    ACEParametersForOne.getInstance().setADELD(isAdvertisingTrackingEnabled)
     ACEParametersForOne.getInstance().setADID(advertisingIdentifier)
   }
 

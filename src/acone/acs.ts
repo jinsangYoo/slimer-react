@@ -470,8 +470,8 @@ export class ACS {
   //#endregion
 
   //#region AdvertisingIdentifier
-  public static setAdvertisingIdentifier(advertisingIdentifier: string): void {
-    ACECommonStaticConfig.setAdvertisingIdentifier(advertisingIdentifier)
+  public static setAdvertisingIdentifier(isAdvertisingTrackingEnabled: boolean, advertisingIdentifier: string): void {
+    ACECommonStaticConfig.setAdvertisingIdentifier(isAdvertisingTrackingEnabled, advertisingIdentifier)
   }
   //#endregion
 

@@ -107,9 +107,7 @@ export default class ACEParametersForOne extends ACEParameters {
   public setADID(value: string): void {
     if (isEmpty(value)) {
       this.adid = ADID.defaultADID
-      this.setADELD(false)
     } else {
-      this.setADELD(true)
       this.adid = value
     }
   }

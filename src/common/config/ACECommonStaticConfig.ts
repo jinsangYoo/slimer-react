@@ -251,10 +251,10 @@ export default class ACECommonStaticConfig {
   }
 
   //#region AdvertisingIdentifier
-  public static setAdvertisingIdentifier(advertisingIdentifier: string): void {
+  public static setAdvertisingIdentifier(isAdvertisingTrackingEnabled: boolean, advertisingIdentifier: string): void {
     const _parameterUtil = ACECommonStaticConfig.getParameterUtil()
     if (_parameterUtil) {
-      _parameterUtil.setAdvertisingIdentifier(advertisingIdentifier)
+      _parameterUtil.setAdvertisingIdentifier(isAdvertisingTrackingEnabled, advertisingIdentifier)
     }
   }
   //#endregion

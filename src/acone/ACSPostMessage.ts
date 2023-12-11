@@ -15,6 +15,7 @@ import type {
 import ACSPostMessageType from '../common/constant/ACSPostMessageType'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACECONSTANT from '../common/constant/ACEConstant'
+import ADID from '../common/constant/ADID'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {QueueManager} from '../common/queue'
 import {ACParams} from './acparam'
@@ -148,8 +149,8 @@ export default class ACSPostMessage {
           key: ACECommonStaticConfig.getKey(),
           device: ACECONSTANT.DEVICE,
           eventName: params.payload.eventName,
-          adid: 'adid_test',
-          adeld: 'adeld_test',
+          adid: ACECommonStaticConfig.getParameterUtil()?.getAdvertisingIdentifier().advertisingIdentifier,
+          adeld: ACECommonStaticConfig.getParameterUtil()?.getAdvertisingIdentifier().isAdvertisingTrackingEnabled,
           ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
         },
       })
@@ -166,6 +167,7 @@ export default class ACSPostMessage {
       } & MessageForIFrame,
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'finish::resOnLoadInOnMessage::params: ', params)
+      this.setAdvertisingIdentifier(params.payload.adeld, params.payload.adid)
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
         this.callbackUpdateByPostMessage,
@@ -352,6 +354,7 @@ export default class ACSPostMessage {
         }
       }
 
+      this.setAdvertisingIdentifier(params.payload.adeld, params.payload.adid)
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
         this.callbackUpdateByPostMessage,
@@ -401,8 +404,8 @@ export default class ACSPostMessage {
             device: ACECONSTANT.DEVICE,
             uniqueKey: params.payload.uniqueKey,
             eventName: params.payload.eventName,
-            adid: 'adid_test',
-            adeld: 'adeld_test',
+            adid: ACECommonStaticConfig.getParameterUtil()?.getAdvertisingIdentifier().advertisingIdentifier,
+            adeld: ACECommonStaticConfig.getParameterUtil()?.getAdvertisingIdentifier().isAdvertisingTrackingEnabled,
             ts: ACECommonStaticConfig.getParameterUtil()?.getTS(),
           },
         },
@@ -421,6 +424,7 @@ export default class ACSPostMessage {
       } & MessageForIFrame,
     ) => {
       ACELog.i(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
+      this.setAdvertisingIdentifier(params.payload.adeld, params.payload.adid)
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
         this.callbackUpdateByPostMessage,
@@ -455,4 +459,13 @@ export default class ACSPostMessage {
     }
   }
   //#endregion
+
+  private setAdvertisingIdentifier(
+    isAdvertisingTrackingEnabled: string | undefined,
+    advertisingIdentifier: string | undefined,
+  ) {
+    let _adeld = !isEmpty(isAdvertisingTrackingEnabled) && isAdvertisingTrackingEnabled === ADID.enable ? true : false
+    let _adid = !isEmpty(advertisingIdentifier) ? (advertisingIdentifier as string) : ADID.defaultADID
+    ACECommonStaticConfig.setAdvertisingIdentifier(_adeld, _adid)
+  }
 }

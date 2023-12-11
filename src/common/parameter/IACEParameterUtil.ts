@@ -1,5 +1,5 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
-import {DetailOfSDK, STVT} from '../constant/ACEPublicStaticConfig'
+import {AdvertisingIdentifierInSDK, DetailOfSDK, STVT} from '../constant/ACEPublicStaticConfig'
 
 export default interface IACEParameterUtil {
   loadUniqueKeyForSDK(): void
@@ -14,7 +14,8 @@ export default interface IACEParameterUtil {
 
   getSdkDetails(value: AceConfiguration): DetailOfSDK
 
-  setAdvertisingIdentifier(advertisingIdentifier: string): void
+  getAdvertisingIdentifier(): AdvertisingIdentifierInSDK
+  setAdvertisingIdentifier(isAdvertisingTrackingEnabled: boolean, advertisingIdentifier: string): void
 
   isDuplicateInstallReferrer(value: string): Promise<boolean>
 
