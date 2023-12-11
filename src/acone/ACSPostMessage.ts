@@ -109,10 +109,10 @@ export default class ACSPostMessage {
     !isEmpty(eventName) &&
       ACEReducerForOne.plWithPage((error?: object, innerResult?: any) => {
         if (error) {
-          ACELog.e(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
+          ACELog.w(ACSPostMessage._TAG, 'Fail to send pl after update for ts.', error)
           QueueManager.push(ACParams.init(ACParams.TYPE.EVENT, eventName))
         } else if (innerResult) {
-          ACELog.e(ACSPostMessage._TAG, 'Success to send pl after update for ts.', innerResult)
+          ACELog.d(ACSPostMessage._TAG, 'Done to send pl after update for ts.', innerResult)
         }
       }, eventName)
   }
