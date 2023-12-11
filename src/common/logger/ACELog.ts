@@ -108,6 +108,12 @@ export default class ACELog {
     ACELog.println(LogLevel.ERROR, tag, msg, debug, moreDebugMessage)
   }
 
+  public static w(tag: string, msg: string): void
+  public static w(tag: string, msg: string, debug: object, moreDebugMessage?: string): void
+  public static w(tag: string, msg: string, debug?: object, moreDebugMessage?: string): void {
+    ACELog.println(LogLevel.WARN, tag, msg, debug, moreDebugMessage)
+  }
+
   public static d(tag: string, msg: string): void
   public static d(tag: string, msg: string, debug: object, moreDebugMessage?: string): void
   public static d(tag: string, msg: string, debug?: object, moreDebugMessage?: string): void {
