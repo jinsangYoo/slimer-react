@@ -24,6 +24,8 @@ function getInterfaceForAOS(ace_and_interface: any) {
     device: ace_and_interface.getDevice(),
     ts: ace_and_interface.getTS(),
     eventName: ace_and_interface.getInjectEventName ? ace_and_interface.getInjectEventName() : '',
+    adid: ace_and_interface.getInjectAdid ? ace_and_interface.getInjectAdid() : '',
+    adeld: ace_and_interface.getInjectAeld ? ace_and_interface.getInjectAeld() : '',
   }
 }
 
