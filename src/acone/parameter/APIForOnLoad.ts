@@ -3,7 +3,7 @@ import {ITaskParams} from '../../common/task/ITaskParams'
 import type {ACSCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACECONSTANT from '../../common/constant/ACEConstant'
-import {getBrowserName, isEqualSelfWindowAndParentWindow} from '../../common/util'
+import {getBrowserName, isTopWindow} from '../../common/util'
 import ACSPostMessageType from '../../common/constant/ACSPostMessageType'
 import type {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
@@ -28,9 +28,9 @@ export default class APIForOnLoad extends ACOTask {
     ACELog.d(APIForOnLoad._p1TAG, 'doWork')
 
     ACELog.d(APIForOnLoad._p1TAG, `getBrowserName(): ${getBrowserName()}`)
-    ACELog.d(APIForOnLoad._p1TAG, `isEqualSelfWindowAndParentWindow(): ${isEqualSelfWindowAndParentWindow()}`)
+    ACELog.d(APIForOnLoad._p1TAG, `isTopWindow(): ${isTopWindow()}`)
 
-    if (!isEqualSelfWindowAndParentWindow()) {
+    if (!isTopWindow()) {
       let paramToWindowParentPostMessage = {
         type: ACSPostMessageType.reqReady,
         token: -1,
