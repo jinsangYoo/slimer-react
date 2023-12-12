@@ -184,7 +184,7 @@ export class ACENetwork {
       method: method,
       baseURL: networkParam.baseUrl,
       headers: requestHeaders,
-      timeout: 1000,
+      timeout: 5000,
       params: networkParam.params,
     }
 

@@ -182,6 +182,7 @@ export class ACS {
     if (callback) {
       const callbackForCB = (error?: object, innerResult?: ACEResponseToCaller) => {
         if (error) {
+          ACELog.d(ACS._TAG, 'fail to send', error)
           callback(new Error(`0001, Can not use ${value.type} api.`))
         } else {
           callback(undefined, innerResult)
