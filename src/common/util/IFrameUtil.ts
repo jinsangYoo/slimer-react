@@ -1,4 +1,3 @@
 export function isTopWindow() {
-  if (window.parent === window) return true
-  return false
+  return window.parent === window
 }
