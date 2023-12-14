@@ -481,6 +481,10 @@ export class ACS {
     return ACECommonStaticConfig.getKey()
   }
 
+  public static getDevice(): string {
+    return ACECONSTANT.DEVICE
+  }
+
   public static getTS(): string {
     const parameterUtil = ACECommonStaticConfig.getParameterUtil()
     return parameterUtil ? JSON.stringify(parameterUtil.getTS()) : '{}'
