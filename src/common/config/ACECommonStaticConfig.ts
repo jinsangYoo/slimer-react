@@ -13,7 +13,7 @@ import {
   STVT,
 } from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
-import {isEmpty, isStartIndexAkAtGCodeString, printMode, detectForNative} from '../util'
+import {isEmpty, printMode, detectForNative} from '../util'
 
 export default class ACECommonStaticConfig {
   private static _TAG = 'comInit'
@@ -183,7 +183,7 @@ export default class ACECommonStaticConfig {
   }
 
   private static validateForAceConfiguration(config: AceConfiguration): boolean {
-    if (isEmpty(config.key) || !isStartIndexAkAtGCodeString(config.key)) {
+    if (isEmpty(config.key)) {
       return false
     }
 
