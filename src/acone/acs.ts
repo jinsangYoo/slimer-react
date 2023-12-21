@@ -12,6 +12,7 @@ import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
 import ACSPostMessage from './ACSPostMessage'
 import {QueueManager} from '../common/queue'
+import onLoadManager from './onload/onLoadManager'
 
 export class ACS {
   private static _TAG = 'ACS'
@@ -522,6 +523,12 @@ export class ACS {
 
   public static handleMessage(e: Event) {
     return ACSPostMessage.handleMessage(e)
+  }
+  //#endregion
+
+  //#region onLoadManager wrappers
+  public static resetToOnLoad() {
+    onLoadManager.reset()
   }
   //#endregion
 }

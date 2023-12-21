@@ -8,6 +8,7 @@ import ACSPostMessageType from '../../common/constant/ACSPostMessageType'
 import type {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 import {makeSuccessCallback, makeFailCallback} from '../../common/util'
+import onLoadManager from '../onload/onLoadManager'
 
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
@@ -26,10 +27,28 @@ export default class APIForOnLoad extends ACOTask {
   public doWork(callback: ACSCallback | undefined) {
     super.doWork(callback)
     ACELog.d(APIForOnLoad._p1TAG, 'doWork')
-
     ACELog.d(APIForOnLoad._p1TAG, `getBrowserName(): ${getBrowserName()}`)
-    ACELog.d(APIForOnLoad._p1TAG, `isTopWindow(): ${isTopWindow()}`)
+    if (onLoadManager.isOnLoad()) {
+      this.failed({
+        // @ts-ignore
+        result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
+        message: 'Already onloaded.',
+      })
+      if (callback) {
+        const res: ACEResponseToCaller = {
+          taskHash: `${this._logSource}::0015`,
+          code: ACEResultCode.AlreadyOnLoaded,
+          // @ts-ignore
+          result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
+          message: 'Already onloaded.',
+          apiName: this.getDescription(),
+        }
+        callback(undefined, res)
+      }
+      return
+    }
 
+    ACELog.d(APIForOnLoad._p1TAG, `isTopWindow(): ${isTopWindow()}`)
     if (!isTopWindow()) {
       let paramToWindowParentPostMessage = {
         type: ACSPostMessageType.reqReady,
@@ -58,19 +77,19 @@ export default class APIForOnLoad extends ACOTask {
         callback(undefined, res)
       }
     } else {
-      ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
+      ACELog.d(APIForOnLoad._p1TAG, 'maybe root position.')
       this.failed({
         // @ts-ignore
         result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
-        message: 'Maybe root for position.',
+        message: 'Maybe root position.',
       })
       if (callback) {
         const res: ACEResponseToCaller = {
           taskHash: `${this._logSource}::0014`,
-          code: ACEResultCode.MaybeRootForPosition,
+          code: ACEResultCode.MaybeRootPosition,
           // @ts-ignore
           result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
-          message: 'Maybe root for position.',
+          message: 'Maybe root position.',
           apiName: this.getDescription(),
         }
         callback(undefined, res)

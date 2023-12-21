@@ -14,6 +14,7 @@ import {
 } from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
 import {isEmpty, printMode, detectForNative} from '../util'
+import onLoadManager from '../../acone/onload/onLoadManager'
 
 export default class ACECommonStaticConfig {
   private static _TAG = 'comInit'
@@ -248,6 +249,7 @@ export default class ACECommonStaticConfig {
   ): void {
     this._staticConfigImpl?.setKey(key)
     this._staticConfigImpl?.getParameterUtil()?.updateByPostMessage(key, callback, eventName, ts)
+    onLoadManager.doneOnLoad()
   }
 
   public static didUpdateByPostMessage(): void {

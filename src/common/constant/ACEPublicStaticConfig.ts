@@ -128,7 +128,8 @@ export const ACEResultCode = {
   NotExistWaitTask: 1032,
   TooBusyWillSendAfterDone: 1033,
   InvalidACParamValues: 1034,
-  MaybeRootForPosition: 1035,
+  MaybeRootPosition: 1035,
+  AlreadyOnLoaded: 1036,
 } as const
 
 export enum ACEGender {
