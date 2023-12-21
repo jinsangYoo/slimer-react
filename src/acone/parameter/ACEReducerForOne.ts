@@ -42,6 +42,7 @@ export default class ACEReducerForOne {
         const result: ACEResponseToCaller = {
           taskHash: `${params.type}::0006`,
           code: ACEResultCode.NotFoundPolicyInformation,
+          // @ts-ignore
           result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
           message: 'Not found policy information.',
           apiName: ACEofAPIForOne[params.type],

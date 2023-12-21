@@ -96,12 +96,14 @@ export function getQueryVar(source: string): object {
   let pairs = (source[0] === '?' ? source.substring(1) : source).split('&')
   for (let i = 0; i < pairs.length; i++) {
     let pair = pairs[i].split('=')
+    // @ts-ignore
     query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '')
   }
   return query
 }
 
 export function getQueryForKey(source: string, value: string): string | undefined {
+  // @ts-ignore
   return getQueryVar(source)[value]
 }
 

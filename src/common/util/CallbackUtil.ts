@@ -17,6 +17,7 @@ export function makeSuccessCallbackWithNetworkResult(task: Task & ITask, message
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.Success,
+      // @ts-ignore
       result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
       message: innerMsg,
       apiName: task.getDescription(),
@@ -26,6 +27,7 @@ export function makeSuccessCallbackWithNetworkResult(task: Task & ITask, message
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.Success,
+      // @ts-ignore
       result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
       message: innerMsg,
       apiName: task.getDescription(),
@@ -49,6 +51,7 @@ export function makeFailCallbackWithNetworkResult(task: Task & ITask, message?: 
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.FailAfterRequest,
+      // @ts-ignore
       result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
       message: innerMsg,
       apiName: task.getDescription(),
@@ -58,6 +61,7 @@ export function makeFailCallbackWithNetworkResult(task: Task & ITask, message?: 
     return {
       taskHash: task.getTaskHash(),
       code: ACEResultCode.FailAfterRequest,
+      // @ts-ignore
       result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
       message: innerMsg,
       apiName: task.getDescription(),
@@ -89,6 +93,7 @@ function makeCallback(task: Task & ITask, code: number, result: string, message?
   return {
     taskHash: task.getTaskHash(),
     code,
+    // @ts-ignore
     result: ACEConstantResultForCallback[result],
     message: innerMsg,
     apiName: task.getDescription(),

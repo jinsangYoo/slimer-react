@@ -44,6 +44,7 @@ export default class ACECommonStaticConfig {
       const response: ACEResponseToCaller = {
         taskHash: '0000',
         code: ACEResultCode.AlreadyInitialized,
+        // @ts-ignore
         result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
         message: 'Already init SDK.',
         apiName: 'init',
@@ -87,6 +88,7 @@ export default class ACECommonStaticConfig {
       const response: ACEResponseToCaller = {
         taskHash: '0000',
         code: ACEResultCode.NeedToCheckAceConfiguration,
+        // @ts-ignore
         result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
         message: 'Please check the configuration.',
         apiName: 'init',
@@ -128,6 +130,7 @@ export default class ACECommonStaticConfig {
             const response: ACEResponseToCaller = {
               taskHash: '0001',
               code: ACEResultCode.CanNotRequestToPolicy,
+              // @ts-ignore
               result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
               message: 'Can not request policy.',
               apiName: 'init',
@@ -166,6 +169,7 @@ export default class ACECommonStaticConfig {
               const response: ACEResponseToCaller = {
                 taskHash: '0002',
                 code: ACEResultCode.CanNotRequestToPolicy,
+                // @ts-ignore
                 result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
                 message: 'Can not request policy.',
                 apiName: 'init',

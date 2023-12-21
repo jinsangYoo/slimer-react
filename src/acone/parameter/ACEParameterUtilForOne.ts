@@ -533,6 +533,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
         this.setBuyCountAtObject(willUpdateVt, 1)
       }
     } else {
+      // @ts-ignore
       ACELog.d(ACEParameterUtilForOne._TAG, `not firstLog: ${this.getSession()}, ${SESSION[this.getSession()]}`)
     }
     this.setGetTS(_now, _randomString)
@@ -719,6 +720,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
 
   public getUserGender(): ACEGender {
+    // @ts-ignore
     return ACEGender[ACEParametersForOne.getInstance().getGD()]
   }
 
@@ -763,6 +765,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
 
   public getUserMaritalStatus(): ACEMaritalStatus {
+    // @ts-ignore
     return ACEMaritalStatus[ACEParametersForOne.getInstance().getMR()]
   }
 

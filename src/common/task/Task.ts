@@ -69,13 +69,18 @@ export default class Task {
     if (this._error) {
       if (ACELog.isDevMode()) {
         return {
+          // @ts-ignore
           message: this._error['message'] ?? '',
+          // @ts-ignore
           name: this._error['name'] ?? '',
+          // @ts-ignore
           config: this._error['config'] ?? {},
         }
       } else {
         return {
+          // @ts-ignore
           message: this._error['message'] ?? '',
+          // @ts-ignore
           name: this._error['name'] ?? '',
         }
       }

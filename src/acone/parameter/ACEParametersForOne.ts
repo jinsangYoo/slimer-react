@@ -881,6 +881,7 @@ export default class ACEParametersForOne extends ACEParameters {
           if (err) {
             callback(err, {
               code: ACEInnerCBResultKey.FailGetVT,
+              // @ts-ignore
               result: ACEInnerCBResultKey[ACEInnerCBResultKey.FailGetVT],
             })
           } else {
@@ -888,11 +889,13 @@ export default class ACEParametersForOne extends ACEParameters {
               this.setJSONtoVT(JSON.parse(result))
               callback(err, {
                 code: ACEInnerCBResultKey.Success,
+                // @ts-ignore
                 result: ACEInnerCBResultKey[ACEInnerCBResultKey.Success],
               })
             } else {
               callback(err, {
                 code: ACEInnerCBResultKey.NotExistKey,
+                // @ts-ignore
                 result: ACEInnerCBResultKey[ACEInnerCBResultKey.NotExistKey],
               })
             }
@@ -915,6 +918,7 @@ export default class ACEParametersForOne extends ACEParameters {
             if (err) {
               callback(err, {
                 code: ACEInnerCBResultKey.FailGetVT,
+                // @ts-ignore
                 result: ACEInnerCBResultKey[ACEInnerCBResultKey.FailGetVT],
               })
             } else {
@@ -922,11 +926,13 @@ export default class ACEParametersForOne extends ACEParameters {
                 this.setJSONtoVT(JSON.parse(result))
                 callback(err, {
                   code: ACEInnerCBResultKey.Success,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.Success],
                 })
               } else {
                 callback(err, {
                   code: ACEInnerCBResultKey.NotExistKey,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.NotExistKey],
                 })
               }
@@ -940,11 +946,13 @@ export default class ACEParametersForOne extends ACEParameters {
                 this.setJSONtoVT(JSON.parse(result))
                 resolve({
                   code: ACEInnerCBResultKey.Success,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.Success],
                 })
               } else {
                 resolve({
                   code: ACEInnerCBResultKey.NotExistKey,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.NotExistKey],
                 })
               }

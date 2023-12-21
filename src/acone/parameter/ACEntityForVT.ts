@@ -60,24 +60,32 @@ export default class ACEntityForVT {
     if (this._map) {
       if (this._map.size > 0) this._map.clear()
     }
+    // @ts-ignore
     const _vts = value[ACOneConstantVt.KeyVTS] ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyVTS, _vts)
+    // @ts-ignore
     const _vtsRandom = value[ACOneConstantVt.KeyRandom6ForVTS] ?? ACECONSTANT.EMPTY
     this._map.set(ACOneConstantVt.KeyRandom6ForVTS, _vtsRandom)
 
+    // @ts-ignore
     const _visitCount = value[ACOneConstantVt.KeyVisitCount] ?? ACECONSTANT.ZERO
     this._map.set(ACOneConstantVt.KeyVisitCount, _visitCount)
 
+    // @ts-ignore
     const _buyTimeTS = value[ACOneConstantVt.KeyBuyTimeTS] ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyBuyTimeTS, _buyTimeTS)
+    // @ts-ignore
     const _buyTimeTSRandom = value[ACOneConstantVt.KeyRandom6ForBuyTimeTS] ?? ACECONSTANT.EMPTY
     this._map.set(ACOneConstantVt.KeyRandom6ForBuyTimeTS, _buyTimeTSRandom)
 
+    // @ts-ignore
     const _buyCount = value[ACOneConstantVt.KeyBuyCount] ?? ACECONSTANT.ZERO
     this._map.set(ACOneConstantVt.KeyBuyCount, _buyCount)
 
+    // @ts-ignore
     const _pcStamp = value[ACOneConstantVt.KeyPcStamp] ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyPcStamp, _pcStamp)
+    // @ts-ignore
     const _pcStampRandom = value[ACOneConstantVt.KeyRandom6ForPcStamp] ?? ACECONSTANT.EMPTY
     this._map.set(ACOneConstantVt.KeyRandom6ForPcStamp, _pcStampRandom)
   }

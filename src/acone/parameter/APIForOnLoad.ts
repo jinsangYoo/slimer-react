@@ -48,6 +48,7 @@ export default class APIForOnLoad extends ACOTask {
         const res: ACEResponseToCaller = {
           taskHash: `${this._logSource}::0013`,
           code: ACEResultCode.Success,
+          // @ts-ignore
           result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
           message: `Postmessage to window.parent(${ACSPostMessageType.reqReady}, parentOrigin:${this.parentOrigin.join(
             ', ',
@@ -59,6 +60,7 @@ export default class APIForOnLoad extends ACOTask {
     } else {
       ACELog.d(APIForOnLoad._p1TAG, 'maybe root for position.')
       this.failed({
+        // @ts-ignore
         result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
         message: 'Maybe root for position.',
       })
@@ -66,6 +68,7 @@ export default class APIForOnLoad extends ACOTask {
         const res: ACEResponseToCaller = {
           taskHash: `${this._logSource}::0014`,
           code: ACEResultCode.MaybeRootForPosition,
+          // @ts-ignore
           result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
           message: 'Maybe root for position.',
           apiName: this.getDescription(),
