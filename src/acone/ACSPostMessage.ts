@@ -433,8 +433,10 @@ export default class ACSPostMessage {
       )
     }
 
+    if (ACELog.isDevMode() && this.isACSPostMessageFormat(_event)) {
+      ACELog.d(ACSPostMessage._TAG, 'handleMessage::params:', _event.data)
+    }
     if (!this.hasOrigin(_event.origin) || _event.data.type === undefined) return
-    ACELog.i(ACSPostMessage._TAG, 'handleMessage::params:', _event.data)
     switch (_event.data.type) {
       case ACSPostMessageType.didAddByOnLoad:
         didAddByOnLoadInHandleMessage(_event.data)
@@ -457,6 +459,11 @@ export default class ACSPostMessage {
       default:
         break
     }
+  }
+
+  private isACSPostMessageFormat(_event: MessageEvent<ACSForMessage>) {
+    if (_event.data.type !== undefined && _event.data.location !== undefined) return true
+    return false
   }
   //#endregion
 
