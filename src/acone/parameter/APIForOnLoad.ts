@@ -106,7 +106,7 @@ export default class APIForOnLoad extends ACOTask {
       if (this._error) {
         callback(
           this.getNetworkError(),
-          makeFailCallbackWithCode(this, (this._error as any).message, (this._error as any).code),
+          makeFailCallbackWithCode(this, (this._error as any).code, (this._error as any).message),
         )
       } else {
         callback(undefined, makeSuccessCallback(this))
