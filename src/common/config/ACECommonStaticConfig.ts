@@ -67,8 +67,8 @@ export default class ACECommonStaticConfig {
       }
 
       // ************************************************ development mode [S]
-      ControlTowerManager.setDevSDKMode()
-      ControlTowerManager.getInstance().setHomeDevNetworkMode()
+      // ControlTowerManager.setDevSDKMode()
+      // ControlTowerManager.getInstance().setHomeDevNetworkMode()
       // ControlTowerManager.setDefaultNetworkMode() // 공개 정책 서버를 쓰도록
       // ************************************************ development mode [E]
     }
