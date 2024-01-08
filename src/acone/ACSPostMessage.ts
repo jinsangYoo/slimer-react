@@ -423,7 +423,7 @@ export default class ACSPostMessage {
           PayloadForAdTracking
       } & MessageForIFrame,
     ) => {
-      ACELog.i(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
+      ACELog.d(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
       this.setAdvertisingIdentifier(params.payload.adeld, params.payload.adid)
       ACECommonStaticConfig.updateByPostMessage(
         params.payload.key,
