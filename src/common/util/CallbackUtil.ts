@@ -75,16 +75,22 @@ export function makeFailCallbackWithNetworkResult(task: Task & ITask, message?: 
 export function makeSuccessCallback(task: Task & ITask): ACEResponseToCaller
 export function makeSuccessCallback(task: Task & ITask, message: string): ACEResponseToCaller
 export function makeSuccessCallback(task: Task & ITask, message?: string): ACEResponseToCaller {
-  return makeCallback(task, ACEResultCode.Success, ACEConstantResultForCallback.Success, message)
+  return makeCallback(task, ACEConstantResultForCallback.Success, ACEResultCode.Success, message)
 }
 
 export function makeFailCallback(task: Task & ITask): ACEResponseToCaller
 export function makeFailCallback(task: Task & ITask, message: string): ACEResponseToCaller
 export function makeFailCallback(task: Task & ITask, message?: string): ACEResponseToCaller {
-  return makeCallback(task, ACEResultCode.FailAfterRequest, ACEConstantResultForCallback.Failed, message)
+  return makeCallback(task, ACEConstantResultForCallback.Failed, ACEResultCode.FailAfterRequest, message)
 }
 
-function makeCallback(task: Task & ITask, code: number, result: string, message?: string): ACEResponseToCaller {
+export function makeFailCallbackWithCode(task: Task & ITask, code: number): ACEResponseToCaller
+export function makeFailCallbackWithCode(task: Task & ITask, code: number, message: string): ACEResponseToCaller
+export function makeFailCallbackWithCode(task: Task & ITask, code: number, message?: string): ACEResponseToCaller {
+  return makeCallback(task, ACEConstantResultForCallback.Failed, code, message)
+}
+
+function makeCallback(task: Task & ITask, result: string, code: number, message?: string): ACEResponseToCaller {
   var innerMsg: string = ACEConstantResultForCallback.DefaultMessage
   if (message && !isEmpty(message)) {
     innerMsg = message

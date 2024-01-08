@@ -7,7 +7,7 @@ import {getBrowserName, isTopWindow} from '../../common/util'
 import ACSPostMessageType from '../../common/constant/ACSPostMessageType'
 import type {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
-import {makeSuccessCallback, makeFailCallback} from '../../common/util'
+import {makeSuccessCallback, makeFailCallbackWithCode} from '../../common/util'
 import onLoadManager from '../onload/onLoadManager'
 
 export default class APIForOnLoad extends ACOTask {
@@ -32,6 +32,7 @@ export default class APIForOnLoad extends ACOTask {
       this.failed({
         // @ts-ignore
         result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
+        code: ACEResultCode.AlreadyOnLoaded,
         message: 'Already onloaded.',
       })
       if (callback) {
@@ -81,6 +82,7 @@ export default class APIForOnLoad extends ACOTask {
       this.failed({
         // @ts-ignore
         result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
+        code: ACEResultCode.MaybeRootPosition,
         message: 'Maybe root position.',
       })
       if (callback) {
@@ -102,7 +104,10 @@ export default class APIForOnLoad extends ACOTask {
     ACELog.d(APIForOnLoad._p1TAG, 'didWork')
     if (callback) {
       if (this._error) {
-        callback(this.getNetworkError(), makeFailCallback(this))
+        callback(
+          this.getNetworkError(),
+          makeFailCallbackWithCode(this, (this._error as any).message, (this._error as any).code),
+        )
       } else {
         callback(undefined, makeSuccessCallback(this))
       }
