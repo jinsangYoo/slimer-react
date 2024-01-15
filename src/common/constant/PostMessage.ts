@@ -3,6 +3,10 @@ export type MessageForIFrame = {
   location: string
 }
 
+export type VersionForMessage = {
+  version: number
+}
+
 export type PayloadForAdTracking = {
   adid?: string
   adeld?: string
@@ -31,13 +35,7 @@ export type PayloadForNative = {
 }
 
 export type ACSForMessage =
-  | ({type: 'ACS.didAddByOnLoad'} & MessageForIFrame)
-  | ({
-      type: 'ACS.versionOfMessage'
-      payload: {
-        version: string
-      }
-    } & MessageForIFrame)
+  | ({type: 'ACS.didAddByOnLoad'} & MessageForIFrame & VersionForMessage)
   | ({
       type: 'ACS.injectToReact'
       payload: PayloadForNative & PayloadForAdTracking
@@ -45,7 +43,8 @@ export type ACSForMessage =
   | ({
       type: 'ACS.reqOnLoad'
       payload: PayloadForOnLoad
-    } & MessageForIFrame)
+    } & MessageForIFrame &
+      VersionForMessage)
   | ({
       type: 'ACS.resOnLoad'
       payload: {
@@ -54,8 +53,9 @@ export type ACSForMessage =
         ts?: PayloadForTS
       } & PayloadForOnLoad &
         PayloadForAdTracking
-    } & MessageForIFrame)
-  | ({type: 'ACS.reqReady'; payload: PayloadForReqReady} & MessageForIFrame)
+    } & MessageForIFrame &
+      VersionForMessage)
+  | ({type: 'ACS.reqReady'; payload: PayloadForReqReady} & MessageForIFrame & VersionForMessage)
   | ({
       type: 'ACS.resReady'
       payload: {
@@ -64,7 +64,8 @@ export type ACSForMessage =
         ts?: PayloadForTS
       } & PayloadForResReady &
         PayloadForAdTracking
-    } & MessageForIFrame)
+    } & MessageForIFrame &
+      VersionForMessage)
 
 export type PayloadForOnLoad = {
   eventName?: string

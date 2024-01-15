@@ -9,6 +9,7 @@ import type {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticCon
 import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 import {makeSuccessCallback, makeFailCallbackWithCode} from '../../common/util'
 import onLoadManager from '../onload/onLoadManager'
+import ACEConstantInteger from '../../common/constant/ACEConstantInteger'
 
 export default class APIForOnLoad extends ACOTask {
   private static _p1TAG = 'APIForOnLoad'
@@ -55,6 +56,7 @@ export default class APIForOnLoad extends ACOTask {
         type: ACSPostMessageType.reqReady,
         token: -1,
         location: self.location.origin.toString(),
+        version: ACEConstantInteger.VersionOfPostMessage,
         payload: {
           uniqueKey: this.key,
           eventName: this.pageName,

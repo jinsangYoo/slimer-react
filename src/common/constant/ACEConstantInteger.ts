@@ -9,6 +9,7 @@ const ACEConstantInteger = {
   QUEUE_MAX_WAITING_COUNT: 5,
   QUEUE_MAX_BUFFER_COUNT: 5,
   TWO_MINUTES: 120,
+  VersionOfPostMessage: 1,
 } as const
 
 export default ACEConstantInteger

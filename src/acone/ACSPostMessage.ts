@@ -11,10 +11,12 @@ import type {
   PayloadForResReady,
   PayloadForOnLoad,
   PayloadForNative,
+  VersionForMessage,
 } from '../common/constant/PostMessage'
 import ACSPostMessageType from '../common/constant/ACSPostMessageType'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACECONSTANT from '../common/constant/ACEConstant'
+import ACEConstantInteger from '../common/constant/ACEConstantInteger'
 import ADID from '../common/constant/ADID'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
 import {QueueManager} from '../common/queue'
@@ -99,6 +101,7 @@ export default class ACSPostMessage {
           type: ACSPostMessageType.didAddByOnLoad,
           token: _token,
           location: self.location.origin.toString(),
+          version: ACEConstantInteger.VersionOfPostMessage,
         },
         _token,
       )
@@ -134,9 +137,10 @@ export default class ACSPostMessage {
 
     const reqOnLoadInOnMessage = (
       params: {
-        type: string
+        type: 'ACS.reqOnLoad'
         payload: PayloadForOnLoad
-      } & MessageForIFrame,
+      } & MessageForIFrame &
+        VersionForMessage,
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'reqOnLoadInOnMessage::params: ', params)
 
@@ -145,6 +149,7 @@ export default class ACSPostMessage {
         type: ACSPostMessageType.resOnLoad,
         token: params.token,
         location: self.location.origin.toString(),
+        version: ACEConstantInteger.VersionOfPostMessage,
         payload: {
           key: ACECommonStaticConfig.getKey(),
           device: ACECONSTANT.DEVICE,
@@ -164,7 +169,8 @@ export default class ACSPostMessage {
           ts?: PayloadForTS
         } & PayloadForOnLoad &
           PayloadForAdTracking
-      } & MessageForIFrame,
+      } & MessageForIFrame &
+        VersionForMessage,
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'finish::resOnLoadInOnMessage::params: ', params)
       this.setAdvertisingIdentifier(params.payload.adeld, params.payload.adid)
@@ -310,18 +316,21 @@ export default class ACSPostMessage {
     const postMessage = (message: ACSForMessage) => {
       if (!port2) {
         ACELog.d(ACSPostMessage._TAG, 'Invalid port2.')
-        ACELog.d(ACSPostMessage._TAG, "Don't send postMessage: ", message)
+        ACELog.d(ACSPostMessage._TAG, "Don't send postMessage by port2: ", message)
         return
       }
-      ACELog.d(ACSPostMessage._TAG, 'Send postMessage:', message)
+      ACELog.d(ACSPostMessage._TAG, 'Send postMessage by port2:', message)
       port2.postMessage(message)
     }
-    const didAddByOnLoadInHandleMessage = (params: {type: 'ACS.didAddByOnLoad'} & MessageForIFrame) => {
+    const didAddByOnLoadInHandleMessage = (
+      params: {type: 'ACS.didAddByOnLoad'} & MessageForIFrame & VersionForMessage,
+    ) => {
       ACELog.d(ACSPostMessage._TAG, 'didAddByOnLoadInHandleMessage::params:', params)
       postMessage({
         type: ACSPostMessageType.reqOnLoad,
         token: params.token,
         location: global.location.origin.toString(),
+        version: ACEConstantInteger.VersionOfPostMessage,
         payload: {},
       })
     }
@@ -365,7 +374,8 @@ export default class ACSPostMessage {
     const reqOnLoadInHandleMessage = (
       params: {
         type: 'ACS.reqOnLoad'
-      } & MessageForIFrame,
+      } & MessageForIFrame &
+        VersionForMessage,
     ) => {
       ACELog.i(ACSPostMessage._TAG, 'reqOnLoadInHandleMessage::params:', params)
     }
@@ -377,7 +387,8 @@ export default class ACSPostMessage {
           device: string
           ts?: PayloadForTS
         } & PayloadForAdTracking
-      } & MessageForIFrame,
+      } & MessageForIFrame &
+        VersionForMessage,
     ) => {
       ACELog.i(ACSPostMessage._TAG, 'resOnLoadInHandleMessage::params:', params)
     }
@@ -385,7 +396,8 @@ export default class ACSPostMessage {
       params: {
         type: 'ACS.reqReady'
         payload: PayloadForReqReady
-      } & MessageForIFrame,
+      } & MessageForIFrame &
+        VersionForMessage,
     ) => {
       if (!this._requestReadys || !this._requestReadys.has(params.payload.uniqueKey)) {
         return
@@ -399,6 +411,7 @@ export default class ACSPostMessage {
           type: ACSPostMessageType.resReady,
           token: _token,
           location: self.location.origin.toString(),
+          version: ACEConstantInteger.VersionOfPostMessage,
           payload: {
             key: ACECommonStaticConfig.getKey(),
             device: ACECONSTANT.DEVICE,
@@ -421,7 +434,8 @@ export default class ACSPostMessage {
           ts?: PayloadForTS
         } & PayloadForResReady &
           PayloadForAdTracking
-      } & MessageForIFrame,
+      } & MessageForIFrame &
+        VersionForMessage,
     ) => {
       ACELog.d(ACSPostMessage._TAG, 'finish::resReadyInHandleMessage::params:', params)
       this.setAdvertisingIdentifier(params.payload.adeld, params.payload.adid)
