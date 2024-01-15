@@ -11,7 +11,7 @@ const ACECONSTANT = {
   INTENT_REFERRER_NAME: 'referrer',
   LNC_LOG_VERSION: 'v2',
   OFFICIAL_LOG_TAG: '[ACE]',
-  PATCH: 'rev01',
+  PATCH: '1',
   ReferrerKeyName: 'kw',
   SDK_PATCH: 'patch',
   SDK_VERSION: 'version',
