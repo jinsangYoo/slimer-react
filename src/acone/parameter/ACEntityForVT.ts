@@ -4,6 +4,7 @@ import {getRandom6CharForSTVT} from '../../common/util/NumberUtil'
 import ACELog from '../../common/logger/ACELog'
 import {objectForVT} from '../../common/constant/ACEPublicStaticConfig'
 import ACOneConstantInteger from '../constant/ACOneConstantInteger'
+import {validateTS, parse, validateCount, parseCountToString} from '../../common/util/TimeStampUtil'
 
 export default class ACEntityForVT {
   private static _TAG = 'vt'
@@ -31,7 +32,7 @@ export default class ACEntityForVT {
 
   public setDeepCopy(value: Map<string, string>) {
     if (this._map) {
-      this._map = new Map<string, string>()
+      if (this._map.size > 0) this._map.clear()
     }
     const _vts = value.get(ACOneConstantVt.KeyVTS) ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyVTS, _vts)
@@ -57,26 +58,34 @@ export default class ACEntityForVT {
 
   public setDeepCopyForJSON(value: JSON) {
     if (this._map) {
-      this._map = new Map<string, string>()
+      if (this._map.size > 0) this._map.clear()
     }
+    // @ts-ignore
     const _vts = value[ACOneConstantVt.KeyVTS] ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyVTS, _vts)
+    // @ts-ignore
     const _vtsRandom = value[ACOneConstantVt.KeyRandom6ForVTS] ?? ACECONSTANT.EMPTY
     this._map.set(ACOneConstantVt.KeyRandom6ForVTS, _vtsRandom)
 
+    // @ts-ignore
     const _visitCount = value[ACOneConstantVt.KeyVisitCount] ?? ACECONSTANT.ZERO
     this._map.set(ACOneConstantVt.KeyVisitCount, _visitCount)
 
+    // @ts-ignore
     const _buyTimeTS = value[ACOneConstantVt.KeyBuyTimeTS] ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyBuyTimeTS, _buyTimeTS)
+    // @ts-ignore
     const _buyTimeTSRandom = value[ACOneConstantVt.KeyRandom6ForBuyTimeTS] ?? ACECONSTANT.EMPTY
     this._map.set(ACOneConstantVt.KeyRandom6ForBuyTimeTS, _buyTimeTSRandom)
 
+    // @ts-ignore
     const _buyCount = value[ACOneConstantVt.KeyBuyCount] ?? ACECONSTANT.ZERO
     this._map.set(ACOneConstantVt.KeyBuyCount, _buyCount)
 
+    // @ts-ignore
     const _pcStamp = value[ACOneConstantVt.KeyPcStamp] ?? ACOneConstantVt.DefaultTS
     this._map.set(ACOneConstantVt.KeyPcStamp, _pcStamp)
+    // @ts-ignore
     const _pcStampRandom = value[ACOneConstantVt.KeyRandom6ForPcStamp] ?? ACECONSTANT.EMPTY
     this._map.set(ACOneConstantVt.KeyRandom6ForPcStamp, _pcStampRandom)
   }
@@ -238,12 +247,29 @@ export default class ACEntityForVT {
     return {
       vts: this.getVTSGoldMaster(),
       visitCount: this.getVisitCount(),
-
       buyTimeTS: this.getBuyTimeTSGoldMaster(),
-
       buyCount: this.getBuyCount(),
-
       pcStamp: this.getPcStampGoldMaster(),
     }
+  }
+
+  public setObjectForTS(value: objectForVT): void {
+    this.parseForTS(ACOneConstantVt.KeyVTS, ACOneConstantVt.KeyRandom6ForVTS, value.vts)
+    this.parseForTS(ACOneConstantVt.KeyBuyTimeTS, ACOneConstantVt.KeyRandom6ForBuyTimeTS, value.buyTimeTS)
+    this.parseForTS(ACOneConstantVt.KeyPcStamp, ACOneConstantVt.KeyRandom6ForPcStamp, value.pcStamp)
+
+    this.parseForCount(ACOneConstantVt.KeyVisitCount, value.visitCount)
+    this.parseForCount(ACOneConstantVt.KeyBuyCount, value.buyCount)
+  }
+
+  private parseForTS(tsKey: string, randomKey: string, timestamp: string): void {
+    const _result = validateTS(timestamp) ? parse(timestamp) : undefined
+    this._map.set(tsKey, _result ? _result.ts : ACOneConstantVt.DefaultTS)
+    this._map.set(randomKey, _result ? _result.random : ACECONSTANT.EMPTY)
+  }
+
+  private parseForCount(tsKey: string, value: string): void {
+    const _result = validateCount(value) ? parseCountToString(value) : undefined
+    this._map.set(tsKey, _result ?? ACECONSTANT.ZERO)
   }
 }

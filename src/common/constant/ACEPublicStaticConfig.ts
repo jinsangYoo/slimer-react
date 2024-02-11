@@ -1,10 +1,15 @@
 import {AceConfiguration} from '../../acone/aceconfiguration'
 
-export const ACEConstantCallback = {
+export const ACEConstantResultForCallback = {
   DefaultMessage: 'done',
   Failed: 'fail',
   Success: 'success',
 } as const
+
+export type STVT = {
+  st: objectForST
+  vt: objectForVT
+}
 
 export type DetailOfSDK = {
   statuses?: {
@@ -47,6 +52,11 @@ export type objectForVT = {
   pcStamp: string
 }
 
+export type AdvertisingIdentifierInSDK = {
+  isAdvertisingTrackingEnabled: string
+  advertisingIdentifier: string
+}
+
 export type ControlTowerOfSDK = {
   isCompletePolicy: boolean
   isForceStop: boolean
@@ -63,6 +73,8 @@ export type NetworkErrorToResponseToCaller = {
   name?: string
   config?: object
 }
+
+export type ACSCallback = (error?: object, innerResult?: ACEResponseToCaller) => void
 
 export type ACEResponseToCaller = {
   taskHash: string
@@ -116,6 +128,8 @@ export const ACEResultCode = {
   NotExistWaitTask: 1032,
   TooBusyWillSendAfterDone: 1033,
   InvalidACParamValues: 1034,
+  MaybeRootPosition: 1035,
+  AlreadyOnLoaded: 1036,
 } as const
 
 export enum ACEGender {

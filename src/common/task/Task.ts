@@ -1,15 +1,14 @@
 import {ITaskParams} from './ITaskParams'
 import {AxiosResponse} from 'axios'
 import ACENetworkResult from '../http/ACENetworkResult'
-import {
-  ACEResponseToCaller,
+import type {
+  ACSCallback,
   NetworkResultToResponseToCaller,
   NetworkErrorToResponseToCaller,
 } from '../constant/ACEPublicStaticConfig'
 import ACELog from '../logger/ACELog'
 
 export default class Task {
-  // private static _c_TAG = 'Task'
   protected _date: number
   protected _response: ACENetworkResult
   protected _error: JSON
@@ -18,11 +17,11 @@ export default class Task {
     this._date = Date.now()
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {}
+  public doWork(callback: ACSCallback | undefined) {}
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {}
+  public didWork(callback: ACSCallback | undefined): void {}
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {}
+  public doneWork(callback: ACSCallback | undefined) {}
 
   protected completed(response: AxiosResponse) {
     this._response = new ACENetworkResult(response)
@@ -70,13 +69,18 @@ export default class Task {
     if (this._error) {
       if (ACELog.isDevMode()) {
         return {
+          // @ts-ignore
           message: this._error['message'] ?? '',
+          // @ts-ignore
           name: this._error['name'] ?? '',
+          // @ts-ignore
           config: this._error['config'] ?? {},
         }
       } else {
         return {
+          // @ts-ignore
           message: this._error['message'] ?? '',
+          // @ts-ignore
           name: this._error['name'] ?? '',
         }
       }

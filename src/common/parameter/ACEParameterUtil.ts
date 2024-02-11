@@ -1,7 +1,7 @@
 import ACECONSTANT from '../constant/ACEConstant'
 import {VersionWithPatch} from '../constant/ACEPublicStaticConfig'
 import {LIB_VERSION} from '../../version'
-import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
+import ControlTowerManager from '../controltower/ControlTowerManager'
 
 export default class ACEParameterUtil {
   public static getResolution(): string {
@@ -15,13 +15,13 @@ export default class ACEParameterUtil {
 
   public static getPackageNameOrBundleID(): string {
     const hostname = window && window.location && window.location.hostname
-    if (hostname === 'localhost' && ControlTowerSingleton.isDevSDKMode()) {
+    if (hostname === 'localhost' && ControlTowerManager.isDevSDKMode()) {
       return 'jinsang.myds.me'
     } else {
       if (typeof window !== 'undefined') {
         return window.location.hostname
       } else {
-        return String(document.location)
+        return document.location.hostname
       }
     }
   }

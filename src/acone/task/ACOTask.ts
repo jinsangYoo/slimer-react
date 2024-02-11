@@ -2,8 +2,8 @@ import {ITaskParams} from '../../common/task/ITaskParams'
 import ACEofAPIForOne from '../../acone/constant/ACEofAPIForOne'
 import {AxiosResponse} from 'axios'
 import ACENetworkResult from '../../common/http/ACENetworkResult'
-import {
-  ACEResponseToCaller,
+import type {
+  ACSCallback,
   NetworkResultToResponseToCaller,
   NetworkErrorToResponseToCaller,
 } from '../../common/constant/ACEPublicStaticConfig'
@@ -21,17 +21,17 @@ export default class ACOTask extends Task implements ITask {
     this._logSource = params.type
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork(callback)
     ACELog.d(ACOTask._aco_TAG, `doWork: ${ACEofAPIForOne[this._logSource]}`)
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(ACOTask._aco_TAG, `didWork: ${ACEofAPIForOne[this._logSource]}`)
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(ACOTask._aco_TAG, `doneWork: ${ACEofAPIForOne[this._logSource]}`)
   }

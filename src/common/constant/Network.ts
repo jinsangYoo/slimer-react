@@ -1,10 +1,9 @@
 export const BASE_URL = {
-  COMPANY_LOCAL_LOG: 'https://jinsang.myds.me',
+  COMPANY_LOCAL_LOG: 'https://gmb.acecounter.com',
   COMPANY_LOCAL_POLICY: 'https://policy2.acecounter.com/policy.php',
-  // HOME_LOCAL_LOG: 'https://jinsang.myds.me',
   HOME_LOCAL_LOG: 'https://gmb.acecounter.com',
   HOME_LOCAL_POLICY: 'https://policy2.acecounter.com/policy.php',
-  PRO_POLICY: 'https://policy.acecounter.com',
+  PRO_POLICY: 'https://policy2.acecounter.com/policy.php',
 } as const
 
 export const HTTP_METHOD = {
@@ -18,7 +17,7 @@ export const HTTP_URL = {
   HOME_LOCAL_LOG: 'mac2/',
   HOME_LOCAL_POLICY: '',
   PRO_LOG: '',
-  PRO_POLICY: 'policy',
+  PRO_POLICY: '',
 } as const
 
 export type ACENetworkParams = {

@@ -2,13 +2,13 @@ import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util/MapUtil'
+import {makeSuccessCallbackWithNetworkResult, makeFailCallbackWithNetworkResult} from '../../common/util'
 import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
 import TP from '../constant/TP'
 import ACECONSTANT from '../../common/constant/ACEConstant'
-import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACEntityForVT from './ACEntityForVT'
 import ACEntityForST from './ACEntityForVT'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
@@ -58,7 +58,8 @@ export default class APIForPushReferrerDeeplink extends ACOTask {
           const res: ACEResponseToCaller = {
             taskHash: `${this._logSource}::0011`,
             code: ACEResultCode.Success,
-            result: ACEConstantCallback[ACEConstantCallback.Success],
+            // @ts-ignore
+            result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
             message: 'Done update st and vt.',
             apiName: this.getDescription(),
           }
@@ -71,7 +72,8 @@ export default class APIForPushReferrerDeeplink extends ACOTask {
           const res: ACEResponseToCaller = {
             taskHash: `${this._logSource}::0012`,
             code: ACEResultCode.FailLoadVT,
-            result: ACEConstantCallback[ACEConstantCallback.Failed],
+            // @ts-ignore
+            result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
             message: 'Fail load vt.',
             apiName: this.getDescription(),
           }
@@ -126,9 +128,9 @@ export default class APIForPushReferrerDeeplink extends ACOTask {
 
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })
@@ -136,9 +138,9 @@ export default class APIForPushReferrerDeeplink extends ACOTask {
         ACELog.d(APIForPushReferrerDeeplink._p1TAG, `resetSessionAndParameterAfterSendWithParams::err: ${err}`)
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })

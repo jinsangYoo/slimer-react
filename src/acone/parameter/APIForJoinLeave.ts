@@ -1,7 +1,7 @@
 import APIForPL from './APIForPL'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {AxiosResponse} from 'axios'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
@@ -16,7 +16,7 @@ export default class APIForJoinLeave extends APIForPL {
     this.userId = params.payload.userId ?? ACECONSTANT.EMPTY
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork((error?: object, innerResult?: ACEResponseToCaller) => {
       ACELog.d(APIForJoinLeave._TAG, 'in doWork::in cb')
       if (error && callback) {
@@ -30,7 +30,7 @@ export default class APIForJoinLeave extends APIForPL {
     })
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForJoinLeave._TAG, 'didWork')
   }
@@ -45,7 +45,7 @@ export default class APIForJoinLeave extends APIForPL {
     ACELog.d(APIForJoinLeave._TAG, 'failed')
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(APIForJoinLeave._TAG, 'doneWork')
     const _parameterUtilForOne = ACEParameterUtilForOne.getInstance()

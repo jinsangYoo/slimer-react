@@ -8,13 +8,15 @@ import APIForLinkTel from './APIForLinkTel'
 import APIForLogin from './APIForLogin'
 import APIForJoinLeave from './APIForJoinLeave'
 import APIForPolicy from './APIForPolicy'
+import APIForOnLoad from './APIForOnLoad'
 import APIForPushReferrerDeeplink from './APIForPushReferrerDeeplink'
 import TaskAdapter from '../../common/task/TaskAdapter'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
-import {ACEConstantCallback, ACEResultCode, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEConstantResultForCallback, ACEResultCode} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
-import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
-import ACProduct from '../acproduct'
+import ControlTowerManager from '../../common/controltower/ControlTowerManager'
+import {ACProduct} from '../acproduct'
 import {ACParams} from '../acparam'
 import {ACEGender, ACEMaritalStatus} from '../../common/constant/ACEPublicStaticConfig'
 import {isEmpty} from '../../common/util/TextUtils'
@@ -32,21 +34,16 @@ export default class ACEReducerForOne {
 
   private constructor() {}
 
-  private static reducer(
-    params: ITaskParams,
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-  ): void
+  private static reducer(params: ITaskParams, callback: ACSCallback | undefined): void
   private static reducer(params: ITaskParams): Promise<ACEResponseToCaller>
-  private static reducer(
-    params: ITaskParams,
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-  ): Promise<ACEResponseToCaller> | void {
+  private static reducer(params: ITaskParams, callback?: ACSCallback | undefined): Promise<ACEResponseToCaller> | void {
     if (params.type !== ACEofAPIForOne.Policy) {
-      if (!ControlTowerSingleton.isEnableByPolicy()) {
+      if (!ControlTowerManager.isEnableByPolicy()) {
         const result: ACEResponseToCaller = {
           taskHash: `${params.type}::0006`,
           code: ACEResultCode.NotFoundPolicyInformation,
-          result: ACEConstantCallback[ACEConstantCallback.Failed],
+          // @ts-ignore
+          result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
           message: 'Not found policy information.',
           apiName: ACEofAPIForOne[params.type],
         }
@@ -83,6 +80,9 @@ export default class ACEReducerForOne {
       case ACEofAPIForOne.Login:
         taskAdapter.addTask(new APIForLogin(params), callback)
         break
+      case ACEofAPIForOne.OnLoad:
+        taskAdapter.addTask(new APIForOnLoad(params), callback)
+        break
       case ACEofAPIForOne.PlWithPage:
         taskAdapter.addTask(new APIForPL(params), callback)
         break
@@ -106,7 +106,7 @@ export default class ACEReducerForOne {
   }
 
   public static appearProduct(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     productId?: string,
@@ -115,7 +115,7 @@ export default class ACEReducerForOne {
     productPrice?: string,
   ): void
   public static appearProduct(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     productId?: string,
@@ -124,7 +124,7 @@ export default class ACEReducerForOne {
     productPrice?: string,
   ): Promise<ACEResponseToCaller>
   public static appearProduct(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     productId?: string,
@@ -152,7 +152,7 @@ export default class ACEReducerForOne {
 
   public static buy(
     type: string,
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     orderNumber?: string,
@@ -161,7 +161,7 @@ export default class ACEReducerForOne {
   ): void
   public static buy(
     type: string,
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     orderNumber?: string,
@@ -170,7 +170,7 @@ export default class ACEReducerForOne {
   ): Promise<ACEResponseToCaller>
   public static buy(
     type: string,
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     orderNumber?: string,
@@ -195,21 +195,16 @@ export default class ACEReducerForOne {
     )
   }
 
+  public static cart(type: string, callback: ACSCallback | undefined, memberKey?: string, products?: ACProduct[]): void
   public static cart(
     type: string,
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    memberKey?: string,
-    products?: ACProduct[],
-  ): void
-  public static cart(
-    type: string,
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     memberKey?: string,
     products?: ACProduct[],
   ): Promise<ACEResponseToCaller>
   public static cart(
     type: string,
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     memberKey?: string,
     products?: ACProduct[],
   ): Promise<ACEResponseToCaller> | void {
@@ -227,18 +222,14 @@ export default class ACEReducerForOne {
     )
   }
 
+  public static join(callback: ACSCallback | undefined, pageName?: string, userId?: string): void
   public static join(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    pageName?: string,
-    userId?: string,
-  ): void
-  public static join(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     userId?: string,
   ): Promise<ACEResponseToCaller>
   public static join(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     userId?: string,
   ): Promise<ACEResponseToCaller> | void {
@@ -256,18 +247,14 @@ export default class ACEReducerForOne {
     )
   }
 
+  public static leave(callback: ACSCallback | undefined, pageName?: string, userId?: string): void
   public static leave(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    pageName?: string,
-    userId?: string,
-  ): void
-  public static leave(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     userId?: string,
   ): Promise<ACEResponseToCaller>
   public static leave(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     userId?: string,
   ): Promise<ACEResponseToCaller> | void {
@@ -285,20 +272,15 @@ export default class ACEReducerForOne {
     )
   }
 
+  public static link(callback: ACSCallback | undefined, pageName?: string, linkName?: string, memberKey?: string): void
   public static link(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    pageName?: string,
-    linkName?: string,
-    memberKey?: string,
-  ): void
-  public static link(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     linkName?: string,
     memberKey?: string,
   ): Promise<ACEResponseToCaller>
   public static link(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     linkName?: string,
     memberKey?: string,
@@ -319,7 +301,7 @@ export default class ACEReducerForOne {
   }
 
   public static login(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback: ACSCallback | undefined,
     pageName?: string,
     userAge?: number,
     userGender?: ACEGender,
@@ -327,7 +309,7 @@ export default class ACEReducerForOne {
     userMaritalStatus?: ACEMaritalStatus,
   ): void
   public static login(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     userAge?: number,
     userGender?: ACEGender,
@@ -335,7 +317,7 @@ export default class ACEReducerForOne {
     userMaritalStatus?: ACEMaritalStatus,
   ): Promise<ACEResponseToCaller>
   public static login(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     userAge?: number,
     userGender?: ACEGender,
@@ -359,18 +341,37 @@ export default class ACEReducerForOne {
     )
   }
 
-  public static plWithPage(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+  public static onLoad(callback: ACSCallback | undefined, key?: string, pageName?: string, origin?: string[]): void
+  public static onLoad(
+    callback?: ACSCallback | undefined,
+    key?: string,
     pageName?: string,
-  ): void
-  public static plWithPage(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    pageName?: string,
+    origin?: string[],
   ): Promise<ACEResponseToCaller>
-  public static plWithPage(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+  public static onLoad(
+    callback?: ACSCallback | undefined,
+    key?: string,
     pageName?: string,
+    origin?: string[],
   ): Promise<ACEResponseToCaller> | void {
+    return ACEReducerForOne.reducer(
+      {
+        type: ACEofAPIForOne.OnLoad,
+        payload: {
+          key,
+          pageName,
+          origin: origin as string[],
+        },
+        error: false,
+        debugParams: {},
+      },
+      callback,
+    )
+  }
+
+  public static plWithPage(callback: ACSCallback | undefined, pageName?: string): void
+  public static plWithPage(callback?: ACSCallback | undefined, pageName?: string): Promise<ACEResponseToCaller>
+  public static plWithPage(callback?: ACSCallback | undefined, pageName?: string): Promise<ACEResponseToCaller> | void {
     return ACEReducerForOne.reducer(
       {
         type: ACEofAPIForOne.PlWithPage,
@@ -384,15 +385,13 @@ export default class ACEReducerForOne {
     )
   }
 
-  public static policy(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void
-  public static policy(): Promise<ACEResponseToCaller>
-  public static policy(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-  ): Promise<ACEResponseToCaller> | void {
+  public static policy(key: string, callback: ACSCallback | undefined): void
+  public static policy(key: string): Promise<ACEResponseToCaller>
+  public static policy(key: string, callback?: ACSCallback | undefined): Promise<ACEResponseToCaller> | void {
     return ACEReducerForOne.reducer(
       {
         type: ACEofAPIForOne.Policy,
-        payload: {},
+        payload: {key},
         error: false,
         debugParams: {},
       },
@@ -400,18 +399,14 @@ export default class ACEReducerForOne {
     )
   }
 
+  public static push(callback: ACSCallback | undefined, data?: {[key: string]: string}, push?: string): void
   public static push(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    data?: {[key: string]: string},
-    push?: string,
-  ): void
-  public static push(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     data?: {[key: string]: string},
     push?: string,
   ): Promise<ACEResponseToCaller>
   public static push(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     data?: {[key: string]: string},
     push?: string,
   ): Promise<ACEResponseToCaller> | void {
@@ -435,18 +430,9 @@ export default class ACEReducerForOne {
     )
   }
 
-  public static referrer(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    keyword?: string,
-  ): void
-  public static referrer(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    keyword?: string,
-  ): Promise<ACEResponseToCaller>
-  public static referrer(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    keyword?: string,
-  ): Promise<ACEResponseToCaller> | void {
+  public static referrer(callback: ACSCallback | undefined, keyword?: string): void
+  public static referrer(callback?: ACSCallback | undefined, keyword?: string): Promise<ACEResponseToCaller>
+  public static referrer(callback?: ACSCallback | undefined, keyword?: string): Promise<ACEResponseToCaller> | void {
     const _keyword = keyword ?? ACECONSTANT.EMPTY
 
     ACEParameterUtilForOne.getInstance()
@@ -469,18 +455,14 @@ export default class ACEReducerForOne {
       })
   }
 
+  public static search(callback: ACSCallback | undefined, pageName?: string, keyword?: string): void
   public static search(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    pageName?: string,
-    keyword?: string,
-  ): void
-  public static search(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     keyword?: string,
   ): Promise<ACEResponseToCaller>
   public static search(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     keyword?: string,
   ): Promise<ACEResponseToCaller> | void {
@@ -498,20 +480,15 @@ export default class ACEReducerForOne {
     )
   }
 
+  public static tel(callback: ACSCallback | undefined, pageName?: string, memberKey?: string, tel?: string): void
   public static tel(
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-    pageName?: string,
-    memberKey?: string,
-    tel?: string,
-  ): void
-  public static tel(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     tel?: string,
   ): Promise<ACEResponseToCaller>
   public static tel(
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
+    callback?: ACSCallback | undefined,
     pageName?: string,
     memberKey?: string,
     tel?: string,

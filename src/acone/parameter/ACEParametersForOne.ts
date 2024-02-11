@@ -6,11 +6,11 @@ import ADID from '../../common/constant/ADID'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import ACOneConstant from '../constant/ACOneConstant'
 import IACBuyMode from '../constant/IACBuyMode'
-import {ACEGender, ACEMaritalStatus} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEGender, ACEMaritalStatus, objectForST, objectForVT} from '../../common/constant/ACEPublicStaticConfig'
 import ACOneConstantSt from '../constant/ACOneConstantSt'
 import ACOneConstantVt from '../constant/ACOneConstantVt'
 import SESSION from '../../common/constant/Session'
-import {ACEInnerCBResultKey} from '../../common/constant/ACEInnerCBResultKey'
+import {ACEInnerCBResultKey} from '../../common/constant/ACEInnerCBResult'
 import ACELog from '../../common/logger/ACELog'
 import ACOneConstantInteger from '../constant/ACOneConstantInteger'
 import TP from '../constant/TP'
@@ -107,9 +107,7 @@ export default class ACEParametersForOne extends ACEParameters {
   public setADID(value: string): void {
     if (isEmpty(value)) {
       this.adid = ADID.defaultADID
-      this.setADELD(false)
     } else {
-      this.setADELD(true)
       this.adid = value
     }
   }
@@ -591,6 +589,10 @@ export default class ACEParametersForOne extends ACEParameters {
     }
   }
 
+  public setSTVTtoST(value: objectForST): void {
+    this.getST().setObjectForTS(value)
+  }
+
   public loadST(callback: ((error?: Error | null, result?: object) => void) | undefined): void
   public loadST(): Promise<object>
   public loadST(callback?: ((error?: Error | null, result?: object) => void) | undefined): Promise<object> | void {
@@ -848,6 +850,10 @@ export default class ACEParametersForOne extends ACEParameters {
     // ACELog.d(ACEParametersForOne._TAG, `setVT::after this.vt`, this.vt)
   }
 
+  public setSTVTtoVT(value: objectForVT): void {
+    this.getVT().setObjectForTS(value)
+  }
+
   public setJSONtoVT(value: JSON): void {
     // ACELog.d(ACEParametersForOne._TAG, `setJSONtoVT::value: ${JSON.stringify(value, null, 2)}`)
     // ACELog.d(ACEParametersForOne._TAG, `setJSONtoVT::before this.vt`, this.vt)
@@ -870,11 +876,12 @@ export default class ACEParametersForOne extends ACEParameters {
   public loadVT(callback?: ((error?: Error | null, result?: object) => void) | undefined): Promise<object> | void {
     if (!globalThis.Promise) {
       getItem(ACOneConstantVt.KeyInStorage, (err, result) => {
-        ACELog.d(ACEParametersForOne._TAG, 'in loadVT::in cb::result', JSON.parse(result ?? '{"result":"undefined"}'))
+        // ACELog.d(ACEParametersForOne._TAG, 'in loadVT::in cb::result', JSON.parse(result ?? '{"result":"undefined"}'))
         if (callback) {
           if (err) {
             callback(err, {
               code: ACEInnerCBResultKey.FailGetVT,
+              // @ts-ignore
               result: ACEInnerCBResultKey[ACEInnerCBResultKey.FailGetVT],
             })
           } else {
@@ -882,11 +889,13 @@ export default class ACEParametersForOne extends ACEParameters {
               this.setJSONtoVT(JSON.parse(result))
               callback(err, {
                 code: ACEInnerCBResultKey.Success,
+                // @ts-ignore
                 result: ACEInnerCBResultKey[ACEInnerCBResultKey.Success],
               })
             } else {
               callback(err, {
                 code: ACEInnerCBResultKey.NotExistKey,
+                // @ts-ignore
                 result: ACEInnerCBResultKey[ACEInnerCBResultKey.NotExistKey],
               })
             }
@@ -909,6 +918,7 @@ export default class ACEParametersForOne extends ACEParameters {
             if (err) {
               callback(err, {
                 code: ACEInnerCBResultKey.FailGetVT,
+                // @ts-ignore
                 result: ACEInnerCBResultKey[ACEInnerCBResultKey.FailGetVT],
               })
             } else {
@@ -916,11 +926,13 @@ export default class ACEParametersForOne extends ACEParameters {
                 this.setJSONtoVT(JSON.parse(result))
                 callback(err, {
                   code: ACEInnerCBResultKey.Success,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.Success],
                 })
               } else {
                 callback(err, {
                   code: ACEInnerCBResultKey.NotExistKey,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.NotExistKey],
                 })
               }
@@ -934,11 +946,13 @@ export default class ACEParametersForOne extends ACEParameters {
                 this.setJSONtoVT(JSON.parse(result))
                 resolve({
                   code: ACEInnerCBResultKey.Success,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.Success],
                 })
               } else {
                 resolve({
                   code: ACEInnerCBResultKey.NotExistKey,
+                  // @ts-ignore
                   result: ACEInnerCBResultKey[ACEInnerCBResultKey.NotExistKey],
                 })
               }
@@ -951,12 +965,12 @@ export default class ACEParametersForOne extends ACEParameters {
 
   public saveVT_toInStorage(
     vt: ACEntityForVT,
-    callback: ((error?: Error | null, result?: ResultAfterSaveInStorage) => void) | undefined,
+    callback?: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
   ): void
   public saveVT_toInStorage(vt: ACEntityForVT): Promise<ResultAfterSaveInStorage>
   public saveVT_toInStorage(
     vt: ACEntityForVT,
-    callback?: ((error?: Error | null, result?: ResultAfterSaveInStorage) => void) | undefined,
+    callback?: (error?: Error | null, result?: ResultAfterSaveInStorage) => void,
   ): Promise<ResultAfterSaveInStorage> | void {
     const _json = JSON.stringify(vt)
     if (!globalThis.Promise) {

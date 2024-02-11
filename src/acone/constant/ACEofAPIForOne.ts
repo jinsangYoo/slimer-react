@@ -18,6 +18,8 @@ enum ACEofAPIForOne {
 
   Search = 190,
 
+  OnLoad = 2000,
+
   Policy = 1000,
 
   InstallReferrer = 3300,

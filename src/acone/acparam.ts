@@ -1,4 +1,4 @@
-import ACProduct from './acproduct'
+import {ACProduct} from './acproduct'
 import {ACEGender, ACEMaritalStatus} from '../common/constant/ACEPublicStaticConfig'
 
 type ParamType =
@@ -12,6 +12,7 @@ type ParamType =
   | 'leave'
   | 'link'
   | 'login'
+  | 'onload'
   | 'push'
   | 'referrer'
   | 'search'
@@ -30,6 +31,7 @@ export type IACParams = {
     LEAVE: ParamType
     LINK: ParamType
     LOGIN: ParamType
+    ONLOAD: ParamType
     PUSH: ParamType
     REFERRER: ParamType
     SEARCH: ParamType
@@ -42,10 +44,12 @@ export type ACParams = {
   name?: string
 
   data?: {[key: string]: string}
+  key?: string
   keyword?: string
   linkName?: string
   memberKey?: string
   orderNumber?: string
+  origin?: string[]
   payMethodName?: string
   productCategoryName?: string
   productId?: string
@@ -73,6 +77,7 @@ export const ACParams: IACParams = {
     LEAVE: 'leave',
     LINK: 'link',
     LOGIN: 'login',
+    ONLOAD: 'onload',
     PUSH: 'push',
     REFERRER: 'referrer',
     SEARCH: 'search',

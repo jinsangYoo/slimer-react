@@ -12,7 +12,7 @@ export default class ACEInternalAPIForOne implements IACECommonAPI {
     key: string,
     callback?: (error?: object, result?: ACEResponseToCaller) => void,
   ): void | Promise<ACEResponseToCaller> {
-    return ACEReducerForOne.policy(callback)
+    return ACEReducerForOne.policy(key, callback)
   }
 
   send(value: ACParams, callback: (error?: object, result?: object) => void): void

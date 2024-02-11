@@ -2,74 +2,62 @@ import {ACParams} from './acparam'
 import {AceConfiguration} from './aceconfiguration'
 import ACECommonStaticConfig from '../common/config/ACECommonStaticConfig'
 import ACEReducerForOne from './parameter/ACEReducerForOne'
-import {ACEResponseToCaller} from '..'
-import ControlTowerSingleton from '../common/controltower/ControlTowerSingleton'
-import {ACEConstantCallback, ACEResultCode, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
-import ACEConstantInteger from '../common/constant/ACEConstantInteger'
+import ControlTowerManager from '../common/controltower/ControlTowerManager'
+import type {ACSCallback, ACEResponseToCaller, DetailOfSDK} from '../common/constant/ACEPublicStaticConfig'
+import {ACEConstantResultForCallback, ACEResultCode} from '../common/constant/ACEPublicStaticConfig'
 import ACELog from '../common/logger/ACELog'
 import NetworkUtils from '../common/http/NetworkUtills'
-import {EventsForWorkerEmitter} from '../common/worker/EventsForWorkerEmitter'
 import {decode, getQueryForKey, isEmpty} from '../common/util/TextUtils'
 import ACECONSTANT from '../common/constant/ACEConstant'
 import ACEParameterUtil from '../common/parameter/ACEParameterUtil'
+import ACSPostMessage from './ACSPostMessage'
+import {QueueManager} from '../common/queue'
+import onLoadManager from './onload/onLoadManager'
 
 export class ACS {
   private static _TAG = 'ACS'
   private static instance: ACS
-  private static waitQueue: ACParams[]
-  private static bufferQueue: ACParams[]
-  private emitter: EventsForWorkerEmitter
-  private static lock = false
-  private _configuration?: AceConfiguration
 
   public static getInstance(): ACS {
     return this.instance || (this.instance = new this())
   }
 
   constructor() {
-    this.emitter = new EventsForWorkerEmitter()
-    this.emitter.on('popWaitQueue', () => {
-      this.popWaitQueue()
-    })
-    this.emitter.on('popBufferQueue', () => {
-      this.popBufferQueue()
-    })
-  }
-
-  private storeConfigurationOfUser(value: AceConfiguration): void {
-    this._configuration = value
+    ACSPostMessage.addOrigin(self.location.origin.toString())
   }
 
   //#region configure of SDK
-  public static configure(
-    value: AceConfiguration,
-    callback: (error?: Error, result?: ACEResponseToCaller) => void,
-  ): void
+  public static configure(value: AceConfiguration, callback: ACSCallback): void
   public static configure(value: AceConfiguration): Promise<ACEResponseToCaller>
-  public static configure(
-    value: AceConfiguration,
-    callback?: (error?: Error, result?: ACEResponseToCaller) => void,
-  ): Promise<ACEResponseToCaller> | void {
+  public static configure(value: AceConfiguration, callback?: ACSCallback): Promise<ACEResponseToCaller> | void {
     return ACS.getInstance().configure(value, callback)
   }
 
-  configure(
-    value: AceConfiguration,
-    callback: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
-  ): void
+  private callbackForTaskInQueue = (error?: object, innerResult?: ACEResponseToCaller) => {
+    if (error) {
+      ACELog.d(ACS._TAG, 'Fail while process queue task.', error)
+    } else {
+      ACELog.d(ACS._TAG, 'Done send for task in queue.', innerResult ?? {})
+    }
+  }
+
+  private callbackForQueue = (param: ACParams | undefined) => {
+    if (param && ControlTowerManager.isEnableByPolicy()) {
+      ACELog.d(ACS._TAG, `Start task what pop waitQueue. ${param.type}`)
+      ACS._send(param, this.callbackForTaskInQueue)
+    }
+  }
+
+  configure(value: AceConfiguration, callback: ACSCallback | undefined): void
   configure(value: AceConfiguration): Promise<ACEResponseToCaller>
-  configure(
-    value: AceConfiguration,
-    callback?: ((error?: Error, result?: ACEResponseToCaller) => void) | undefined,
-  ): Promise<ACEResponseToCaller> | void {
-    this.storeConfigurationOfUser({...value})
+  configure(value: AceConfiguration, callback?: ACSCallback | undefined): Promise<ACEResponseToCaller> | void {
     if (callback) {
       const callbackAtInit = (error?: object, innerResult?: ACEResponseToCaller) => {
         if (error) {
           callback(new Error(`0000, Can not init SDK.`), innerResult)
         } else {
           callback(undefined, innerResult)
-          this.popWaitQueueEmit()
+          QueueManager.pop(this.callbackForQueue)
         }
       }
 
@@ -80,12 +68,12 @@ export class ACS {
           .then(res => {
             resolveToOut(res)
           })
-          .then(res => {
-            ACELog.d(ACS._TAG, `0000::configure::then2: ${JSON.stringify(res, null, 2)}`)
-            this.popWaitQueueEmit()
+          .then(unUsed => {
+            ACELog.d(ACS._TAG, '0000::configure::then:')
+            QueueManager.pop(this.callbackForQueue)
           })
           .catch(err => {
-            ACELog.d(ACS._TAG, `0000::configure::catch2: ${JSON.stringify(err, null, 2)}`)
+            ACELog.d(ACS._TAG, '0000::configure::catch:', err)
             rejectToOut(err)
           })
       })
@@ -94,45 +82,22 @@ export class ACS {
   //#endregion
 
   //#region send of public
-  public static send(value: ACParams, callback: (error?: object, result?: ACEResponseToCaller) => void): void
+  public static send(value: ACParams, callback: ACSCallback): void
   public static send(value: ACParams): Promise<ACEResponseToCaller>
-  public static send(
-    value: ACParams,
-    callback?: (error?: object, result?: ACEResponseToCaller) => void,
-  ): Promise<ACEResponseToCaller> | void {
-    if (!ControlTowerSingleton.isEnableByPolicy()) {
-      ACS.setWaitQueue(value)
-      const result: ACEResponseToCaller = {
-        taskHash: `${value.type}::0404`,
-        code: ACEResultCode.NotFoundPolicyInformation,
-        result: ACEConstantCallback.Failed,
-        message: 'Not found policy information.',
-        apiName: value.type,
-      }
-
-      if (callback) {
-        callback(undefined, result)
-        return
-      } else {
-        return new Promise((resolveToOut, rejectToOut) => {
-          rejectToOut(result)
-        })
-      }
-    }
-
-    ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerSingleton.getIsCompletePolicy()}`)
-    if (!ControlTowerSingleton.getIsCompletePolicy()) {
-      ACS.setWaitQueue(value)
+  public static send(value: ACParams, callback?: ACSCallback): Promise<ACEResponseToCaller> | void {
+    ACELog.d(ACS._TAG, `send::getIsCompletePolicy: ${ControlTowerManager.getIsCompletePolicy()}`)
+    if (!ControlTowerManager.getIsCompletePolicy()) {
+      this._pushAtQueue(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0405`,
         code: ACEResultCode.NotReceivePolicy,
-        result: ACEConstantCallback.Failed,
+        result: ACEConstantResultForCallback.Failed,
         message: 'Not receive policy for SDK. It will send after init.',
         apiName: value.type,
       }
 
       if (callback) {
-        callback(undefined, result)
+        callback(new Error('Not receive policy for SDK. It will send after init.'), result)
         return
       } else {
         return new Promise((resolveToOut, rejectToOut) => {
@@ -141,19 +106,19 @@ export class ACS {
       }
     }
 
-    ACELog.d(ACS._TAG, `send::isEnableByPolicy: ${ControlTowerSingleton.isEnableByPolicy()}`)
-    if (!ControlTowerSingleton.isEnableByPolicy()) {
-      ACS.setWaitQueue(value)
+    ACELog.d(ACS._TAG, `send::isEnableByPolicy: ${ControlTowerManager.isEnableByPolicy()}`)
+    if (!ControlTowerManager.isEnableByPolicy()) {
+      this._pushAtQueue(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0406`,
         code: ACEResultCode.DisabledByPolicy,
-        result: ACEConstantCallback.Failed,
+        result: ACEConstantResultForCallback.Failed,
         message: 'Disabled by policy of SDK. It will send after init.',
         apiName: value.type,
       }
 
       if (callback) {
-        callback(undefined, result)
+        callback(new Error('Disabled by policy of SDK. It will send after init.'), result)
         return
       } else {
         return new Promise((resolveToOut, rejectToOut) => {
@@ -162,18 +127,18 @@ export class ACS {
       }
     }
 
-    if (ACS.isLock()) {
-      ACS.setBufferQueue(value)
+    if (QueueManager.isLock()) {
+      this._pushAtQueue(value)
       const result: ACEResponseToCaller = {
         taskHash: `${value.type}::0409`,
         code: ACEResultCode.TooBusyWillSendAfterDone,
-        result: ACEConstantCallback.Failed,
+        result: ACEConstantResultForCallback.Failed,
         message: 'Too busy. It will send after done.',
         apiName: value.type,
       }
 
       if (callback) {
-        callback(undefined, result)
+        callback(new Error('Too busy. It will send after done.'), result)
         return
       } else {
         return new Promise((resolveToOut, rejectToOut) => {
@@ -187,7 +152,7 @@ export class ACS {
 
   //#region detail of SDK
   public static isEnableSDK(): boolean {
-    return ControlTowerSingleton.getIsSDKEnabled()
+    return ControlTowerManager.getIsSDKEnabled()
   }
 
   public static getSdkVersion(): string {
@@ -199,93 +164,32 @@ export class ACS {
   }
 
   public static getSdkDetails(): DetailOfSDK {
-    const _parameterUtil = ACECommonStaticConfig.getParameterUtil()
-    if (_parameterUtil) {
-      return _parameterUtil.getSdkDetails(
-        ACS.getInstance()._configuration ?? {
-          key: 'not has configuration',
-        },
-      )
-    }
-
-    return {
-      result: ACEConstantCallback.Failed,
-      message: `SDK is maybe that don't initialize.`,
-    }
-  }
-  //#endregion
-
-  //#region pop wait queue
-  private popWaitQueueEmit(): void {
-    this.emitter.emit('popWaitQueue')
-  }
-
-  private popWaitQueue(): void {
-    ACELog.d(ACS._TAG, 'pop waitQueue')
-    if (ACS.waitQueue && ACS.waitQueue.length > 0) {
-      ACELog.d(ACS._TAG, `waitQueue: ${ACS.waitQueue.length}`)
-
-      const callback = (error?: object, innerResult?: ACEResponseToCaller) => {
-        if (error) {
-          ACELog.d(ACS._TAG, 'error of waitQueue', error)
-        } else if (innerResult) {
-          ACELog.d(ACS._TAG, 'result of waitQueue', innerResult)
-          this.popWaitQueueEmit()
-        }
-      }
-
-      const param = ACS.waitQueue.shift()
-      if (param) ACS._send(param, callback)
-    }
-  }
-  //#endregion
-
-  //#region pop buffer queue
-  private popBufferQueueEmit(): void {
-    this.emitter.emit('popBufferQueue')
-  }
-
-  private popBufferQueue(): void {
-    ACELog.d(ACS._TAG, 'pop bufferQueue')
-    if (ACS.bufferQueue && ACS.bufferQueue.length > 0) {
-      ACELog.d(ACS._TAG, `bufferQueue: ${ACS.bufferQueue.length}`)
-
-      const callback = (error?: object, innerResult?: ACEResponseToCaller) => {
-        if (error) {
-          ACELog.d(ACS._TAG, 'error of bufferQueue', error)
-        } else if (innerResult) {
-          ACELog.d(ACS._TAG, 'result of bufferQueue', innerResult)
-        }
-      }
-
-      const param = ACS.bufferQueue.shift()
-      if (param) ACS._send(param, callback)
-    }
+    return ACECommonStaticConfig.getSdkDetails()
   }
   //#endregion
 
   //#region private methods
-  private static _send(
-    value: ACParams,
-    callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-  ): void
+  private static _pushAtQueue(value: ACParams): void {
+    if (value.type === ACParams.TYPE.ONLOAD) QueueManager.pushAtFirst(value)
+    else QueueManager.push(value)
+  }
+
+  private static _send(value: ACParams, callback: ACSCallback | undefined): void
   private static _send(value: ACParams): Promise<ACEResponseToCaller>
-  private static _send(
-    value: ACParams,
-    callback?: ((error?: object, result?: ACEResponseToCaller) => void) | undefined,
-  ): Promise<ACEResponseToCaller> | void {
-    ACS.toggleLock()
+  private static _send(value: ACParams, callback?: ACSCallback | undefined): Promise<ACEResponseToCaller> | void {
+    QueueManager.toggleLock()
     ACELog.i(ACS._TAG, 'ACParams is ', value)
 
     if (callback) {
       const callbackForCB = (error?: object, innerResult?: ACEResponseToCaller) => {
         if (error) {
-          callback(new Error(`0001, Can not use ${value.type} api.`))
+          ACELog.d(ACS._TAG, 'fail to send', error)
+          callback(new Error(`0001, Can not use ${value.type} api.`), innerResult)
         } else {
           callback(undefined, innerResult)
         }
-        ACS.toggleLock()
-        ACS.getInstance().popBufferQueueEmit()
+        QueueManager.toggleLock()
+        QueueManager.pop(this.getInstance().callbackForQueue)
       }
 
       NetworkUtils.isNetworkAvailable()
@@ -342,6 +246,24 @@ export class ACS {
                   value.userMaritalStatus,
                 )
                 break
+              case ACParams.TYPE.ONLOAD:
+                if (value.origin === null || value.origin === undefined) {
+                  const result: ACEResponseToCaller = {
+                    taskHash: `${value.type}::0411`,
+                    code: ACEResultCode.InvalidACParamValues,
+                    result: ACEConstantResultForCallback.Failed,
+                    message: 'Invalid value in ACParam.origin value.',
+                    apiName: value.type,
+                  }
+
+                  QueueManager.toggleLock()
+                  QueueManager.pop(this.getInstance().callbackForQueue)
+                  callback(undefined, result)
+                  return
+                }
+                ACSPostMessage.addOriginArray(value.origin)
+                ACEReducerForOne.onLoad(callbackForCB, value.key, value.name, value.origin)
+                break
               case ACParams.TYPE.PUSH:
                 ACEReducerForOne.push(callbackForCB, value.data, value.push)
                 break
@@ -351,13 +273,13 @@ export class ACS {
                   const result: ACEResponseToCaller = {
                     taskHash: `${value.type}::0410`,
                     code: ACEResultCode.InvalidACParamValues,
-                    result: ACEConstantCallback.Failed,
+                    result: ACEConstantResultForCallback.Failed,
                     message: 'Invalid value in ACParam object.',
                     apiName: value.type,
                   }
 
-                  ACS.toggleLock()
-                  ACS.getInstance().popBufferQueueEmit()
+                  QueueManager.toggleLock()
+                  QueueManager.pop(this.getInstance().callbackForQueue)
                   callback(undefined, result)
                   return
                 }
@@ -374,13 +296,13 @@ export class ACS {
             const result: ACEResponseToCaller = {
               taskHash: `${value.type}::0407`,
               code: ACEResultCode.NotConnectToTheInternet,
-              result: ACEConstantCallback.Failed,
+              result: ACEConstantResultForCallback.Failed,
               message: 'Not connect to the internet.',
               apiName: value.type,
             }
 
-            ACS.toggleLock()
-            ACS.getInstance().popBufferQueueEmit()
+            QueueManager.toggleLock()
+            QueueManager.pop(this.getInstance().callbackForQueue)
             callback(undefined, result)
           }
         })
@@ -389,13 +311,13 @@ export class ACS {
           const result: ACEResponseToCaller = {
             taskHash: `${value.type}::0408`,
             code: ACEResultCode.UnknownConnectStateToTheInternet,
-            result: ACEConstantCallback.Failed,
+            result: ACEConstantResultForCallback.Failed,
             message: 'Unknown connect state to the internet.',
             apiName: value.type,
           }
 
-          ACS.toggleLock()
-          ACS.getInstance().popBufferQueueEmit()
+          QueueManager.toggleLock()
+          QueueManager.pop(this.getInstance().callbackForQueue)
           callback(undefined, result)
         })
     } else {
@@ -410,8 +332,8 @@ export class ACS {
           } else {
             if (innerResult) resolveToOut(innerResult)
           }
-          ACS.toggleLock()
-          ACS.getInstance().popBufferQueueEmit()
+          QueueManager.toggleLock()
+          QueueManager.pop(this.getInstance().callbackForQueue)
         }
 
         NetworkUtils.isNetworkAvailable()
@@ -468,6 +390,24 @@ export class ACS {
                     value.userMaritalStatus,
                   )
                   break
+                case ACParams.TYPE.ONLOAD:
+                  if (value.origin === null || value.origin === undefined) {
+                    const result: ACEResponseToCaller = {
+                      taskHash: `${value.type}::0411`,
+                      code: ACEResultCode.InvalidACParamValues,
+                      result: ACEConstantResultForCallback.Failed,
+                      message: 'Invalid value in ACParam.origin value.',
+                      apiName: value.type,
+                    }
+
+                    QueueManager.toggleLock()
+                    QueueManager.pop(this.getInstance().callbackForQueue)
+                    rejectToOut(result)
+                    return
+                  }
+                  ACSPostMessage.addOriginArray(value.origin)
+                  ACEReducerForOne.onLoad(callbackForPromise, value.key, value.name, value.origin)
+                  break
                 case ACParams.TYPE.PUSH:
                   ACEReducerForOne.push(callbackForPromise, value.data, value.push)
                   break
@@ -480,13 +420,13 @@ export class ACS {
                     const result: ACEResponseToCaller = {
                       taskHash: `${value.type}::0410`,
                       code: ACEResultCode.InvalidACParamValues,
-                      result: ACEConstantCallback.Failed,
+                      result: ACEConstantResultForCallback.Failed,
                       message: 'Invalid value in ACParam object.',
                       apiName: value.type,
                     }
 
-                    ACS.toggleLock()
-                    ACS.getInstance().popBufferQueueEmit()
+                    QueueManager.toggleLock()
+                    QueueManager.pop(this.getInstance().callbackForQueue)
                     rejectToOut(result)
                     return
                   }
@@ -503,14 +443,14 @@ export class ACS {
               const result: ACEResponseToCaller = {
                 taskHash: `${value.type}::0407`,
                 code: ACEResultCode.NotConnectToTheInternet,
-                result: ACEConstantCallback.Failed,
+                result: ACEConstantResultForCallback.Failed,
                 message: 'Not connect to the internet.',
                 apiName: value.type,
               }
 
               rejectToOut(result)
-              ACS.toggleLock()
-              ACS.getInstance().popBufferQueueEmit()
+              QueueManager.toggleLock()
+              QueueManager.pop(this.getInstance().callbackForQueue)
             }
           })
           .catch(err => {
@@ -518,60 +458,22 @@ export class ACS {
             const result: ACEResponseToCaller = {
               taskHash: `${value.type}::0408`,
               code: ACEResultCode.UnknownConnectStateToTheInternet,
-              result: ACEConstantCallback.Failed,
+              result: ACEConstantResultForCallback.Failed,
               message: 'Unknown connect state to the internet.',
               apiName: value.type,
             }
 
-            ACS.toggleLock()
+            QueueManager.toggleLock()
             rejectToOut(result)
           })
       })
     }
   }
-
-  private static initWaitQueue(): void {
-    if (!ACS.waitQueue) {
-      ACS.waitQueue = []
-    }
-  }
-
-  private static setWaitQueue(value: ACParams): void {
-    ACS.initWaitQueue()
-    ACELog.i(ACS._TAG, `ACS.waitQueue.length: ${ACS.waitQueue.length}`)
-    if (ACS.waitQueue.length < ACEConstantInteger.QUEUE_MAX_WAITING_COUNT) {
-      ACELog.i(ACS._TAG, `ACS.waitQueue.push: ${value.type}, >>${value.name}<<`)
-      ACS.waitQueue.push(value)
-    }
-  }
-
-  private static initBufferQueue(): void {
-    if (!ACS.bufferQueue) {
-      ACS.bufferQueue = []
-    }
-  }
-
-  private static setBufferQueue(value: ACParams): void {
-    ACS.initBufferQueue()
-    ACELog.i(ACS._TAG, `ACS.bufferQueue.length: ${ACS.bufferQueue.length}`)
-    if (ACS.bufferQueue.length < ACEConstantInteger.QUEUE_MAX_BUFFER_COUNT) {
-      ACELog.i(ACS._TAG, `ACS.bufferQueue.push: ${value.type}, >>${value.name}<<`)
-      ACS.bufferQueue.push(value)
-    }
-  }
-
-  private static toggleLock(): void {
-    this.lock = !this.lock
-  }
-
-  private static isLock(): boolean {
-    return this.lock
-  }
   //#endregion
 
   //#region AdvertisingIdentifier
-  public static setAdvertisingIdentifier(advertisingIdentifier: string): void {
-    ACECommonStaticConfig.setAdvertisingIdentifier(advertisingIdentifier)
+  public static setAdvertisingIdentifier(isAdvertisingTrackingEnabled: boolean, advertisingIdentifier: string): void {
+    ACECommonStaticConfig.setAdvertisingIdentifier(isAdvertisingTrackingEnabled, advertisingIdentifier)
   }
   //#endregion
 
@@ -580,9 +482,53 @@ export class ACS {
     return ACECommonStaticConfig.getKey()
   }
 
+  public static getDevice(): string {
+    return ACECONSTANT.DEVICE
+  }
+
   public static getTS(): string {
     const parameterUtil = ACECommonStaticConfig.getParameterUtil()
-    return parameterUtil ? parameterUtil.getTS() : '{}'
+    return parameterUtil ? JSON.stringify(parameterUtil.getTS()) : '{}'
+  }
+  //#endregion
+
+  //#region ACSPostMessage wrappers
+  public static addDependency(
+    iframeRef: React.RefObject<HTMLIFrameElement>,
+    destinationDomain: string,
+    latency?: number,
+  ) {
+    ACSPostMessage.addDependency(iframeRef, destinationDomain, latency)
+  }
+
+  public static addRequestReady(
+    identity: string,
+    iframeRef: React.RefObject<HTMLIFrameElement>,
+    destinationDomain: string,
+  ): boolean {
+    return ACSPostMessage.addRequestReady(identity, iframeRef, destinationDomain)
+  }
+
+  public static removeDependencices() {
+    ACSPostMessage.removeDependencices()
+  }
+
+  public static printDependencies() {
+    ACSPostMessage.printDependencies()
+  }
+
+  public static addOrigin(domain: string | undefined) {
+    ACSPostMessage.addOrigin(domain)
+  }
+
+  public static handleMessage(e: Event) {
+    return ACSPostMessage.handleMessage(e)
+  }
+  //#endregion
+
+  //#region onLoadManager wrappers
+  public static resetToOnLoad() {
+    onLoadManager.reset()
   }
   //#endregion
 }

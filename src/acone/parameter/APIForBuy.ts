@@ -1,9 +1,9 @@
 import APIForPL from './APIForPL'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {AxiosResponse} from 'axios'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
-import ACProduct from '../acproduct'
+import {ACProduct} from '../acproduct'
 import ACECONSTANT from '../../common/constant/ACEConstant'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
 import IACBuyMode from '../constant/IACBuyMode'
@@ -27,7 +27,7 @@ export default class APIForBuy extends APIForPL {
     this.products = Array.from(params.payload.products ?? [])
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork((error?: object, innerResult?: ACEResponseToCaller) => {
       ACELog.d(APIForBuy._TAG, 'in doWork::in cb')
       if (error && callback) {
@@ -63,7 +63,7 @@ export default class APIForBuy extends APIForPL {
     })
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForBuy._TAG, 'didWork')
   }
@@ -78,7 +78,7 @@ export default class APIForBuy extends APIForPL {
     ACELog.d(APIForBuy._TAG, 'failed')
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(APIForBuy._TAG, 'doneWork')
     const _parameterUtilForOne = ACEParameterUtilForOne.getInstance()

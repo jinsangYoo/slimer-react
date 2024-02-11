@@ -5,7 +5,7 @@ import {NetworkMode, NetworkRequestType} from '../constant/SDKMode'
 import {mapValueStringToObject} from '../util/MapUtil'
 import ACELog from '../logger/ACELog'
 
-import ControlTowerSingleton from '../controltower/ControlTowerSingleton'
+import ControlTowerManager from '../controltower/ControlTowerManager'
 import ACEParameterUtil from '../parameter/ACEParameterUtil'
 import ACEParameterUtilForOne from '../../acone/parameter/ACEParameterUtilForOne'
 import ACEPolicyParameters from '../policy/ACEPolicyParameters'
@@ -19,14 +19,15 @@ export class ACENetwork {
   private static _TAG = 'Net'
 
   private static networkRequestTypeToParams(requestType: NetworkRequestType, parmas?: requestParams): ACENetworkParams {
-    const currentNetworkMode = ControlTowerSingleton.getInstance().getNetworkMode()
+    const currentNetworkMode = ControlTowerManager.getInstance().getNetworkMode()
     ACELog.d(
       ACENetwork._TAG,
-      `networkRequestTypeToParams requestType: ${NetworkRequestType[requestType]}, currentNetworkMode:${NetworkMode[currentNetworkMode]}`,
+      `networkRequestTypeToParams requestType: ${NetworkRequestType[requestType]}, currentNetworkMode:${NetworkMode[currentNetworkMode]}, parmas:`,
+      parmas ?? {},
     )
     return {
       baseUrl: this.networkRequestTypeToBaseURLs(currentNetworkMode, requestType),
-      requestHeaders: this.networkRequestTypeToHeaders(currentNetworkMode, requestType),
+      requestHeaders: this.networkRequestTypeToHeaders(currentNetworkMode, requestType, parmas),
       url: this.networkRequestTypeToURLs(currentNetworkMode, requestType),
       params: this.networkRequestTypeToURLParams(requestType),
     }
@@ -107,7 +108,7 @@ export class ACENetwork {
       case NetworkRequestType.LOG:
         return this.logToRequestHeaders(networkMode)
       case NetworkRequestType.POLICY:
-        return this.policyToRequestHeaders(networkMode)
+        return this.policyToRequestHeaders(networkMode, parmas)
     }
   }
   //#endregion
@@ -160,7 +161,7 @@ export class ACENetwork {
     completed?: (response: AxiosResponse) => void,
     failed?: (err: object) => void,
   ): void {
-    ACENetwork.request(ACENetwork.networkRequestTypeToParams(NetworkRequestType.POLICY), completed, failed)
+    ACENetwork.request(ACENetwork.networkRequestTypeToParams(NetworkRequestType.POLICY, parmas), completed, failed)
   }
 
   public static requestToLog(completed?: (response: AxiosResponse) => void, failed?: (err: object) => void): void {
@@ -183,7 +184,7 @@ export class ACENetwork {
       method: method,
       baseURL: networkParam.baseUrl,
       headers: requestHeaders,
-      timeout: 1000,
+      timeout: 5000,
       params: networkParam.params,
     }
 

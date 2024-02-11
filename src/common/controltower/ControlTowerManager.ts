@@ -4,15 +4,15 @@ import ControlTower from './ControlTower'
 import ACEControlTowerForOne from '../../acone/controltower/ACEControlTowerForOne'
 import ACELog from '../logger/ACELog'
 
-export default class ControlTowerSingleton {
-  private static _TAG = 'towerSingle'
+export default class ControlTowerManager {
+  private static _TAG = 'CTM'
   private _platform: ACEPlatform
   private _controlTower: ControlTower
 
-  private static instance: ControlTowerSingleton
+  private static instance: ControlTowerManager
 
-  public static getInstance(): ControlTowerSingleton
-  public static getInstance(platform?: ACEPlatform): ControlTowerSingleton {
+  public static getInstance(): ControlTowerManager
+  public static getInstance(platform?: ACEPlatform): ControlTowerManager {
     return this.instance || (this.instance = new this(platform))
   }
 
@@ -40,12 +40,12 @@ export default class ControlTowerSingleton {
     const currentIsCompletePolicy = this.getIsCompletePolicy()
     const currentIsSDKEnabled = this.getIsSDKEnabled()
     ACELog.d(
-      ControlTowerSingleton._TAG,
+      ControlTowerManager._TAG,
       `getIsCompletePolicy(): ${currentIsCompletePolicy}, getIsSDKEnabled(): ${currentIsSDKEnabled}`,
     )
 
     if (currentIsCompletePolicy && !currentIsSDKEnabled) {
-      ACELog.d(ControlTowerSingleton._TAG, 'SDK is disabled.')
+      ACELog.d(ControlTowerManager._TAG, 'SDK is disabled.')
       return true
     }
 
@@ -131,15 +131,15 @@ export default class ControlTowerSingleton {
 
   //#region static
   public static getIsSDKEnabled(): boolean {
-    return ControlTowerSingleton.getInstance().getIsSDKEnabled()
+    return ControlTowerManager.getInstance().getIsSDKEnabled()
   }
 
   public static getCurrentSDKkModeName(): string {
-    return SDKMode[ControlTowerSingleton.getInstance().getSDKMode()]
+    return SDKMode[ControlTowerManager.getInstance().getSDKMode()]
   }
 
   public static getCurrentNetworkModeName(): string {
-    return NetworkMode[ControlTowerSingleton.getInstance().getNetworkMode()]
+    return NetworkMode[ControlTowerManager.getInstance().getNetworkMode()]
   }
 
   public static getDefaultNetworkMode(): NetworkMode {
@@ -147,31 +147,31 @@ export default class ControlTowerSingleton {
   }
 
   public static setDefaultNetworkMode(): void {
-    ControlTowerSingleton.getInstance().setNetworkMode(ControlTowerSingleton.getDefaultNetworkMode())
+    ControlTowerManager.getInstance().setNetworkMode(ControlTowerManager.getDefaultNetworkMode())
   }
 
   public static isDevSDKMode(): boolean {
-    return ControlTowerSingleton.getInstance().isDevSDKMode()
+    return ControlTowerManager.getInstance().isDevSDKMode()
   }
 
   public static setDevSDKMode(): void {
-    ControlTowerSingleton.getInstance().setDevSDKMode()
+    ControlTowerManager.getInstance().setDevSDKMode()
   }
 
   public static getIsCompletePolicy(): boolean {
-    return ControlTowerSingleton.getInstance().getIsCompletePolicy()
+    return ControlTowerManager.getInstance().getIsCompletePolicy()
   }
 
   public static isEnableByPolicy(): boolean {
-    return ControlTowerSingleton.getInstance().isEnableByPolicy()
+    return ControlTowerManager.getInstance().isEnableByPolicy()
   }
 
   public static isEnableForceStop(): boolean {
-    return ControlTowerSingleton.getInstance().isEnableForceStop()
+    return ControlTowerManager.getInstance().isEnableForceStop()
   }
 
   public static reset(): void {
-    return ControlTowerSingleton.getInstance().reset()
+    return ControlTowerManager.getInstance().reset()
   }
   //#endregion
 }

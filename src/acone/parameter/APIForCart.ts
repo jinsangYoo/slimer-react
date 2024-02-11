@@ -2,14 +2,14 @@ import ACOTask from '../task/ACOTask'
 import {ITaskParams} from '../../common/task/ITaskParams'
 import {ACENetwork} from '../../common/http/ACENetwork'
 import {AxiosResponse} from 'axios'
-import {makeSuccessCallbackParams, makeFailCallbackParams} from '../../common/util/MapUtil'
-import {ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
+import {makeSuccessCallbackWithNetworkResult, makeFailCallbackWithNetworkResult} from '../../common/util'
+import type {ACSCallback, ACEResponseToCaller} from '../../common/constant/ACEPublicStaticConfig'
 import ACELog from '../../common/logger/ACELog'
 import ACEParameterUtilForOne from './ACEParameterUtilForOne'
 import TP from '../constant/TP'
-import {ACEResultCode, ACEConstantCallback} from '../../common/constant/ACEPublicStaticConfig'
+import {ACEResultCode, ACEConstantResultForCallback} from '../../common/constant/ACEPublicStaticConfig'
 import ACEntityForVT from './ACEntityForVT'
-import ACProduct from '../acproduct'
+import {ACProduct} from '../acproduct'
 import {acproductToURLForOne} from '../../common/util/ACProductUtil'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import IACBuyMode from '../constant/IACBuyMode'
@@ -28,7 +28,7 @@ export default class APIForCart extends ACOTask {
     this.products = Array.from(params.payload.products ?? [])
   }
 
-  public doWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doWork(callback: ACSCallback | undefined) {
     super.doWork(callback)
     ACELog.d(APIForCart._TAG, 'doWork')
 
@@ -58,7 +58,8 @@ export default class APIForCart extends ACOTask {
           const res: ACEResponseToCaller = {
             taskHash: `${this._logSource}::0011`,
             code: ACEResultCode.Success,
-            result: ACEConstantCallback[ACEConstantCallback.Success],
+            // @ts-ignore
+            result: ACEConstantResultForCallback[ACEConstantResultForCallback.Success],
             message: 'Done update st and vt.',
             apiName: this.getDescription(),
           }
@@ -71,7 +72,8 @@ export default class APIForCart extends ACOTask {
           const res: ACEResponseToCaller = {
             taskHash: `${this._logSource}::0012`,
             code: ACEResultCode.FailLoadVT,
-            result: ACEConstantCallback[ACEConstantCallback.Failed],
+            // @ts-ignore
+            result: ACEConstantResultForCallback[ACEConstantResultForCallback.Failed],
             message: 'Fail load vt.',
             apiName: this.getDescription(),
           }
@@ -80,7 +82,7 @@ export default class APIForCart extends ACOTask {
       })
   }
 
-  public didWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined): void {
+  public didWork(callback: ACSCallback | undefined): void {
     super.didWork(callback)
     ACELog.d(APIForCart._TAG, 'didWork')
 
@@ -108,7 +110,7 @@ export default class APIForCart extends ACOTask {
     ACELog.d(APIForCart._TAG, 'failed')
   }
 
-  public doneWork(callback: ((error?: object, result?: ACEResponseToCaller) => void) | undefined) {
+  public doneWork(callback: ACSCallback | undefined) {
     super.doneWork(callback)
     ACELog.d(APIForCart._TAG, 'doneWork')
     const _parameterUtilForOne = ACEParameterUtilForOne.getInstance()
@@ -127,9 +129,9 @@ export default class APIForCart extends ACOTask {
 
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })
@@ -137,9 +139,9 @@ export default class APIForCart extends ACOTask {
         ACELog.d(APIForCart._TAG, `resetSessionAndParameterAfterSendWithParams::err: ${err}`)
         if (callback) {
           if (this._error) {
-            callback(this.getNetworkError(), makeFailCallbackParams(this))
+            callback(this.getNetworkError(), makeFailCallbackWithNetworkResult(this))
           } else {
-            callback(undefined, makeSuccessCallbackParams(this))
+            callback(undefined, makeSuccessCallbackWithNetworkResult(this))
           }
         }
       })

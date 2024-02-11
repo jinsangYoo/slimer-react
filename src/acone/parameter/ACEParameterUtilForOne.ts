@@ -9,11 +9,13 @@ import ACEntityForST from './ACEntityForST'
 import ACEntityForVT from './ACEntityForVT'
 import {
   ACEResponseToCaller,
-  ACEConstantCallback,
+  ACEConstantResultForCallback,
   ACEResultCode,
   ACEGender,
   ACEMaritalStatus,
+  AdvertisingIdentifierInSDK,
   DetailOfSDK,
+  STVT,
 } from '../../common/constant/ACEPublicStaticConfig'
 import {isEmpty, onlyLetteringAtStartIndex, stringToNumber} from '../../common/util/TextUtils'
 import ACELog from '../../common/logger/ACELog'
@@ -24,9 +26,10 @@ import IACBuyMode from '../constant/IACBuyMode'
 import JN from '../constant/JN'
 import ACEofAPIForOne from '../constant/ACEofAPIForOne'
 import {AceConfiguration} from '../aceconfiguration'
-import ControlTowerSingleton from '../../common/controltower/ControlTowerSingleton'
+import ControlTowerManager from '../../common/controltower/ControlTowerManager'
 import {LIB_VERSION} from '../../version'
 import Incoming from '../../common/constant/Incoming'
+import ACOneConstantSt from '../constant/ACOneConstantSt'
 
 export default class ACEParameterUtilForOne implements IACEParameterUtil {
   private static _TAG = 'paramUtilForOne'
@@ -51,17 +54,17 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
   getSdkDetails(value: AceConfiguration): DetailOfSDK {
     const _parametersForOne = ACEParametersForOne.getInstance()
-    const _controlTowerSingleton = ControlTowerSingleton.getInstance()
+    const _controlTowerManager = ControlTowerManager.getInstance()
     return {
       statuses: {
         configuration: {
           ...value,
         },
         controlTower: {
-          isCompletePolicy: _controlTowerSingleton.getIsCompletePolicy(),
-          isForceStop: _controlTowerSingleton.isEnableForceStop(),
+          isCompletePolicy: _controlTowerManager.getIsCompletePolicy(),
+          isForceStop: _controlTowerManager.isEnableForceStop(),
           isInstallReferrerWaitDone: false,
-          isSDKEnabled: _controlTowerSingleton.isEnableByPolicy(),
+          isSDKEnabled: _controlTowerManager.isEnableByPolicy(),
         },
       },
       internal: {
@@ -70,11 +73,19 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
         vt: this.getVT().getObjectForTS(),
         versions: ACEParameterUtil.getSdkVersionWithPatch(),
       },
-      result: ACEConstantCallback.Success,
+      result: ACEConstantResultForCallback.Success,
     }
   }
 
-  setAdvertisingIdentifier(advertisingIdentifier: string): void {
+  getAdvertisingIdentifier(): AdvertisingIdentifierInSDK {
+    return {
+      isAdvertisingTrackingEnabled: ACEParametersForOne.getInstance().getADELD(),
+      advertisingIdentifier: ACEParametersForOne.getInstance().getADID(),
+    }
+  }
+
+  setAdvertisingIdentifier(isAdvertisingTrackingEnabled: boolean, advertisingIdentifier: string): void {
+    ACEParametersForOne.getInstance().setADELD(isAdvertisingTrackingEnabled)
     ACEParametersForOne.getInstance().setADID(advertisingIdentifier)
   }
 
@@ -102,11 +113,44 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
     })
   }
 
-  getTS(): string {
-    return JSON.stringify({
+  getTS(): STVT {
+    return {
       st: this.getST().getObjectForTS(),
       vt: this.getVT().getObjectForTS(),
-    })
+    }
+  }
+
+  setTS(ts: STVT) {
+    const _parametersForOne = ACEParametersForOne.getInstance()
+    _parametersForOne.setSTVTtoST(ts.st)
+    _parametersForOne.setSTVTtoVT(ts.vt)
+  }
+
+  updateByPostMessage(key: string, callback: (eventName?: string) => void, eventName?: string, ts?: STVT): void {
+    const _parametersForOne = ACEParametersForOne.getInstance()
+    _parametersForOne.setMID(key)
+
+    if (ts) {
+      this.setTS(ts)
+      this.saveVT_toInStorage(this.getVT(), (error?: Error | null, result?: ResultAfterSaveInStorage) => {
+        if (error) {
+          ACELog.e(ACEParameterUtilForOne._TAG, 'Fail to update for ts.', error)
+        } else if (result) {
+          ACELog.d(ACEParameterUtilForOne._TAG, 'Done to update for ts.')
+          ACELog.d(ACEParameterUtilForOne._TAG, `result.getKey: ${result.getKey}`, JSON.parse(result.getValue))
+          callback(eventName)
+        }
+      })
+    }
+  }
+
+  didUpdateByPostMessage(): void {
+    const st = this.getST()
+    if (st.getGetTS() !== ACOneConstantSt.DefaultTS) {
+      this.setKeepSession()
+    }
+    this.setInnerIncomingRI()
+    this.setSTS(st.getStartTSGoldMaster())
   }
 
   public initParameters(
@@ -149,12 +193,12 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
 
           this.getVT()
           this.loadUniqueKeyForSDK()
-          ACELog.d(ACEParameterUtilForOne._TAG, 'Promise.all vt:', this.getVT())
+          // ACELog.d(ACEParameterUtilForOne._TAG, 'Promise.all vt:', this.getVT())
 
           const response: ACEResponseToCaller = {
             taskHash: '0003',
             code: ACEResultCode.Success,
-            result: ACEConstantCallback.Success,
+            result: ACEConstantResultForCallback.Success,
             message: 'SDK init step one done',
             apiName: 'init',
           }
@@ -170,7 +214,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
           const response: ACEResponseToCaller = {
             taskHash: '0004',
             code: ACEResultCode.FailAfterRequest,
-            result: ACEConstantCallback.Failed,
+            result: ACEConstantResultForCallback.Failed,
             message: 'SDK init step one fail',
             apiName: 'init',
           }
@@ -489,6 +533,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
         this.setBuyCountAtObject(willUpdateVt, 1)
       }
     } else {
+      // @ts-ignore
       ACELog.d(ACEParameterUtilForOne._TAG, `not firstLog: ${this.getSession()}, ${SESSION[this.getSession()]}`)
     }
     this.setGetTS(_now, _randomString)
@@ -568,7 +613,6 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   public setURL(value: string): void {
     value = onlyLetteringAtStartIndex(value)
     const _parametersForOne = ACEParametersForOne.getInstance()
-    ACELog.d(ACEParameterUtilForOne._TAG, `>>${ACEParameterUtil.getPackageNameOrBundleID()}/${value}<<`)
     _parametersForOne.setURL(`${ACEParameterUtil.getPackageNameOrBundleID()}/${value}`)
   }
 
@@ -676,6 +720,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
 
   public getUserGender(): ACEGender {
+    // @ts-ignore
     return ACEGender[ACEParametersForOne.getInstance().getGD()]
   }
 
@@ -720,6 +765,7 @@ export default class ACEParameterUtilForOne implements IACEParameterUtil {
   }
 
   public getUserMaritalStatus(): ACEMaritalStatus {
+    // @ts-ignore
     return ACEMaritalStatus[ACEParametersForOne.getInstance().getMR()]
   }
 

@@ -1,5 +1,5 @@
 import ACEofAPIForOne from '../../acone/constant/ACEofAPIForOne'
-import ACProduct from '../../acone/acproduct'
+import {ACProduct} from '../../acone/acproduct'
 import {ACEGender, ACEMaritalStatus} from '../constant/ACEPublicStaticConfig'
 
 export type IDebugParams = {}
@@ -10,6 +10,7 @@ export type IPayload = {
   linkName?: string
   memberKey?: string
   orderNumber?: string
+  origin?: string[]
   pageName?: string
   paymentMethod?: string
   productId?: string

@@ -13,9 +13,7 @@ export default class ACEControlTowerForOne extends ControlTower {
       return
     }
 
-    if (isCompletePolicy && isSucceedRequestPolicy) {
-      // 정상 정책 수신 후 대기큐 정리 위치
-    } else if (!isSucceedRequestPolicy) {
+    if (!isSucceedRequestPolicy) {
       ACELog.d(ACEControlTowerForOne._TAG, 'failed receive policy will disable SDK.')
       this._isSDKEnabled = isSucceedRequestPolicy
     }
